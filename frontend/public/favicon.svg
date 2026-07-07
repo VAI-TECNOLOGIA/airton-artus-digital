@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Bandeira do Rio Grande do Sul">
+  <defs>
+    <clipPath id="round"><rect width="64" height="64" rx="12" /></clipPath>
+  </defs>
+  <g clip-path="url(#round)">
+    <!-- campo verde (superior-esquerdo) -->
+    <rect width="64" height="64" fill="#1b7a43" />
+    <!-- campo vermelho (inferior-direito) -->
+    <polygon points="64,0 64,64 0,64" fill="#c8102e" />
+    <!-- faixa dourada na diagonal -->
+    <line x1="-3" y1="67" x2="67" y2="-3" stroke="#f2b705" stroke-width="14" />
+  </g>
+</svg>

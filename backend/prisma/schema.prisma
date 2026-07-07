@@ -1,0 +1,875 @@
+// ============================================================
+//  Campanha DEMO — Schema Prisma
+//  Banco: PostgreSQL
+//  28 models cobrindo todos os módulos da plataforma.
+// ============================================================
+
+generator client {
+  provider      = "prisma-client-js"
+  // Client gerado dentro do código-fonte (não em node_modules): assim o
+  // bundler da Vercel inclui o engine automaticamente (corrige ENOENT serverless).
+  output        = "../src/generated/prisma"
+  // "native" = local; demais cobrem a runtime serverless da Vercel (x64 e ARM64)
+  binaryTargets = ["native", "rhel-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("APP_DATABASE_URL") // pooled (runtime). Nome próprio p/ não conflitar com a integração Vercel/Neon.
+  directUrl = env("APP_DIRECT_URL")   // conexão direta (migrações)
+}
+
+// ============================ ENUMS ============================
+
+enum UserRole {
+  LIDER
+  MEMBRO
+  PARCEIRO
+}
+
+enum SupportType {
+  VOLUNTARIO
+  FAIXA_CASA
+  ADESIVO_CARRO
+  MATERIAL_DIGITAL
+  CAMINHADA
+  EVENTOS
+  INDICAR
+  NOTICIAS
+}
+
+enum SupporterStatus {
+  NOVO
+  CONFIRMADO
+  ATIVO
+  PENDENTE
+  SUSPEITO
+  INATIVO
+  BLACKLIST
+}
+
+enum Channel {
+  WHATSAPP
+  INSTAGRAM
+  MESSENGER
+  SMS
+  CHAT_INTERNO
+}
+
+enum ConversationStatus {
+  ABERTA
+  EM_ATENDIMENTO
+  AGUARDANDO
+  ENCAMINHADA
+  RESOLVIDA
+  FECHADA
+}
+
+enum MessageDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum NoticeType {
+  AVISO
+  CONVOCACAO
+  AGENDA
+  ORIENTACAO
+  VIDEO
+  LINK
+  PRIORIDADE
+  URGENTE
+}
+
+enum Priority {
+  BAIXA
+  MEDIA
+  ALTA
+  URGENTE
+}
+
+enum PublishStatus {
+  RASCUNHO
+  PUBLICADO
+  ARQUIVADO
+}
+
+enum MediaType {
+  VIDEO
+  REELS
+  STORY
+  ARTE
+  JINGLE
+  CAPA_FACEBOOK
+  CARD_WHATSAPP
+  LEGENDA
+}
+
+enum SocialNetwork {
+  INSTAGRAM
+  FACEBOOK
+  WHATSAPP
+  TIKTOK
+  YOUTUBE
+  TODAS
+}
+
+enum TaskType {
+  POST_INSTAGRAM
+  POST_FACEBOOK
+  SHARE_WHATSAPP
+  CAMINHADA
+  FAIXA
+  ADESIVOS
+  CONVIDAR
+  EVENTO
+}
+
+enum MaterialRequestStatus {
+  SOLICITADO
+  EM_ANALISE
+  APROVADO
+  SEPARADO
+  ENTREGUE
+  RECUSADO
+  CANCELADO
+}
+
+enum BannerStatus {
+  AUTORIZADO
+  AGUARDANDO_INSTALACAO
+  INSTALADO
+  RECUSADO
+  REMOVIDO
+  SUSPEITO
+}
+
+enum StreetActionType {
+  CAMINHADA
+  REUNIAO
+  VISITA
+  EVENTO
+  ENTREGA_MATERIAL
+  INSTALACAO_FAIXA
+  CARREATA
+  BANDEIRACO
+}
+
+enum ActionStatus {
+  PLANEJADA
+  EM_ANDAMENTO
+  REALIZADA
+  CANCELADA
+}
+
+enum EventStatus {
+  AGENDADO
+  CONFIRMADO
+  REALIZADO
+  CANCELADO
+}
+
+enum DemandCategory {
+  SAUDE
+  EDUCACAO
+  INFRAESTRUTURA
+  SEGURANCA
+  EMPREGO
+  TRANSPORTE
+  OUTROS
+}
+
+enum DemandStatus {
+  NOVA
+  EM_ANALISE
+  EM_ANDAMENTO
+  RESOLVIDA
+  ARQUIVADA
+}
+
+enum BroadcastStatus {
+  RASCUNHO
+  AGENDADA
+  ENVIANDO
+  CONCLUIDA
+  PAUSADA
+  CANCELADA
+}
+
+enum BroadcastContactStatus {
+  PENDENTE
+  ENVIADO
+  ENTREGUE
+  FALHA
+}
+
+enum AutomationType {
+  ANIVERSARIO
+  NATAL
+  DIA_AMIGO
+  AGRADECIMENTO_VOLUNTARIO
+  LEMBRETE_EVENTO
+  CONVOCACAO
+  CONFIRMACAO
+}
+
+enum AutomationStatus {
+  ATIVA
+  PAUSADA
+  RASCUNHO
+}
+
+// ============================ MODELS ============================
+
+model Role {
+  id          String   @id @default(uuid())
+  key         UserRole @unique
+  name        String
+  description String?
+  permissions Json     @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  role      UserRole @default(PARCEIRO)
+  avatarUrl String?
+  active    Boolean  @default(true)
+  code      String?  @unique // código único do membro (chat interno)
+
+  regionId  String?
+  region    Region? @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  coordinatedRegions Region[] @relation("RegionCoordinator")
+  managerId String?
+  manager   User?   @relation("UserHierarchy", fields: [managerId], references: [id], onDelete: SetNull)
+  team      User[]  @relation("UserHierarchy")
+
+  resetToken        String?
+  resetTokenExpires DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  coordinatedSupporters Supporter[]         @relation("SupporterCoordinator")
+  supervisedVolunteers  Volunteer[]         @relation("VolunteerSupervisor")
+  assignedConversations Conversation[]      @relation("ConversationAgent")
+  authoredNotices       Notice[]            @relation("NoticeAuthor")
+  uploadedMedia         MediaKit[]          @relation("MediaAuthor")
+  mediaDownloads        MediaDownload[]
+  publicationProofs     MediaPublicationProof[]
+  engagements           Engagement[]        @relation("EngagementValidator")
+  requestedMaterials    MaterialRequest[]   @relation("RequestRequester")
+  approvedMaterials     MaterialRequest[]   @relation("RequestApprover")
+  coordinatedActions    StreetAction[]      @relation("ActionCoordinator")
+  responsibleEvents     Event[]             @relation("EventResponsible")
+  responsibleDemands    Demand[]            @relation("DemandResponsible")
+  broadcasts            BroadcastCampaign[] @relation("BroadcastOwner")
+  auditLogs             AuditLog[]
+  messages              Message[]           @relation("MessageSender")
+  internalMemberships   InternalMember[]    @relation("IntMember")
+  internalMessages      InternalMessage[]   @relation("IntMsgSender")
+
+  @@index([role])
+  @@index([regionId])
+  @@index([managerId])
+}
+
+model Region {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  uf        String   @default("RS")
+  color     String?
+  coordinatorId String?
+  coordinator   User?   @relation("RegionCoordinator", fields: [coordinatorId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cities        City[]
+  users         User[]
+  supporters    Supporter[]
+  notices       Notice[]
+  mediaKits     MediaKit[]
+  streetActions StreetAction[]
+  events        Event[]
+}
+
+model City {
+  id        String   @id @default(uuid())
+  name      String
+  uf        String   @default("RS")
+  regionId  String
+  region    Region   @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  supporters    Supporter[]
+  streetActions StreetAction[]
+  events        Event[]
+  demands       Demand[]
+
+  @@unique([name, regionId])
+  @@index([regionId])
+}
+
+model Supporter {
+  id          String          @id @default(uuid())
+  name        String
+  phone       String
+  whatsapp    String?
+  email       String?
+  cpf         String?
+  birthDate   DateTime?
+  cep         String?
+  street      String?
+  number      String?
+  complement  String?
+  neighborhood String?
+  cityName    String?
+  cityId      String?
+  city        City?           @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  regionId    String?
+  region      Region?         @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  lat         Float?
+  lng         Float?
+  photoUrl    String?
+  instagram   String?
+  facebook    String?
+  supportType SupportType     @default(NOTICIAS)
+  status      SupporterStatus @default(NOVO)
+  notes       String?
+  flaggedReason String?
+  duplicateOfId String?
+  duplicateOf   Supporter?    @relation("SupporterDuplicates", fields: [duplicateOfId], references: [id], onDelete: SetNull)
+  duplicates    Supporter[]   @relation("SupporterDuplicates")
+  coordinatorId String?
+  coordinator   User?         @relation("SupporterCoordinator", fields: [coordinatorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  volunteer       Volunteer?
+  conversations   Conversation[]
+  bannerLocations BannerLocation[]
+  broadcastContacts BroadcastContact[]
+
+  @@index([phone])
+  @@index([status])
+  @@index([regionId])
+  @@index([cityId])
+  @@index([coordinatorId])
+}
+
+model Volunteer {
+  id          String   @id @default(uuid())
+  supporterId String   @unique
+  supporter   Supporter @relation(fields: [supporterId], references: [id], onDelete: Cascade)
+
+  active       Boolean  @default(false)
+  totalScore   Int      @default(0)
+  confirmed         Boolean   @default(false)
+  confirmedAt       DateTime?
+  confirmationChannel Channel?
+  helpPreference    String?
+
+  supervisorId String?
+  supervisor   User?   @relation("VolunteerSupervisor", fields: [supervisorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  statusHistory VolunteerStatusHistory[]
+  engagements   Engagement[]
+  scores        Score[]
+  tasks         Task[]
+
+  @@index([active])
+  @@index([supervisorId])
+}
+
+model VolunteerStatusHistory {
+  id          String          @id @default(uuid())
+  volunteerId String
+  volunteer   Volunteer       @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  fromStatus  SupporterStatus?
+  toStatus    SupporterStatus
+  reason      String?
+  changedById String?
+  createdAt   DateTime        @default(now())
+
+  @@index([volunteerId])
+}
+
+model Blacklist {
+  id        String   @id @default(uuid())
+  phone     String?
+  cpf       String?
+  name      String?
+  reason    String
+  createdById String?
+  createdAt DateTime @default(now())
+
+  @@index([phone])
+}
+
+model MediaKit {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  type        MediaType
+  fileUrl     String?
+  thumbnailUrl String?
+  captionText String?
+  hashtags    String?
+  network     SocialNetwork @default(TODAS)
+  priority    Priority      @default(MEDIA)
+  status      PublishStatus @default(PUBLICADO)
+  publishDate DateTime?
+  guidance    String?
+
+  regionId String?
+  region   Region? @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  authorId String?
+  author   User?   @relation("MediaAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  downloads MediaDownload[]
+  proofs    MediaPublicationProof[]
+
+  @@index([type])
+  @@index([status])
+}
+
+model MediaDownload {
+  id         String   @id @default(uuid())
+  mediaKitId String
+  mediaKit   MediaKit @relation(fields: [mediaKitId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([mediaKitId])
+}
+
+model MediaPublicationProof {
+  id          String   @id @default(uuid())
+  mediaKitId  String
+  mediaKit    MediaKit @relation(fields: [mediaKitId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  screenshotUrl String?
+  postUrl     String?
+  network     SocialNetwork @default(INSTAGRAM)
+  createdAt   DateTime @default(now())
+
+  @@index([mediaKitId])
+}
+
+model Notice {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  type        NoticeType    @default(AVISO)
+  priority    Priority      @default(MEDIA)
+  publishDate DateTime      @default(now())
+  attachmentUrl String?
+  externalLink String?
+  status      PublishStatus @default(PUBLICADO)
+
+  regionId String?
+  region   Region? @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  authorId String?
+  author   User?   @relation("NoticeAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([priority])
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  type        TaskType
+  title       String
+  description String?
+  points      Int      @default(10)
+  active      Boolean  @default(true)
+
+  volunteerId String?
+  volunteer   Volunteer? @relation(fields: [volunteerId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  engagements Engagement[]
+}
+
+model Engagement {
+  id          String   @id @default(uuid())
+  volunteerId String
+  volunteer   Volunteer @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  taskId      String?
+  task        Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  type        TaskType
+  points      Int      @default(0)
+  proofUrl    String?
+  note        String?
+  validated   Boolean  @default(false)
+  validatedById String?
+  validatedBy   User?  @relation("EngagementValidator", fields: [validatedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+
+  @@index([volunteerId])
+  @@index([type])
+}
+
+model Material {
+  id          String   @id @default(uuid())
+  name        String
+  category    String
+  unit        String   @default("un")
+  stock       Int      @default(0)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  requests MaterialRequest[]
+}
+
+model MaterialRequest {
+  id          String   @id @default(uuid())
+  materialId  String?
+  material    Material? @relation(fields: [materialId], references: [id], onDelete: SetNull)
+  materialName String
+  quantity    Int      @default(1)
+  justification String?
+  cityName    String?
+  neighborhood String?
+  deliveryAddress String?
+
+  requesterId String?
+  requester   User?    @relation("RequestRequester", fields: [requesterId], references: [id], onDelete: SetNull)
+  approverId  String?
+  approver    User?    @relation("RequestApprover", fields: [approverId], references: [id], onDelete: SetNull)
+
+  status      MaterialRequestStatus @default(SOLICITADO)
+  appliedPhotoUrl String?
+  requestedAt DateTime @default(now())
+  approvedAt  DateTime?
+  deliveredAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([requesterId])
+}
+
+model BannerLocation {
+  id          String   @id @default(uuid())
+  responsibleName String
+  phone       String?
+  address     String?
+  cityName    String?
+  neighborhood String?
+  lat         Float?
+  lng         Float?
+  housePhotoUrl String?
+  bannerPhotoUrl String?
+  authorized  Boolean  @default(false)
+  authorizedAt DateTime?
+  status      BannerStatus @default(AGUARDANDO_INSTALACAO)
+  notes       String?
+
+  supporterId String?
+  supporter   Supporter? @relation(fields: [supporterId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+}
+
+model StreetAction {
+  id          String   @id @default(uuid())
+  type        StreetActionType
+  title       String
+  cityName    String?
+  cityId      String?
+  city        City?    @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  neighborhood String?
+  address     String?
+  lat         Float?
+  lng         Float?
+  date        DateTime
+  description String?
+  team        String?
+  peopleReached Int    @default(0)
+  photos      Json     @default("[]")
+  notes       String?
+  status      ActionStatus @default(PLANEJADA)
+
+  regionId      String?
+  region        Region? @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  coordinatorId String?
+  coordinator   User?   @relation("ActionCoordinator", fields: [coordinatorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+}
+
+model Event {
+  id          String   @id @default(uuid())
+  title       String
+  description String?
+  location    String?
+  cityName    String?
+  cityId      String?
+  city        City?    @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  neighborhood String?
+  date        DateTime
+  time        String?
+  participants String?
+  status      EventStatus @default(AGENDADO)
+
+  regionId      String?
+  region        Region? @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  responsibleId String?
+  responsible   User?   @relation("EventResponsible", fields: [responsibleId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@index([status])
+}
+
+model Conversation {
+  id          String   @id @default(uuid())
+  channel     Channel  @default(WHATSAPP)
+  status      ConversationStatus @default(ABERTA)
+  contactName String?
+  contactPhone String?
+  tags        Json     @default("[]")
+  notes       String?
+
+  supporterId String?
+  supporter   Supporter? @relation(fields: [supporterId], references: [id], onDelete: SetNull)
+  agentId     String?
+  agent       User?    @relation("ConversationAgent", fields: [agentId], references: [id], onDelete: SetNull)
+
+  lastMessageAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  messages Message[]
+
+  @@index([status])
+  @@index([channel])
+}
+
+model Message {
+  id             String   @id @default(uuid())
+  conversationId String
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  direction      MessageDirection
+  body           String
+  channel        Channel  @default(WHATSAPP)
+  senderId       String?
+  sender         User?    @relation("MessageSender", fields: [senderId], references: [id], onDelete: SetNull)
+  externalId     String?
+  createdAt      DateTime @default(now())
+
+  @@index([conversationId])
+}
+
+model Demand {
+  id          String   @id @default(uuid())
+  citizenName String
+  phone       String?
+  cityName    String?
+  cityId      String?
+  city        City?    @relation(fields: [cityId], references: [id], onDelete: SetNull)
+  neighborhood String?
+  category    DemandCategory @default(OUTROS)
+  description String
+  priority    Priority @default(MEDIA)
+  status      DemandStatus @default(NOVA)
+  history     Json     @default("[]")
+
+  responsibleId String?
+  responsible   User?  @relation("DemandResponsible", fields: [responsibleId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([category])
+}
+
+model BroadcastCampaign {
+  id          String   @id @default(uuid())
+  name        String
+  message     String
+  channel     Channel  @default(WHATSAPP)
+  status      BroadcastStatus @default(RASCUNHO)
+  scheduledAt DateTime?
+  totalContacts Int    @default(0)
+  sentCount     Int    @default(0)
+  failedCount   Int    @default(0)
+  pendingCount  Int    @default(0)
+
+  ownerId String?
+  owner   User?   @relation("BroadcastOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  contacts BroadcastContact[]
+  logs     Json @default("[]")
+
+  @@index([status])
+}
+
+model BroadcastContact {
+  id          String   @id @default(uuid())
+  campaignId  String
+  campaign    BroadcastCampaign @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+  name        String
+  phone       String
+  cityName    String?
+  neighborhood String?
+  responsible String?
+  status      BroadcastContactStatus @default(PENDENTE)
+  error       String?
+  sentAt      DateTime?
+
+  supporterId String?
+  supporter   Supporter? @relation(fields: [supporterId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([campaignId])
+  @@index([status])
+}
+
+model Automation {
+  id          String   @id @default(uuid())
+  name        String
+  type        AutomationType
+  message     String
+  audience    String?
+  triggerDate DateTime?
+  status      AutomationStatus @default(RASCUNHO)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  logs AutomationLog[]
+}
+
+model AutomationLog {
+  id           String   @id @default(uuid())
+  automationId String
+  automation   Automation @relation(fields: [automationId], references: [id], onDelete: Cascade)
+  recipient    String?
+  channel      Channel  @default(WHATSAPP)
+  success      Boolean  @default(true)
+  detail       String?
+  createdAt    DateTime @default(now())
+
+  @@index([automationId])
+}
+
+model Score {
+  id          String   @id @default(uuid())
+  volunteerId String
+  volunteer   Volunteer @relation(fields: [volunteerId], references: [id], onDelete: Cascade)
+  points      Int
+  reason      String?
+  engagementType TaskType?
+  createdAt   DateTime @default(now())
+
+  @@index([volunteerId])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String
+  entityId  String?
+  changes   Json?
+  ip        String?
+  createdAt DateTime @default(now())
+
+  @@index([entity])
+  @@index([userId])
+}
+
+model Setting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+//  Chat interno da equipe (Central de Comunicação — CRM interno)
+//  Separado das conversas com clientes (Conversation/WhatsApp).
+// ============================================================
+enum InternalThreadType {
+  DIRECT
+  GROUP
+  CAMPAIGN
+}
+
+model InternalThread {
+  id            String             @id @default(uuid())
+  type          InternalThreadType @default(DIRECT)
+  name          String? // usado em GROUP / CAMPAIGN
+  createdById   String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  lastMessageAt DateTime           @default(now())
+
+  members  InternalMember[]
+  messages InternalMessage[]
+
+  @@index([type])
+}
+
+model InternalMember {
+  id         String         @id @default(uuid())
+  threadId   String
+  thread     InternalThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User           @relation("IntMember", fields: [userId], references: [id], onDelete: Cascade)
+  lastReadAt DateTime? // marca de leitura (badge de não-lidas)
+
+  @@unique([threadId, userId])
+  @@index([userId])
+}
+
+model InternalMessage {
+  id            String         @id @default(uuid())
+  threadId      String
+  thread        InternalThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderId      String?
+  sender        User?          @relation("IntMsgSender", fields: [senderId], references: [id], onDelete: SetNull)
+  body          String
+  attachmentUrl String? // imagem anexada (data URL armazenada no banco)
+  createdAt     DateTime       @default(now())
+
+  @@index([threadId])
+}

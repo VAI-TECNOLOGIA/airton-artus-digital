@@ -1,0 +1,18 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "https://marcio.vai-sistema.com",
+      "localStorage": [
+        {
+          "name": "mbd_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2Zjg0MTk4YS1iZDI4LTQxYzctYmFkYS04YTVmYWMwZjQwMWIiLCJyb2xlIjoiTElERVIiLCJpYXQiOjE3Nzk4MDQ0MTQsImV4cCI6MTc4MDQwOTIxNH0.y6N7rENL3FNc7ShorVLeC4W-ab88mgIt16UwxyCsXxA"
+        },
+        {
+          "name": "vai_access",
+          "value": "1"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Env
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Build
+dist/
+build/
+frontend/dist/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Uploads (manter pasta, ignorar conteúdo)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Prisma
+backend/prisma/*.db
+
+# OS / Editor
+.DS_Store
+.vscode/
+.idea/
+.vercel
+.env*
+
+# Prisma client gerado (regenerado no build)
+backend/src/generated/
+
+# Pasta de trabalho/origem de imagens (assets usados já estão em frontend/public)
+Imagem/

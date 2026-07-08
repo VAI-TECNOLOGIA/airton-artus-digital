@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 // Por padrão testa a produção; sobrescreva com PLAYWRIGHT_BASE_URL para apontar
 // para o ambiente local (ex.: http://localhost:5173).
-const BASE = process.env.PLAYWRIGHT_BASE_URL || 'https://marcio.vai-sistema.com';
+const BASE = process.env.PLAYWRIGHT_BASE_URL || 'https://airton.vai-sistema.com';
 
 export default defineConfig({
   testDir: './tests/e2e',

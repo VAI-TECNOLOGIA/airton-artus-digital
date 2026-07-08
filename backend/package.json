@@ -1,7 +1,7 @@
 {
-  "name": "mbd-backend",
+  "name": "aad-backend",
   "version": "1.0.0",
-  "description": "API Márcio Binsely Digital — Node + Express + Prisma",
+  "description": "API Airton Artus Digital — Node + Express + Prisma",
   "type": "module",
   "main": "src/server.js",
   "prisma": {
@@ -14,7 +14,8 @@
     "prisma:migrate": "prisma migrate dev --name init",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "seed": "node prisma/seed.js"
+    "seed": "node prisma/seed.js",
+    "bootstrap:prod": "node prisma/bootstrap-prod.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.1.0",

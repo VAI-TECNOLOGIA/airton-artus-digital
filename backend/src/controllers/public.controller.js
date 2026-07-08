@@ -84,7 +84,7 @@ export const join = asyncHandler(async (req, res) => {
 
   if (supporter.supportType === 'VOLUNTARIO' && status !== 'BLACKLIST') {
     await prisma.volunteer.create({ data: { supporterId: supporter.id } });
-    const body = `Olá ${supporter.name}! 👋 Recebemos seu cadastro na campanha do Candidato Teste. Responda *SIM* para confirmar sua participação. 💪`;
+    const body = `Olá ${supporter.name}! Recebemos seu cadastro na pré-campanha do Airton Artus. Responda *SIM* para confirmar sua participação.`;
     const r = await sendWhatsApp({ to: phone, body });
     await prisma.conversation.create({
       data: {

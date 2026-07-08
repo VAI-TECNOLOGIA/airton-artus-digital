@@ -12,7 +12,7 @@ export default function Header({ title, subtitle, onMenu }) {
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
-    try { localStorage.setItem('mbd_theme', theme); } catch (e) {}
+    try { localStorage.setItem('aad_theme', theme); } catch (e) {}
   }, [theme]);
 
   return (

@@ -1,12 +1,13 @@
 // Backfill de códigos únicos dos membros + dados demo do chat interno.
 // Não apaga nada — idempotente onde possível.
+import 'dotenv/config';
 import { PrismaClient } from '../src/generated/prisma/index.js';
 const prisma = new PrismaClient();
 
 function genCode(used) {
   const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let c;
-  do { c = 'MB-' + Array.from({ length: 4 }, () => A[Math.floor(Math.random() * A.length)]).join(''); } while (used.has(c));
+  do { c = 'AA-' + Array.from({ length: 4 }, () => A[Math.floor(Math.random() * A.length)]).join(''); } while (used.has(c));
   used.add(c);
   return c;
 }

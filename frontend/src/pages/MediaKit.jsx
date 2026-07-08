@@ -67,7 +67,7 @@ export default function MediaKit() {
       setLoading(false);
     }
   }
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+  useEffect(() => { load(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function copy(text, msg = 'Copiado!') {
     navigator.clipboard?.writeText(text || '');

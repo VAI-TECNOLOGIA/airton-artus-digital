@@ -8,12 +8,11 @@ test('Bug3: camadas do mapa carregam com números reais', async ({ page }) => {
   await page.locator('.leaflet-container').waitFor({ state: 'visible', timeout: 25000 });
 
   // a contagem de Apoiadores deve ser um número > 0 (não "…" nem 0)
-  const label = page.locator('.legend-item', { hasText: 'Apoiadores' }).first();
-  await expect(label).toBeVisible();
-  const txt = await label.innerText();
-  const m = txt.match(/\((\d+)\)/);
-  expect(m, `contagem deveria ser numérica: "${txt}"`).not.toBeNull();
-  expect(Number(m[1])).toBeGreaterThan(0);
+  const item = page.locator('.layer-item', { hasText: 'Apoiadores' }).first();
+  await expect(item).toBeVisible();
+  const txt = await item.locator('.layer-count').innerText();
+  const n = Number(txt.replace(/\D/g, ''));
+  expect(n, `contagem deveria ser numérica > 0: "${txt}"`).toBeGreaterThan(0);
 
   // há marcadores plotados
   await expect(page.locator('.leaflet-interactive').first()).toBeVisible({ timeout: 10000 });

@@ -1,13 +1,24 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import * as Icons from 'lucide-react';
-import { ChevronDown } from 'lucide-react';
+import {
+  ChevronDown, Circle, LayoutDashboard, MapPinned, BarChart3, UserPlus, Users,
+  ShieldAlert, Ban, Megaphone, Image, Trophy, Footprints, CalendarDays, Package,
+  Flag, MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv,
+} from 'lucide-react';
+
+// Mapa explícito de ícones da navegação — evita `import * as` (que puxa a
+// biblioteca lucide inteira para o bundle do layout).
+const ICONS = {
+  LayoutDashboard, MapPinned, BarChart3, UserPlus, Users, ShieldAlert, Ban,
+  Megaphone, Image, Trophy, Footprints, CalendarDays, Package, Flag,
+  MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv,
+};
 import { NAV, can } from '../../lib/permissions.js';
 import { useAuth } from '../../context/AuthContext.jsx';
 import Avatar from '../ui/Avatar.jsx';
 import { label } from '../../config/enums.js';
 
-const STORE_KEY = 'mbd_nav_collapsed';
+const STORE_KEY = 'aad_nav_collapsed';
 function loadCollapsed() {
   try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
 }
@@ -37,9 +48,9 @@ export default function Sidebar({ open, onClose }) {
   return (
     <aside className={`sidebar ${open ? 'open' : ''}`}>
       <div className="sidebar-brand">
-        <div className="brand-mark"><img src="/candidato.jpg" alt="Candidato Teste" /></div>
+        <div className="brand-mark"><img src="/candidato.jpg" alt="Airton Artus" /></div>
         <div className="brand-text">
-          <strong>Candidato Teste</strong>
+          <strong>Airton Artus</strong>
           <span>Digital</span>
         </div>
       </div>
@@ -57,7 +68,7 @@ export default function Sidebar({ open, onClose }) {
               )}
               <div className="nav-group-items">
                 {group.items.map((item) => {
-                  const Icon = Icons[item.icon] || Icons.Circle;
+                  const Icon = ICONS[item.icon] || Circle;
                   return (
                     <NavLink
                       key={item.to}

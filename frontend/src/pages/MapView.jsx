@@ -11,8 +11,8 @@ import { label } from '../config/enums.js';
 import { formatPhone } from '../lib/format.js';
 import 'leaflet/dist/leaflet.css';
 
-const SC_CENTER = [-27.5, -50.3];
-const SC_CENTER_LATLNG = { lat: -27.5, lng: -50.3 };
+const RS_CENTER = [-29.7, -52.0];
+const RS_CENTER_LATLNG = { lat: -29.7, lng: -52.0 };
 const REFRESH_MS = 30_000;
 
 // Google Maps — usado quando VITE_GOOGLE_MAPS_API_KEY estiver setada em build/env.
@@ -47,9 +47,9 @@ const TILE_ATTR =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 const LAYERS = [
-  { key: 'supporters',    lbl: 'Apoiadores',     color: '#003E9D', icon: Users },
-  { key: 'banners',       lbl: 'Faixas',         color: '#003E9D', icon: MapPin },
-  { key: 'streetActions', lbl: 'Ações de rua',   color: '#003E9D', icon: Activity },
+  { key: 'supporters',    lbl: 'Apoiadores',     color: '#1B1D39', icon: Users },
+  { key: 'banners',       lbl: 'Faixas',         color: '#BD2E2F', icon: MapPin },
+  { key: 'streetActions', lbl: 'Ações de rua',   color: '#398254', icon: Activity },
 ];
 
 function timeAgo(ts) {
@@ -106,8 +106,7 @@ export default function MapView() {
     const id = setInterval(() => setTick((t) => t + 1), 5000);
     return () => clearInterval(id);
   }, []);
-  // eslint-disable-next-line no-unused-vars
-  const _ = tick;
+  const _tick = tick; // força recomputo do useMemo a cada 5s
 
   const counts = useMemo(() => {
     const c = {};
@@ -288,7 +287,7 @@ function LeafletCanvas({ data, visible, refreshing, hasContent }) {
   return (
     <div className="map-wrap map-container-wrap">
       <MapContainer
-        center={SC_CENTER}
+        center={RS_CENTER}
         zoom={7}
         scrollWheelZoom
         zoomControl={false}
@@ -369,7 +368,7 @@ function GoogleCanvas({ data, visible, refreshing, hasContent }) {
     <div className="map-wrap map-container-wrap">
       <GoogleMap
         mapContainerStyle={{ width: '100%', height: '100%' }}
-        center={SC_CENTER_LATLNG}
+        center={RS_CENTER_LATLNG}
         zoom={7}
         options={GMAP_OPTIONS}
       >

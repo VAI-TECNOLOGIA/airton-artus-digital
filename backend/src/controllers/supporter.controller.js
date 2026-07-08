@@ -204,7 +204,7 @@ export const toBlacklist = asyncHandler(async (req, res) => {
 });
 
 async function sendConfirmation(supporter) {
-  const body = `Olá ${supporter.name}! 👋 Aqui é da campanha do Candidato Teste. Recebemos seu cadastro como voluntário(a). Você confirma sua participação? Responda *SIM* para confirmar. 💪`;
+  const body = `Olá ${supporter.name}! Aqui é da equipe do Airton Artus. Recebemos seu cadastro como voluntário(a). Você confirma sua participação? Responda *SIM* para confirmar.`;
   const result = await sendWhatsApp({ to: supporter.whatsapp || supporter.phone, body });
   await prisma.conversation.create({
     data: {

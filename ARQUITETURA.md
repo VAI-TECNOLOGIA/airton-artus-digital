@@ -1,4 +1,4 @@
-# 🏛️ Visão de Arquitetura — Márcio Binsely Digital
+# Visão de Arquitetura — Airton Artus Digital
 
 ```
 ┌──────────────────────┐      HTTP/JSON (Bearer JWT)      ┌──────────────────────┐

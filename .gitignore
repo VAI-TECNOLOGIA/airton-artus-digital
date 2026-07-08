@@ -31,10 +31,17 @@ backend/prisma/*.db
 .vscode/
 .idea/
 .vercel
-.env*
 
 # Prisma client gerado (regenerado no build)
 backend/src/generated/
 
-# Pasta de trabalho/origem de imagens (assets usados já estão em frontend/public)
+# Pastas de trabalho/origem de imagens (assets usados já estão em frontend/public)
 Imagem/
+imagens/
+id visual*
+
+# Artefatos de teste E2E
+frontend/tests/e2e/.auth/
+frontend/test-results/
+frontend/playwright-report/
+.env*

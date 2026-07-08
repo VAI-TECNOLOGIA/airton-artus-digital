@@ -1,13 +1,14 @@
-# 🟥🟩🟨 Márcio Binsely Digital
+# Airton Artus Digital
 
-Plataforma web completa para **gestão de campanha política** — voluntários, apoiadores, mobilização de rua, faixas, mídia kit, mapa político, CRM de atendimento, disparos, demandas da população, relatórios e painel de TV.
+Plataforma web completa para **gestão da pré-campanha** de Airton Artus — apoiadores, voluntários, mobilização de rua, faixas, mídia kit, mapa político, CRM de atendimento, disparos, demandas da população, relatórios e painel de TV.
 
-> Candidato: **Márcio Bins Ely** · Vereador de Porto Alegre/RS · PDT · nº **12345**
-> Identidade visual: **Trabalhismo Gaúcho** — tricolor da bandeira do RS (vermelho + verde + amarelo) sobre fundo creme, tipografia slab.
+> Candidato: **Airton Artus** · Pré-candidato a Deputado Estadual · RS · PDT
+> Base: **Venâncio Aires / Vale do Taquari** · médico, ex-prefeito (2009–2016) e deputado estadual (2023–2026)
+> Identidade visual: **navy `#1B1D39` + ouro `#E8AF3C` + faixa tricolor do RS** (verde `#398254` · vermelho `#BD2E2F` · ouro), tipografia display Anton.
 
 ---
 
-## 🧱 Stack
+## Stack
 
 | Camada        | Tecnologia                                              |
 | ------------- | ------------------------------------------------------- |
@@ -16,33 +17,35 @@ Plataforma web completa para **gestão de campanha política** — voluntários,
 | Banco         | **PostgreSQL**                                          |
 | ORM           | **Prisma**                                              |
 | Autenticação  | **JWT** + bcrypt                                        |
-| Upload        | **Local** (multer) — preparado para **S3** compatível   |
-| Mapa          | **Leaflet** + OpenStreetMap                             |
+| Upload        | **Vercel Blob** em produção · local (multer) em dev     |
+| Mapa          | **Leaflet** + CartoDB (Google Maps opcional)            |
 | Integrações   | Arquitetura pronta p/ **WhatsApp Oficial, Instagram, Messenger, SMS** |
 
 ---
 
-## 📁 Estrutura de pastas
+## Estrutura de pastas
 
 ```
-marcio-binsely-digital/
+airton-artus-digital/
 ├── docker-compose.yml        # PostgreSQL pronto p/ desenvolvimento
 ├── package.json              # scripts orquestradores (setup, dev)
+├── vercel.json               # build + rewrites + cron (produção Vercel)
+├── api/index.mjs             # função serverless que serve a API Express
 ├── README.md
 ├── ARQUITETURA.md            # visão de arquitetura detalhada
 │
 ├── backend/
-│   ├── prisma/ (schema.prisma · seed.js)
+│   ├── prisma/ (schema.prisma · seed.js · bootstrap-prod.mjs)
 │   └── src/ (config · middlewares · utils · services · controllers · routes · app.js · server.js)
 │
 └── frontend/
-    ├── public/ (foto.png · logo.png · candidato.svg)
+    ├── public/ (candidato.jpg · img/ · marca.svg · favicon.svg · ícones PWA)
     └── src/ (api · context · components · config · lib · pages · styles)
 ```
 
 ---
 
-## 🚀 Como rodar localmente
+## Como rodar localmente
 
 ### Pré-requisitos
 - **Node.js 18+**
@@ -68,64 +71,66 @@ Acesse **http://localhost:5173** (login) ou **http://localhost:5173/lp** (landin
 > Sem Docker? Aponte `DATABASE_URL` no `backend/.env` para o seu PostgreSQL e rode `npm run prisma:migrate && npm run seed`.
 > **macOS (Homebrew):** se o Postgres não iniciar, exporte `LC_ALL=C LANG=C` antes de subir o serviço.
 
-### 🔑 Acesso inicial (seed)
+### Acesso inicial (seed de desenvolvimento)
 
 | Perfil            | E-mail                          | Senha       |
 | ----------------- | ------------------------------- | ----------- |
-| **Administrador** | `admin@marciobinsely.com`       | `Admin@123` |
-| Coordenador       | `norte@marciobinsely.com`       | `Admin@123` |
-| Coordenador       | `sul@marciobinsely.com`         | `Admin@123` |
-| Supervisor        | `supervisor@marciobinsely.com`  | `Admin@123` |
-| Voluntário        | `voluntario@marciobinsely.com`  | `Admin@123` |
-| Marketing         | `marketing@marciobinsely.com`   | `Admin@123` |
-| Materiais         | `materiais@marciobinsely.com`   | `Admin@123` |
-| Atendimento       | `atendimento@marciobinsely.com` | `Admin@123` |
+| **Líder**         | `admin@airtonartus.com.br`      | `Admin@123` |
+| Coordenação Vale  | `vale@airtonartus.com.br`       | `Admin@123` |
+| Coordenação Metro | `metro@airtonartus.com.br`      | `Admin@123` |
+| Supervisão        | `supervisao@airtonartus.com.br` | `Admin@123` |
+| Parceiro          | `parceiro@airtonartus.com.br`   | `Admin@123` |
+| Marketing         | `marketing@airtonartus.com.br`  | `Admin@123` |
+| Materiais         | `materiais@airtonartus.com.br`  | `Admin@123` |
+| Atendimento       | `atendimento@airtonartus.com.br`| `Admin@123` |
+
+> ⚠️ O `seed.js` cria **dados fictícios de demonstração** e **apaga a base** — é só para dev.
+> Em produção use `npm --prefix backend run bootstrap:prod` (idempotente, só dados de referência + admin).
 
 ---
 
-## 🖼️ Imagens da campanha
-- `frontend/public/foto.png` — **foto do candidato** (usada no login e na LP, com tratamento duotone).
-- `frontend/public/logo.png` — logo da campanha.
-- Para trocar a foto, substitua `frontend/public/foto.png` (o CSS já a referencia em `--candidate-photo`).
+## Imagens da campanha
+- `frontend/public/candidato.jpg` — retrato oficial (login, sidebar e LP).
+- `frontend/public/img/` — fotos reais usadas na landing (hero, saúde, mobilização, proximidade, escuta, família).
+- `frontend/public/marca.svg` / `favicon.svg` — monograma "A" com a faixa tricolor.
+- Para trocar qualquer foto, substitua o arquivo mantendo o nome (o CSS/JSX já referencia).
 
 ---
 
-## 🧩 Módulos
+## Módulos
 Autenticação · Dashboard · Apoiadores & Voluntários (antifraude) · Confirmação automática (WhatsApp) · CRM de comunicação · Mural · Mídia Kit · Engajamento (pontuação/ranking) · Pedidos de material (anti-desperdício) · Faixas · Mapa político · Ações de rua · Agenda · Disparador · Automações · Demandas (Kanban) · Relatórios · Painel TV · Configurações · **Landing Page pública** (`/lp`).
 
 ---
 
-## 🔌 Integrações futuras
+## Integrações futuras
 WhatsApp Cloud API (oficial), Instagram Direct, Messenger e SMS passam pelo roteador `services/messaging.service.js` (provider pattern). Tudo **simulado** por padrão — basta preencher credenciais no `.env` e trocar `WHATSAPP_PROVIDER=meta_cloud`. Detalhes em **[ARQUITETURA.md](ARQUITETURA.md)**.
 
-> ⚖️ Conectar apenas APIs **oficiais/autorizadas**, em conformidade com a legislação eleitoral e a LGPD.
+> ⚖️ Conectar apenas APIs **oficiais/autorizadas**, em conformidade com a legislação eleitoral e a LGPD. Enquanto durar a **pré-campanha**, o material público não deve conter pedido explícito de voto.
 
 ---
 
-## 🛰️ Operação em produção (runbook)
+## Operação em produção (runbook)
 
-**Infra:** Vercel (frontend estático + API Express serverless via `api/index.mjs`) · Postgres Neon (integração `marcelopolitico`) · Vercel Blob (`marcio-binsely-uploads`) para uploads.
+**Infra:** Vercel (frontend estático + API Express serverless via `api/index.mjs`) · Postgres Neon · Vercel Blob para uploads.
 
 ### Deploy
 
 ```bash
-vercel --prod            # deploy manual (raiz do repo, projeto vai-campanha)
+vercel --prod            # deploy manual (raiz do repo, projeto airton-artus)
 ```
-
-> Recomendado: conectar o repo GitHub ao projeto Vercel (`vercel git connect`) para deploy automático a cada push na `main`.
 
 ### Variáveis de ambiente (produção)
 
-| Var | Função | Estado |
-|---|---|---|
-| `APP_DATABASE_URL` / `APP_DIRECT_URL` | Postgres Neon (pooled / direto) | ✅ via integração Neon |
-| `JWT_SECRET` | Assinatura dos tokens | ✅ |
-| `UPLOAD_DRIVER` | `blob` em produção (Vercel Blob) | ✅ |
-| `BLOB_READ_WRITE_TOKEN` | Token do Blob store | ✅ via integração |
-| `CRON_SECRET` | Protege `/api/cron/*` (Vercel envia como Bearer) | ✅ |
-| `RESEND_API_KEY` / `EMAIL_FROM` | E-mail transacional (reset de senha) | 🔶 pendente chave |
-| `WHATSAPP_PROVIDER` + `WHATSAPP_TOKEN` + `WHATSAPP_PHONE_NUMBER_ID` | WhatsApp real (Meta Cloud API) | 🔶 modo `simulado` |
-| `VITE_GOOGLE_MAPS_API_KEY` | Google Maps no /mapa (fallback: CartoDB) | 🔶 opcional |
+| Var | Função |
+|---|---|
+| `APP_DATABASE_URL` / `APP_DIRECT_URL` | Postgres Neon (pooled / direto) |
+| `JWT_SECRET` | Assinatura dos tokens (openssl rand -base64 48) |
+| `UPLOAD_DRIVER` | `blob` em produção (Vercel Blob) |
+| `BLOB_READ_WRITE_TOKEN` | Token do Blob store |
+| `CRON_SECRET` | Protege `/api/cron/*` (Vercel envia como Bearer) |
+| `RESEND_API_KEY` / `EMAIL_FROM` | E-mail transacional (reset de senha) — opcional |
+| `WHATSAPP_PROVIDER` + `WHATSAPP_TOKEN` + `WHATSAPP_PHONE_NUMBER_ID` | WhatsApp real (Meta Cloud API) — inicia `simulado` |
+| `VITE_GOOGLE_MAPS_API_KEY` | Google Maps no /mapa (fallback: CartoDB) — opcional |
 
 ### Cron de automações
 
@@ -136,10 +141,13 @@ vercel --prod            # deploy manual (raiz do repo, projeto vai-campanha)
 - Idempotente (não repete destinatário no mesmo dia) · máx. 100 envios/execução.
 - Execução manual: `curl -H "Authorization: Bearer $CRON_SECRET" https://<prod>/api/cron/automations`
 
-### Bootstrap de dados de referência
+### Bootstrap de dados de referência (produção)
 
-O banco de produção já contém: 3 perfis, 6 regiões de POA, 12 cidades RS, 8 tarefas, 6 materiais e settings da campanha. Para recriar num ambiente novo, usar o padrão de rota one-shot documentado em `docs/PLANO-GO-LIVE-100.md` (nunca rodar `prisma/seed.js` em produção — ele TRUNCATE e cria dados fake).
+```bash
+APP_DATABASE_URL=... ADMIN_PASS='SenhaForte' npm --prefix backend run bootstrap:prod
+```
+Cria (idempotente): 3 perfis, 6 regiões do RS, 28 cidades (foco Vale do Taquari), 8 tarefas, 6 materiais, configurações da campanha e o usuário admin. **Nunca rode `prisma/seed.js` em produção** — ele apaga a base e cria dados fake.
 
 ### Geolocalização de apoiadores
 
-Todo cadastro (landing pública e manual) recebe automaticamente `cityId`/`regionId` (lookup pelo nome da cidade) e `lat/lng` aproximado (centroide da cidade + dispersão ~2km determinística — `backend/src/utils/geo.js`). Coordenada manual no formulário tem precedência.
+Todo cadastro (landing pública e manual) recebe automaticamente `cityId`/`regionId` (lookup pelo nome da cidade) e `lat/lng` aproximado (centroide da cidade + dispersão ~2km determinística — `backend/src/utils/geo.js`). Coordenada manual no formulário tem precedência. Default: Venâncio Aires.

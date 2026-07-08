@@ -2,7 +2,7 @@
 
 ## Posicionamento: são complementares
 - **"Agora é com a Gente"** = **front-end do apoiador** (mobilização hiperlocal, mobile-first).
-- **Márcio Binsely Digital (nosso)** = **back-office de gestão** (admin/coordenação: CRM, materiais, mapa, relatórios, RBAC, disparos, demandas...).
+- **Airton Artus Digital (nosso)** = **back-office de gestão** (admin/coordenação: CRM, materiais, mapa, relatórios, RBAC, disparos, demandas...).
 
 A maior oportunidade é **incorporar a camada do apoiador** ao nosso sistema (que já é muito mais completo no back-office).
 

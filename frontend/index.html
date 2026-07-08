@@ -3,26 +3,39 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#003E9D" />
-    <meta name="description" content="Candidato Teste — Sua cidade, sua campanha. Junte-se à campanha." />
-    <title>Candidato Teste · Sua cidade, sua campanha</title>
+    <meta name="theme-color" content="#1B1D39" />
+    <title>Airton Artus · Pré-candidato a Deputado Estadual · RS</title>
+    <meta name="description" content="Airton Artus — médico, ex-prefeito de Venâncio Aires e deputado estadual. Pré-candidato a Deputado Estadual pelo Rio Grande do Sul. Saúde, trabalho e desenvolvimento para o Vale do Taquari e todo o RS." />
+    <meta name="author" content="Airton Artus" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph / redes sociais -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:site_name" content="Airton Artus" />
+    <meta property="og:title" content="Airton Artus · Pré-candidato a Deputado Estadual · RS" />
+    <meta property="og:description" content="Médico, ex-prefeito de Venâncio Aires e deputado estadual. Saúde, trabalho e desenvolvimento para o Vale do Taquari e todo o Rio Grande do Sul." />
+    <meta property="og:image" content="/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Airton Artus · Pré-candidato a Deputado Estadual · RS" />
+    <meta name="twitter:description" content="Médico, ex-prefeito de Venâncio Aires e deputado estadual. Saúde, trabalho e desenvolvimento para o RS." />
+    <meta name="twitter:image" content="/og-image.jpg" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Poppins:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&family=Roboto+Slab:wght@500;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Fontes da landing executiva (/lp) -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap"
       rel="stylesheet"
     />
     <!-- Aplica o tema salvo antes da pintura (evita flash) -->
     <script>
       (function () {
         try {
-          var t = localStorage.getItem('mbd_theme');
+          var t = localStorage.getItem('aad_theme');
           if (!t) t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
           document.documentElement.dataset.theme = t;
         } catch (e) {}

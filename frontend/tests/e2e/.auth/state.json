@@ -2,15 +2,11 @@
   "cookies": [],
   "origins": [
     {
-      "origin": "https://marcio.vai-sistema.com",
+      "origin": "http://localhost:5220",
       "localStorage": [
         {
-          "name": "mbd_token",
-          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2Zjg0MTk4YS1iZDI4LTQxYzctYmFkYS04YTVmYWMwZjQwMWIiLCJyb2xlIjoiTElERVIiLCJpYXQiOjE3Nzk4MDQ0MTQsImV4cCI6MTc4MDQwOTIxNH0.y6N7rENL3FNc7ShorVLeC4W-ab88mgIt16UwxyCsXxA"
-        },
-        {
-          "name": "vai_access",
-          "value": "1"
+          "name": "aad_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5Y2Q3MDdkYi1hZmNiLTQwN2MtYWRjMC1lZGVmODMyZjRlODQiLCJyb2xlIjoiTElERVIiLCJpYXQiOjE3ODM0NzA0NjQsImV4cCI6MTc4NDA3NTI2NH0.fZOBpWGLd1o5BNznoU6UzisoAfE3SsRHTeBFOW1QGxk"
         }
       ]
     }

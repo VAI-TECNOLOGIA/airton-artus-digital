@@ -61,7 +61,7 @@ const env = {
     provider: process.env.WHATSAPP_PROVIDER || 'simulado',
     token: process.env.WHATSAPP_TOKEN || '',
     phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || '',
-    verifyToken: process.env.WHATSAPP_VERIFY_TOKEN || 'mbd-verify',
+    verifyToken: process.env.WHATSAPP_VERIFY_TOKEN || 'aad-verify',
   },
   sms: {
     provider: process.env.SMS_PROVIDER || 'simulado',

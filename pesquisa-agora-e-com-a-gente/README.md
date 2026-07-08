@@ -1,6 +1,6 @@
 # 🔎 Pesquisa de Concorrente — "Agora é com a Gente" / "Constrói com a Manu"
 
-Dossiê de pesquisa sobre a plataforma **https://agoraecomagente.com.br/plataforma/** — para inspirar e priorizar recursos no nosso sistema (Márcio Binsely Digital).
+Dossiê de pesquisa sobre a plataforma **https://agoraecomagente.com.br/plataforma/** — para inspirar e priorizar recursos no nosso sistema (Airton Artus Digital).
 
 > **Data da pesquisa:** 2026-05-25 · **Fonte:** acesso público à landing + funil de cadastro (passo 1/4). A plataforma é um **app SPA mobile-first atrás de login**; o interior (pós-login) foi **inferido** a partir da proposta de valor e do onboarding. Itens marcados com ✅ foram **observados diretamente**; itens com 🔎 são **inferências** fundamentadas.
 >

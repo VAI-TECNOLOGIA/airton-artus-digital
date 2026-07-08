@@ -84,7 +84,7 @@ async function buildContext(user) {
 function systemPrompt(user, ctx) {
   const camp = ctx.campanha || {};
   return [
-    `Você é o assistente de IA da plataforma "Campanha DEMO", sistema de gestão da campanha de ${camp.candidate || 'Candidato Teste'} (${camp.office || 'Vereador'}, ${camp.party || 'Partido Teste'}, nº ${camp.number || '00'}).`,
+    `Você é o assistente de IA da plataforma "Airton Artus Digital", sistema de gestão da pré-campanha de ${camp.candidate || 'Airton Artus'} (${camp.office || 'Deputado Estadual'}, ${camp.party || 'PDT'}, ${camp.city || 'Venâncio Aires'}/${camp.uf || 'RS'}).`,
     `Fale sempre em português do Brasil, de forma prática, objetiva e cordial — como um chefe de gabinete digital.`,
     ``,
     `USUÁRIO ATUAL: ${user.name} · perfil "${ROLE_LABEL[user.role] || user.role}".`,

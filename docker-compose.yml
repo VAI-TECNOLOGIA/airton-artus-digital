@@ -1,21 +1,21 @@
 services:
   db:
     image: postgres:16-alpine
-    container_name: mbd_postgres
+    container_name: aad_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: mbd
-      POSTGRES_PASSWORD: mbd_secret
-      POSTGRES_DB: marcio_binsely
+      POSTGRES_USER: aad
+      POSTGRES_PASSWORD: aad_secret
+      POSTGRES_DB: airton_artus
     ports:
       - "5432:5432"
     volumes:
-      - mbd_pgdata:/var/lib/postgresql/data
+      - aad_pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U mbd -d marcio_binsely"]
+      test: ["CMD-SHELL", "pg_isready -U aad -d airton_artus"]
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  mbd_pgdata:
+  aad_pgdata:

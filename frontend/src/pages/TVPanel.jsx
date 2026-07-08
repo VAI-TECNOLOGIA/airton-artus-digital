@@ -5,20 +5,21 @@ import { Trophy, CalendarDays, Target, ArrowLeft, MapPin, Users, UserPlus, Flag,
 import api from '../api/client.js';
 import { formatDate } from '../lib/format.js';
 
-// Coordenadas reais das cidades de Santa Catarina (os totais vêm do banco).
+// Coordenadas reais das cidades do RS (os totais vêm do banco) — foco Vale do Taquari.
 const RS_COORDS = {
-  'Florianópolis': [-27.5954, -48.5480], 'Joinville': [-26.3045, -48.8487],
-  'Blumenau': [-26.9194, -49.0661], 'São José': [-27.5969, -48.6394],
-  'Chapecó': [-27.1004, -52.6152], 'Itajaí': [-26.9078, -48.6619],
-  'Criciúma': [-28.6775, -49.3695], 'Jaraguá do Sul': [-26.4851, -49.0667],
-  'Lages': [-27.8161, -50.3259], 'Palhoça': [-27.6386, -48.6703],
-  'Balneário Camboriú': [-26.9926, -48.6349], 'Brusque': [-27.0980, -48.9177],
-  'Tubarão': [-28.4666, -49.0069], 'Camboriú': [-27.0246, -48.6586],
-  'Navegantes': [-26.8990, -48.6544], 'Concórdia': [-27.2338, -52.0278],
-  'Rio do Sul': [-27.2148, -49.6431], 'Araranguá': [-28.9350, -49.4916],
-  'Gaspar': [-26.9317, -48.9585], 'Indaial': [-26.8978, -49.2318],
-  'Itapema': [-27.0902, -48.6114], 'Biguaçu': [-27.4939, -48.6558],
-  'São Bento do Sul': [-26.2503, -49.3783], 'Caçador': [-26.7753, -51.0148],
+  'Venâncio Aires': [-29.6143, -52.1932], 'Lajeado': [-29.4669, -51.9614],
+  'Estrela': [-29.5017, -51.9651], 'Teutônia': [-29.4482, -51.8044],
+  'Encantado': [-29.2367, -51.8703], 'Arroio do Meio': [-29.4014, -51.9450],
+  'Taquari': [-29.7997, -51.8644], 'Cruzeiro do Sul': [-29.5147, -52.0964],
+  'Bom Retiro do Sul': [-29.6070, -51.9451], 'Roca Sales': [-29.2886, -51.8664],
+  'Santa Cruz do Sul': [-29.7175, -52.4258], 'Vera Cruz': [-29.7184, -52.5152],
+  'Barros Cassal': [-29.0939, -52.5828], 'Soledade': [-28.8306, -52.5131],
+  'Sobradinho': [-29.4192, -53.0292], 'Porto Alegre': [-30.0346, -51.2177],
+  'Canoas': [-29.9177, -51.1844], 'Gravataí': [-29.9444, -50.9919],
+  'Novo Hamburgo': [-29.6783, -51.1306], 'São Leopoldo': [-29.7603, -51.1472],
+  'Caxias do Sul': [-29.1678, -51.1794], 'Bento Gonçalves': [-29.1662, -51.5165],
+  'Passo Fundo': [-28.2576, -52.4091], 'Santa Maria': [-29.6842, -53.8069],
+  'Pelotas': [-31.7654, -52.3376], 'Erechim': [-27.6339, -52.2747],
 };
 
 function RSMap({ byCity }) {
@@ -30,12 +31,12 @@ function RSMap({ byCity }) {
   return (
     <div className="tv-map">
       <MapContainer
-        center={[-27.5, -50.3]}
+        center={[-29.75, -52.2]}
         zoom={7}
         scrollWheelZoom={false}
         zoomControl={false}
         attributionControl={false}
-        style={{ height: '100%', width: '100%', background: '#0a1f15' }}
+        style={{ height: '100%', width: '100%', background: '#0C0D1D' }}
       >
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
         {cities.map((c) => {
@@ -46,7 +47,7 @@ function RSMap({ byCity }) {
               key={c.name}
               center={c.coord}
               radius={r}
-              pathOptions={{ color: '#FEC330', fillColor: '#FEC330', fillOpacity: 0.5, weight: 2 }}
+              pathOptions={{ color: '#E8AF3C', fillColor: '#E8AF3C', fillOpacity: 0.5, weight: 2 }}
             >
               <LeafletTooltip permanent={big} direction="top" className="tv-tip" offset={[0, -2]}>
                 <b>{c.name}</b> · {c.total.toLocaleString('pt-BR')}
@@ -109,8 +110,8 @@ export default function TVPanel() {
         <div className="flex items-center gap-12">
           <RSFlag size={64} />
           <div>
-            <h1>{campaign.name || 'Candidato Teste'}</h1>
-            <div style={{ color: '#FEC330', fontWeight: 600 }}>{campaign.slogan || 'Juntos por você, pela sua cidade'}</div>
+            <h1>{campaign.name || 'Airton Artus'}</h1>
+            <div style={{ color: '#E8AF3C', fontWeight: 600 }}>{campaign.slogan || 'Saúde, trabalho e desenvolvimento para o RS'}</div>
           </div>
         </div>
         <div className="flex items-center gap-12">
@@ -127,16 +128,16 @@ export default function TVPanel() {
       </div>
 
       <div className="tv-card" style={{ marginBottom: 20 }}>
-        <h3><MapPin size={20} style={{ verticalAlign: '-3px', color: '#FEC330' }} /> Apoio por Santa Catarina</h3>
+        <h3><MapPin size={20} style={{ verticalAlign: '-3px', color: '#E8AF3C' }} /> Apoio pelo Rio Grande do Sul</h3>
         <RSMap byCity={byCity} />
       </div>
 
       <div className="tv-cols">
         <div className="tv-card">
-          <h3><Trophy size={20} style={{ verticalAlign: '-3px', color: '#FEC330' }} /> Top voluntários</h3>
+          <h3><Trophy size={20} style={{ verticalAlign: '-3px', color: '#E8AF3C' }} /> Top voluntários</h3>
           {(rankings.volunteers || []).slice(0, 6).map((v) => (
             <div className="tv-rank-row" key={v.id}>
-              <strong style={{ color: '#FEC330', width: 32 }}>{v.rank}º</strong>
+              <strong style={{ color: '#E8AF3C', width: 32 }}>{v.rank}º</strong>
               <span style={{ flex: 1 }}>{v.name}</span>
               <strong>{v.score} pts</strong>
             </div>
@@ -144,7 +145,7 @@ export default function TVPanel() {
         </div>
 
         <div className="tv-card">
-          <h3><Target size={20} style={{ verticalAlign: '-3px', color: '#FEC330' }} /> Metas da campanha</h3>
+          <h3><Target size={20} style={{ verticalAlign: '-3px', color: '#E8AF3C' }} /> Metas da campanha</h3>
           <GoalBar label="Apoiadores" current={stats.totalSupporters} target={goals.supporters} pct={goal(stats.totalSupporters, goals.supporters)} />
           <GoalBar label="Voluntários" current={stats.totalVolunteers} target={goals.volunteers} pct={goal(stats.totalVolunteers, goals.volunteers)} />
           <GoalBar label="Faixas" current={stats.authorizedBanners} target={goals.banners} pct={goal(stats.authorizedBanners, goals.banners)} />
@@ -153,7 +154,7 @@ export default function TVPanel() {
       </div>
 
       <div className="tv-card" style={{ marginTop: 20 }}>
-        <h3><CalendarDays size={20} style={{ verticalAlign: '-3px', color: '#FEC330' }} /> Próximos eventos</h3>
+        <h3><CalendarDays size={20} style={{ verticalAlign: '-3px', color: '#E8AF3C' }} /> Próximos eventos</h3>
         {events.length === 0 && <p style={{ color: '#cbd5e1' }}>Sem eventos agendados.</p>}
         {events.map((e) => (
           <div className="tv-rank-row" key={e.id}>
@@ -168,13 +169,12 @@ export default function TVPanel() {
 
 function RSFlag({ size = 60 }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-label="Bandeira do RS">
-      <defs><clipPath id="tvflag"><rect width="64" height="64" rx="13" /></clipPath></defs>
-      <g clipPath="url(#tvflag)">
-        <rect width="64" height="64" fill="#1A1D21" />
-        <polygon points="64,0 64,64 0,64" fill="#003E9D" />
-        <line x1="-3" y1="67" x2="67" y2="-3" stroke="#FEC330" strokeWidth="15" />
-      </g>
+    <svg width={size} height={size} viewBox="0 0 64 64" aria-label="Marca Airton Artus">
+      <rect width="64" height="64" rx="14" fill="#14162B" />
+      <path fill="#E8AF3C" fillRule="evenodd" d="M26.2 11h11.6l10.4 38.5h-9.2l-1.9-7.4H26.9L25 49.5h-9.2L26.2 11zm5.8 9.6-3.5 14.6h7L32 20.6z" />
+      <rect x="15" y="54" width="11.33" height="4.5" fill="#398254" />
+      <rect x="26.33" y="54" width="11.33" height="4.5" fill="#BD2E2F" />
+      <rect x="37.66" y="54" width="11.34" height="4.5" fill="#E8AF3C" />
     </svg>
   );
 }
@@ -197,7 +197,7 @@ function GoalBar({ label, current, target, pct }) {
         <strong>{current} / {target || '—'}</strong>
       </div>
       <div style={{ height: 12, background: 'rgba(255,255,255,0.12)', borderRadius: 999 }}>
-        <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg,#003E9D,#FEC330)', borderRadius: 999, transition: 'width .6s ease' }} />
+        <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg,#398254,#E8AF3C)', borderRadius: 999, transition: 'width .6s ease' }} />
       </div>
     </div>
   );

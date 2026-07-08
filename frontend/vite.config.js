@@ -9,16 +9,16 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'perfil.jpg', 'vai-logo.png'],
+      includeAssets: ['favicon.svg', 'apple-touch-icon.png', 'marca.svg'],
       manifest: {
-        name: 'Márcio Binsely Digital',
-        short_name: 'MB Digital',
-        description: 'Central de comando da campanha — mobilização, dados, atendimento e território.',
+        name: 'Airton Artus Digital',
+        short_name: 'Artus Digital',
+        description: 'Central de comando da pré-campanha — mobilização, dados, atendimento e território.',
         lang: 'pt-BR',
         start_url: '/',
         display: 'standalone',
-        theme_color: '#C8102E',
-        background_color: '#f5f6f8',
+        theme_color: '#1B1D39',
+        background_color: '#F6F7F9',
         icons: [
           { src: '/pwa-192.png', sizes: '192x192', type: 'image/png' },
           { src: '/pwa-512.png', sizes: '512x512', type: 'image/png' },
@@ -30,7 +30,7 @@ export default defineConfig({
         navigateFallbackDenylist: [/^\/api/, /^\/uploads/],
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         // Fotos grandes da landing ficam fora do precache (carregam da rede).
-        globIgnores: ['**/foto.png', '**/logo.png'],
+        globIgnores: ['**/img/**', '**/candidato.jpg', '**/og-image.jpg'],
         maximumFileSizeToCacheInBytes: 4 * 1024 * 1024,
         runtimeCaching: [
           {

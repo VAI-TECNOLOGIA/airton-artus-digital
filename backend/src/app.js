@@ -17,7 +17,7 @@ if (env.nodeEnv === 'development') app.use(morgan('dev'));
 app.use(`/${env.uploadDir}`, express.static(path.resolve(process.cwd(), env.uploadDir)));
 
 app.get('/health', (req, res) =>
-  res.json({ status: 'ok', name: 'Campanha DEMO API', ts: new Date().toISOString() })
+  res.json({ status: 'ok', name: 'Airton Artus Digital API', ts: new Date().toISOString() })
 );
 
 app.use('/api', routes);

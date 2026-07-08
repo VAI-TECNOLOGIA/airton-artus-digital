@@ -37,11 +37,11 @@ const QUICK_REPLIES = [
   'Que ótimo ter você com a gente! 💪',
 ];
 const TEMPLATES = [
-  { name: 'Boas-vindas voluntário', body: 'Olá! 👋 Que bom ter você na campanha do Candidato Teste! Para confirmar sua participação como voluntário, responda *SIM*. Juntos pela sua cidade! 💪' },
+  { name: 'Boas-vindas voluntário', body: 'Olá! Que bom ter você na pré-campanha do Airton Artus! Para confirmar sua participação como voluntário, responda *SIM*. Juntos pelo Rio Grande!' },
   { name: 'Convite para evento', body: '📅 Você está convidado(a) para nossa próxima ação de rua! Confira a agenda e participe — sua presença faz a diferença!' },
   { name: 'Material digital', body: '📎 Aqui está nosso material digital para você compartilhar. Espalhe nas suas redes e ajude a campanha a crescer! 🚀' },
   { name: 'Faixa na sua casa', body: '🏠 Quer uma faixa na sua casa? Responda com seu endereço que organizamos a instalação. Obrigado pelo apoio!' },
-  { name: 'Agradecimento', body: 'Muito obrigado pelo seu apoio! 🙌 Conte com a gente e vamos juntos por uma Porto Alegre melhor.' },
+  { name: 'Agradecimento', body: 'Muito obrigado pelo seu apoio! Conte com a gente e vamos juntos por um Rio Grande do Sul com mais saúde e desenvolvimento.' },
 ];
 const TAGS = ['Voluntário', 'Apoiador', 'Liderança', 'Indeciso', 'Imprensa', 'Faixa', 'Material', 'Prioritário'];
 
@@ -55,7 +55,6 @@ function WhatsAppCRM() {
   const [showTpl, setShowTpl] = useState(false);
   const [tags, setTags] = useState([]);
   const [notes, setNotes] = useState('');
-  const [sending, setSending] = useState(false);
 
   async function loadList() {
     try {
@@ -71,8 +70,8 @@ function WhatsAppCRM() {
       setActive(data); setTags(Array.isArray(data.tags) ? data.tags : []); setNotes(data.notes || '');
     } catch (e) { toast.error(apiError(e)); }
   }
-  useEffect(() => { loadList(); /* eslint-disable-next-line */ }, [statusFilter]);
-  useEffect(() => { loadActive(activeId); /* eslint-disable-next-line */ }, [activeId]);
+  useEffect(() => { loadList(); }, [statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { loadActive(activeId); }, [activeId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Bug 1: envio otimista — a mensagem aparece na hora; o POST roda em background.
   function sendText(body) {
@@ -170,7 +169,7 @@ function WhatsAppCRM() {
               </div>
               <div className="qr-bar">
                 <span className="qr-label"><Zap size={13} /> Rápidas:</span>
-                {QUICK_REPLIES.map((q, i) => (<button key={i} className="qr-chip" disabled={sending} onClick={() => sendText(q)}>{q}</button>))}
+                {QUICK_REPLIES.map((q, i) => (<button key={i} className="qr-chip" onClick={() => sendText(q)}>{q}</button>))}
               </div>
               <div className="chat-input">
                 <div className="tpl-wrap">
@@ -183,7 +182,7 @@ function WhatsAppCRM() {
                   )}
                 </div>
                 <input className="input" placeholder="Digite uma resposta..." value={text} onChange={(e) => setText(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && sendText(text)} />
-                <button className="btn btn-primary" disabled={sending} onClick={() => sendText(text)}><Send size={16} /> Enviar</button>
+                <button className="btn btn-primary" onClick={() => sendText(text)}><Send size={16} /> Enviar</button>
               </div>
             </div>
           )}
@@ -248,9 +247,9 @@ function InternalChat() {
   async function loadDir() {
     try { const { data } = await api.get('/internal/users'); setDir(data.data); } catch (e) { toast.error(apiError(e)); }
   }
-  useEffect(() => { loadThreads(); setActiveId(null); setActive(null); setShowNew(false); /* eslint-disable-next-line */ }, [tab]);
-  useEffect(() => { loadActive(activeId); /* eslint-disable-next-line */ }, [activeId]);
-  useEffect(() => { loadDir(); }, []);
+  useEffect(() => { loadThreads(); setActiveId(null); setActive(null); setShowNew(false); }, [tab]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { loadActive(activeId); }, [activeId]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { loadDir(); }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // refresh ativo a cada 8s (comunicação interna)
   useEffect(() => {

@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Check, MapPin, Flag } from 'lucide-react';
+import {
+  ArrowRight, Check, HeartPulse, Stethoscope, Wheat, GraduationCap,
+  Landmark, Briefcase, Route, MapPin, Award, CalendarDays,
+} from 'lucide-react';
 import api, { apiError } from '../api/client.js';
 import { useToast } from '../context/ToastContext.jsx';
 import { options } from '../config/enums.js';
@@ -11,9 +14,8 @@ const NOMES = [
   'Mateus','Lucas','Gabriel','Pedro','João','Felipe','Rafael','Bruno','Thiago','Vinícius','Eduardo','Gustavo',
   'Leonardo','Rodrigo','Marcelo','Fernando','Ricardo','André','Diego','Henrique','Carlos','Paulo','Daniel','Fábio',
   'Alexandre','Júlio','César','Renato','Maurício','Anderson','Cristiano','Émerson','Jonas','Augusto','Otávio','Caio',
-  'Vitor','Igor','Murilo','Arthur','Bernardo','Heitor','Davi','Enzo','Nícolas','Samuel','Téo','Miguel','Lorenzo',
   'Cleber','Volnei','Ademar','Nelson','Valdir','Sérgio','Jair','Ivo','Délcio','Ari','Hélio','José','Antônio',
-  'Francisco','Luiz','Mário','Adilson','Gilberto','Rogério','Sandro','Márcio','Joel','Everton','Maicon','Wagner','Cláudio',
+  'Francisco','Luiz','Mário','Adilson','Gilberto','Rogério','Sandro','Joel','Everton','Maicon','Wagner','Cláudio',
   'Ana','Maria','Júlia','Beatriz','Larissa','Fernanda','Camila','Bruna','Carolina','Letícia','Amanda','Gabriela',
   'Mariana','Patrícia','Aline','Vanessa','Daniela','Juliana','Renata','Tatiane','Cristiane','Sabrina','Débora','Priscila',
   'Eduarda','Manuela','Helena','Valentina','Laura','Isabela','Sofia','Alice','Lívia','Cecília','Antônia','Rafaela',
@@ -21,21 +23,16 @@ const NOMES = [
   'Graziela','Taís','Rosane','Marlene','Salete','Ivone','Neusa','Terezinha','Verônica','Joana','Marta',
 ];
 const CIDADES = [
-  'Florianópolis','Joinville','Blumenau','São José','Chapecó','Itajaí','Criciúma','Jaraguá do Sul','Lages',
-  'Palhoça','Balneário Camboriú','Brusque','Tubarão','Caçador','Concórdia','Camboriú','Navegantes','Rio do Sul',
-  'Araranguá','Biguaçu','Gaspar','Indaial','Itapema','Tijucas','São Bento do Sul','Mafra','Canoinhas','Videira',
-  'Xanxerê','Imbituba','Içara','Sombrio','Braço do Norte','Orleans','Urussanga','Laguna','Garopaba','Imaruí',
-  'Santo Amaro da Imperatriz','Governador Celso Ramos','Porto Belo','Bombinhas','Penha','Barra Velha',
-  'São Francisco do Sul','Araquari','Guaramirim','Massaranduba','Corupá','Schroeder','Pomerode','Timbó','Rodeio',
-  'Ibirama','Presidente Getúlio','Taió','Ituporanga','Otacílio Costa','Correia Pinto','São Joaquim','Urubici',
-  'Bom Retiro','Curitibanos','Fraiburgo','Campos Novos','Joaçaba','Herval d’Oeste','Capinzal','Seara','Xaxim',
-  'São Miguel do Oeste','Maravilha','Pinhalzinho','São Lourenço do Oeste','Palmitos','Mondaí','Dionísio Cerqueira',
-  'Abelardo Luz','Água Doce','Ponte Serrada','Balneário Piçarras','Ilhota','Gravatal','Sangão','Morro da Fumaça',
-  'Nova Veneza','Siderópolis','Forquilhinha','Meleiro','Turvo','Praia Grande','Jaguaruna','Treze Tílias',
+  'Venâncio Aires','Lajeado','Estrela','Teutônia','Encantado','Arroio do Meio','Taquari','Cruzeiro do Sul',
+  'Bom Retiro do Sul','Roca Sales','Mato Leitão','Santa Clara do Sul','Progresso','Marques de Souza','Colinas',
+  'Imigrante','Westfália','Paverama','Fazenda Vilanova','Muçum','Santa Cruz do Sul','Vera Cruz','Sobradinho',
+  'Barros Cassal','Soledade','Porto Alegre','Canoas','Gravataí','Novo Hamburgo','São Leopoldo','Esteio',
+  'Caxias do Sul','Bento Gonçalves','Farroupilha','Passo Fundo','Santa Maria','Erechim','Ijuí','Santo Ângelo',
+  'Pelotas','Rio Grande','Bagé','Uruguaiana','Alegrete','Gramado','Canela','Torres','Osório','Tramandaí',
 ];
-const VERBOS = ['virou apoiador!','entrou na campanha!','agora apoia a campanha!','se juntou ao movimento!','virou voluntário!'];
+const VERBOS = ['apoia a pré-campanha!','entrou no movimento!','virou voluntário!','se juntou à caminhada!','quer o Vale mais forte!'];
 const TEMPOS = ['agora mesmo','há poucos segundos','há instantes'];
-const CORES = [['#1f6feb','#0a2540'],['#d62828','#9e1818'],['#1a9e54','#0d6b39'],['#7b2ff7','#3a1d8a'],['#f59e0b','#b45309'],['#0ea5e9','#075985']];
+const CORES = [['#1B1D39','#0C0D1D'],['#398254','#1D4630'],['#BD2E2F','#8A1F20'],['#B98618','#7d5a0d'],['#3554A5','#22376e']];
 
 function gerarPool() {
   const pool = [];
@@ -61,7 +58,7 @@ export default function Landing() {
   const [stats, setStats] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
-  // imã — Plano de Governo
+  // imã — propostas da pré-campanha
   const [lead, setLead] = useState({ name: '', email: '', phone: '' });
   const [leadSent, setLeadSent] = useState(false);
   const [leadSending, setLeadSending] = useState(false);
@@ -127,11 +124,11 @@ export default function Landing() {
         name: lead.name,
         phone: lead.phone,
         email: lead.email || undefined,
-        cityName: 'Florianópolis',
+        cityName: 'Venâncio Aires',
         supportType: 'MATERIAL_DIGITAL',
       });
       setLeadSent(true);
-      toast.success('Plano de Governo a caminho! 📩');
+      toast.success('Propostas a caminho do seu WhatsApp!');
     } catch (err) {
       toast.error(apiError(err));
     } finally {
@@ -143,9 +140,9 @@ export default function Landing() {
     e.preventDefault();
     setSending(true);
     try {
-      await api.post('/public/join', { ...form, cityName: form.cityName || 'Florianópolis' });
+      await api.post('/public/join', { ...form, cityName: form.cityName || 'Venâncio Aires' });
       setSent(true);
-      toast.success('Cadastro recebido! 💪');
+      toast.success('Cadastro recebido! Obrigado por caminhar junto.');
     } catch (err) {
       toast.error(apiError(err));
     } finally {
@@ -154,155 +151,202 @@ export default function Landing() {
   }
 
   const fmt = (n) => (n == null ? '—' : n);
+  // Só exibe o bloco de números quando a base já tem movimento real.
+  const hasStats = !!(stats && (stats.supporters || stats.volunteers || stats.actions || stats.banners));
 
   return (
     <div className="mlp">
       {/* HEADER */}
       <header className={'mlp-header' + (scrolled ? ' scrolled' : '')}>
+        <div className="mlp-tricolor" aria-hidden="true"><i className="g" /><i className="r" /><i className="y" /></div>
         <div className="mlp-wrap mlp-bar">
           <a href="#topo" className="mlp-brand">
-            <img className="mlp-mark" src="/partido-mark.svg" alt="Partido Teste" width="42" height="42" />
-            <span className="wm"><b>Candidato Teste</b><small>Vereador · Partido Teste</small></span>
+            <span className="wm">
+              <b>Airton Artus</b>
+              <small>Pré-candidato a Deputado Estadual · RS</small>
+            </span>
           </a>
-          <nav className="mlp-menu">
-            <a className="mlp-navlink" href="#bandeiras">Bandeiras</a>
-            <a className="mlp-navlink" href="#frentes">Frentes</a>
+          <nav className="mlp-menu" aria-label="Navegação principal">
             <a className="mlp-navlink" href="#trajetoria">Trajetória</a>
+            <a className="mlp-navlink" href="#bandeiras">Bandeiras</a>
+            <a className="mlp-navlink" href="#resultados">Resultados</a>
             <a className="mlp-navlink" href="#redes">Redes</a>
             <Link to="/login" className="mlp-enter">Entrar no sistema</Link>
-            <a href="#apoie" className="mlp-btn mlp-btn--primary">Some-se</a>
+            <a href="#apoie" className="mlp-btn mlp-btn--primary">Participe</a>
           </nav>
         </div>
       </header>
 
-      {/* HERO */}
+      {/* HERO — foto real ao púlpito com as bandeiras do Brasil e do RS */}
       <section className="mlp-hero" id="topo">
-        <div className="mlp-wrap mlp-hero-grid">
-          <div>
-            <span className="mlp-eyebrow"><Flag size={13} /> Vereador · Partido Teste · Santa Catarina</span>
-            <h1>Juntos por você,<br /><span className="accent">pela sua&nbsp;cidade.</span></h1>
-            <p className="mlp-lead">
-              Trabalho e idealismo por uma cidade mais justa. Política de proximidade,
-              com ética e coerência — feita com a comunidade, para a comunidade.
-            </p>
-            <div className="mlp-cta">
-              <a href="#apoie" className="mlp-btn mlp-btn--primary">Quero apoiar a campanha <ArrowRight size={18} /></a>
-              <a href="#bandeiras" className="mlp-btn mlp-btn--ghost">Conhecer as bandeiras</a>
-            </div>
-            <div className="mlp-trust">
-              <span className="mlp-pill"><b>+000</b> apoiadores</span>
-              <span className="mlp-pill"><b>00</b> bairros</span>
-              <span className="mlp-pill">Campanha de demonstração</span>
-            </div>
+        <div className="mlp-hero-photo" role="img" aria-label="Airton Artus discursa ao púlpito com as bandeiras do Brasil e do Rio Grande do Sul" />
+        <div className="mlp-hero-shade" />
+        <div className="mlp-wrap mlp-hero-content">
+          <span className="mlp-eyebrow"><Stethoscope size={14} /> Médico · Ex-prefeito de Venâncio Aires · Deputado Estadual</span>
+          <h1>Meu lado é o<br /><span className="accent">da saúde.</span></h1>
+          <p className="mlp-lead">
+            Uma vida inteira cuidando de gente: 40 anos de medicina, dois mandatos de prefeito
+            e um mandato de deputado trabalhando por saúde, infraestrutura e desenvolvimento
+            para o Vale do Taquari e todo o Rio Grande do Sul.
+          </p>
+          <div className="mlp-cta">
+            <a href="#apoie" className="mlp-btn mlp-btn--primary">Quero participar <ArrowRight size={18} /></a>
+            <a href="#trajetoria" className="mlp-btn mlp-btn--ghost">Conhecer a trajetória</a>
           </div>
-
-          <div className="mlp-portrait">
-            <div className="ring" />
-            <img src="/candidato.jpg" alt="Candidato Teste" />
-            <div className="mlp-chip c1">
-              <div className="ic"><MapPin size={20} /></div>
-              <div><small>Atuação</small><b>Florianópolis</b></div>
-            </div>
-            <div className="mlp-chip c2">
-              <div className="ic"><Check size={20} /></div>
-              <div><small>Cargo</small><b>Vereador</b></div>
-            </div>
+          <div className="mlp-trust">
+            <span className="mlp-pill"><b>24.319</b> votos em 2022</span>
+            <span className="mlp-pill"><b>2</b> mandatos de prefeito</span>
+            <span className="mlp-pill"><b>40</b> anos de medicina</span>
           </div>
         </div>
         <div className="mlp-scroll"><div className="mlp-mouse" />role para conhecer</div>
       </section>
 
       {/* MARQUEE */}
-      <div className="mlp-marquee">
+      <div className="mlp-marquee" aria-hidden="true">
         <div className="mlp-track">
-          <span>Saúde <i>•</i> Educação <i>•</i> Guaíba Despoluído <i>•</i> Moradia Popular <i>•</i> Cooperativismo <i>•</i> Esporte <i>•</i> Cidadania <i>•</i></span>
-          <span>Saúde <i>•</i> Educação <i>•</i> Guaíba Despoluído <i>•</i> Moradia Popular <i>•</i> Cooperativismo <i>•</i> Esporte <i>•</i> Cidadania <i>•</i></span>
+          <span>Saúde <i>•</i> Vale do Taquari <i>•</i> Agricultura Familiar <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
+          <span>Saúde <i>•</i> Vale do Taquari <i>•</i> Agricultura Familiar <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
         </div>
       </div>
 
-      {/* STATS (ao vivo) */}
-      <section className="mlp-block">
+      {/* STATS (ao vivo) — só aparece quando a base já tem movimento */}
+      {hasStats && (
+        <section className="mlp-block">
+          <div className="mlp-wrap">
+            <div className="mlp-stats">
+              <div className="mlp-stat mlp-reveal"><b>{fmt(stats?.supporters)}</b><span>Apoiadores</span></div>
+              <div className="mlp-stat mlp-reveal"><b>{fmt(stats?.volunteers)}</b><span>Voluntários</span></div>
+              <div className="mlp-stat mlp-reveal"><b>{fmt(stats?.actions)}</b><span>Ações pelo RS</span></div>
+              <div className="mlp-stat mlp-reveal"><b>{fmt(stats?.banners)}</b><span>Faixas nas casas</span></div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* TRAJETÓRIA */}
+      <section className="mlp-block mlp-soft" id="trajetoria">
         <div className="mlp-wrap">
-          <div className="mlp-stats">
-            <div className="mlp-stat mlp-reveal"><b>{fmt(stats?.supporters)}</b><span>Apoiadores</span></div>
-            <div className="mlp-stat mlp-reveal"><b>{fmt(stats?.volunteers)}</b><span>Voluntários</span></div>
-            <div className="mlp-stat mlp-reveal"><b>{fmt(stats?.actions)}</b><span>Ações de rua</span></div>
-            <div className="mlp-stat mlp-reveal"><b>{fmt(stats?.banners)}</b><span>Faixas nas casas</span></div>
+          <div className="mlp-head mlp-reveal">
+            <span className="mlp-eyebrow">Quem é Airton Artus</span>
+            <h2>Do consultório à Assembleia</h2>
+            <p>Médico formado em 1983, Airton construiu sua vida pública cuidando das pessoas — no consultório, na prefeitura e no parlamento.</p>
+          </div>
+          <div className="mlp-bio">
+            <figure className="mlp-bio-photo mlp-reveal">
+              <img src="/img/saude.jpg" alt="Dr. Airton Artus de jaleco, analisando exames no consultório" loading="lazy" />
+              <figcaption>Dr. Airton Artus — médico há mais de 40 anos</figcaption>
+            </figure>
+            <div className="mlp-timeline">
+              <Tl yr="1983" t="Formado em Medicina" d="Clínico geral na saúde pública e privada, começou a carreira cuidando de quem mais precisa." />
+              <Tl yr="1991" t="Coordenador Regional de Saúde" d="Acompanhou de dentro a criação e a implantação do SUS na região." />
+              <Tl yr="1993" t="Diretor clínico do Hospital São Sebastião Mártir" d="Liderança médica no principal hospital de Venâncio Aires." />
+              <Tl yr="1997" t="Vereador por dois mandatos" d="Primeira missão pública em Venâncio Aires (1997–2004), seguida do período como vice-prefeito (2005–2008)." />
+              <Tl yr="2009" t="Prefeito de Venâncio Aires — 2 mandatos" d="Oito anos de gestão (2009–2016) com marca de trabalho sério e cuidado com as pessoas." />
+              <Tl yr="2023" t="Deputado Estadual" d="Na Assembleia Legislativa do RS, destinou recursos para saúde e infraestrutura da região." />
+              <Tl yr="2026" t="Pré-candidato a Deputado Estadual" d="De volta ao Vale do Taquari para ampliar a representação da região na Assembleia." />
+            </div>
           </div>
         </div>
       </section>
 
       {/* BANDEIRAS */}
-      <section className="mlp-block mlp-soft" id="bandeiras">
+      <section className="mlp-block" id="bandeiras">
         <div className="mlp-wrap">
           <div className="mlp-head mlp-reveal">
             <span className="mlp-eyebrow">O que defendemos</span>
-            <h2>Bandeiras que mudam o seu dia a dia</h2>
-            <p>Causas trabalhadas de forma contínua — com metas claras e prestação de contas para cada bairro da cidade.</p>
+            <h2>Bandeiras que mudam a vida real</h2>
+            <p>Prioridades construídas em 40 anos de escuta — no consultório, nas comunidades do interior e nos municípios do Rio Grande.</p>
           </div>
           <div className="mlp-pillars">
-            <Pillar ico="🏥" t="Saúde integrativa" d="Mais acesso, agilidade no atendimento e apoio às práticas integrativas e à doação de órgãos e sangue." />
-            <Pillar ico="🏠" t="Moradia digna" d="Apoio à moradia popular e à regularização fundiária, dando segurança e dignidade às famílias." />
-            <Pillar ico="🌊" t="Guaíba despoluído" d="Despoluição das águas do Guaíba e cuidado ambiental para uma cidade mais limpa e saudável." />
-            <Pillar ico="🤝" t="Cooperativismo" d="Incentivo ao cooperativismo e ao pequeno empreendedor como motor de emprego e renda." />
-            <Pillar ico="📚" t="Educação de futuro" d="Educação de qualidade, segurança escolar e inclusão digital para preparar as novas gerações." />
-            <Pillar ico="🏅" t="Esporte e cidadania" d="Esporte, lazer e cultura como ferramentas de inclusão e transformação social nos bairros." />
+            <Pillar ico={<HeartPulse size={26} />} t="Saúde pública de verdade" d="Menos fila e mais atendimento: fortalecimento dos hospitais regionais, dos postos de saúde e do SUS que o Airton ajudou a implantar." />
+            <Pillar ico={<Route size={26} />} t="Infraestrutura e estradas" d="Pavimentação e manutenção das estradas do interior, ligando as comunidades à cidade e o produtor ao mercado." />
+            <Pillar ico={<Wheat size={26} />} t="Agricultura familiar" d="Apoio a quem produz: assistência técnica, escoamento da produção e valorização do produtor do Vale." />
+            <Pillar ico={<GraduationCap size={26} />} t="Educação e futuro" d="Escola de qualidade e oportunidades para os jovens ficarem e crescerem na própria região." />
+            <Pillar ico={<Landmark size={26} />} t="Municipalismo" d="Quem foi prefeito sabe: recursos e autonomia para os municípios resolverem a vida das pessoas na ponta." />
+            <Pillar ico={<Briefcase size={26} />} t="Trabalho e desenvolvimento" d="Ambiente favorável para a indústria, o comércio e os serviços gerarem emprego e renda no interior." />
           </div>
         </div>
       </section>
 
-      {/* FRENTES PARLAMENTARES */}
-      <section className="mlp-block" id="frentes">
+      {/* RESULTADOS */}
+      <section className="mlp-block mlp-dark" id="resultados">
         <div className="mlp-wrap">
           <div className="mlp-head mlp-reveal">
-            <span className="mlp-eyebrow">Liderança comprovada</span>
-            <h2>Frentes parlamentares que presido</h2>
-            <p>À frente de causas estruturantes para a sua cidade, articulando soluções com a sociedade civil.</p>
+            <span className="mlp-eyebrow">Trabalho que aparece</span>
+            <h2>Resultados de mandato</h2>
+            <p>Números de uma trajetória dedicada à região — com recurso público tratado com o respeito que ele merece.</p>
           </div>
-          <div className="mlp-frentes">
-            <Frente n="01" t="Despoluição das Águas do Guaíba" d="Pela recuperação e saúde do nosso cartão-postal." />
-            <Frente n="02" t="Apoio à Moradia Popular e Regularização Fundiária" d="Segurança jurídica e dignidade para as famílias." />
-            <Frente n="03" t="Apoio ao Cooperativismo — FRENCOOP" d="Fortalecimento da economia cooperativa local." />
-            <Frente n="04" t="Práticas Integrativas em Saúde" d="Ampliação do cuidado e do bem-estar no SUS municipal." />
-            <Frente n="05" t="Incentivo à Doação de Órgãos e Sangue" d="Salvando vidas com conscientização e políticas públicas." />
-            <Frente n="06" t="Mercado Imobiliário" d="Desenvolvimento urbano responsável e geração de emprego." />
+          <div className="mlp-results">
+            <Resultado v="R$ 10,7 mi" t="Investimento em pavimentação" d="6 km de asfalto entre Grão-Pará e Linha Travessa, no interior de Venâncio Aires." ico={<Route size={22} />} />
+            <Resultado v="24.319" t="Votos em 2022" d="Quinto mais votado do PDT no estado, assumindo o mandato em fevereiro de 2023." ico={<Award size={22} />} />
+            <Resultado v="3,5 anos" t="De mandato na Assembleia" d="Atuação firme por saúde, infraestrutura e municípios na 56ª legislatura." ico={<Landmark size={22} />} />
+            <Resultado v="8 anos" t="À frente de Venâncio Aires" d="Dois mandatos consecutivos de prefeito (2009–2016), além de vice-prefeito e vereador." ico={<MapPin size={22} />} />
           </div>
         </div>
       </section>
 
-      {/* IMÃ — Plano de Governo */}
-      <section className="mlp-block mlp-soft" id="plano">
+      {/* GALERIA — O RIO GRANDE DE PERTO */}
+      <section className="mlp-block">
+        <div className="mlp-wrap">
+          <div className="mlp-head mlp-reveal">
+            <span className="mlp-eyebrow">Pé no chão, olho no olho</span>
+            <h2>O Rio Grande de perto</h2>
+          </div>
+          <div className="mlp-gallery">
+            <figure className="mlp-shot wide mlp-reveal">
+              <img src="/img/mobilizacao.jpg" alt="Militância reunida em pavilhão no interior, com bandeiras do PDT" loading="lazy" />
+              <figcaption>Mobilização no interior do Vale</figcaption>
+            </figure>
+            <figure className="mlp-shot mlp-reveal">
+              <img src="/img/proximidade.jpg" alt="Airton Artus segurando as mãos de uma senhora, em conversa próxima" loading="lazy" />
+              <figcaption>Escuta de verdade, pessoa por pessoa</figcaption>
+            </figure>
+            <figure className="mlp-shot mlp-reveal">
+              <img src="/img/escuta.jpg" alt="Airton Artus conversando de perto com moradoras em evento comunitário" loading="lazy" />
+              <figcaption>Comunidade em primeiro lugar</figcaption>
+            </figure>
+            <figure className="mlp-shot mlp-reveal">
+              <img src="/img/familia.jpg" alt="Airton Artus no parreiral com o neto, segurando um cesto de uvas" loading="lazy" />
+              <figcaption>Raízes no interior gaúcho</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      {/* IMÃ — Propostas */}
+      <section className="mlp-block mlp-soft" id="propostas">
         <div className="mlp-wrap">
           <div className="mlp-magnet mlp-reveal">
             <div className="mlp-magnet-inner">
               <div>
                 <span className="mlp-eyebrow">Material exclusivo · Grátis</span>
-                <h2>Baixe o Plano de Governo completo</h2>
-                <p>Receba no seu WhatsApp/e-mail o documento com todas as propostas, metas e cronograma — e seja o primeiro a saber das novidades da campanha.</p>
+                <h2>Receba as propostas completas</h2>
+                <p>Deixe seu contato e receba no WhatsApp o material da pré-campanha — prioridades por área, agenda de encontros e as novidades em primeira mão.</p>
                 <ul>
-                  <li><Check size={22} /> Bandeiras detalhadas por área</li>
-                  <li><Check size={22} /> Metas com prazos e indicadores</li>
-                  <li><Check size={22} /> Agenda de eventos perto de você</li>
+                  <li><Check size={22} /> Prioridades detalhadas por área</li>
+                  <li><Check size={22} /> Resultados e prestação de contas</li>
+                  <li><Check size={22} /> Agenda de encontros perto de você</li>
                 </ul>
               </div>
               <div className="mlp-form">
                 {leadSent ? (
                   <div className="mlp-ok">
                     <Check size={54} />
-                    <h3>Recebido! 🎉</h3>
+                    <h3>Recebido!</h3>
                     <p>Em instantes você recebe o material. Obrigado por caminhar conosco!</p>
                   </div>
                 ) : (
                   <form onSubmit={submitLead}>
                     <h3>Receba agora, é grátis</h3>
                     <p className="sub">Preencha e enviamos o material.</p>
-                    <div className="mlp-field"><input placeholder="Seu nome" value={lead.name} onChange={(e) => setLead((s) => ({ ...s, name: e.target.value }))} required /></div>
-                    <div className="mlp-field"><input placeholder="WhatsApp (DDD + número)" value={lead.phone} onChange={(e) => setLead((s) => ({ ...s, phone: e.target.value }))} required /></div>
-                    <div className="mlp-field"><input type="email" placeholder="Seu e-mail (opcional)" value={lead.email} onChange={(e) => setLead((s) => ({ ...s, email: e.target.value }))} /></div>
+                    <div className="mlp-field"><label className="sr-only" htmlFor="lead-name">Seu nome</label><input id="lead-name" placeholder="Seu nome" value={lead.name} onChange={(e) => setLead((s) => ({ ...s, name: e.target.value }))} required /></div>
+                    <div className="mlp-field"><label className="sr-only" htmlFor="lead-phone">WhatsApp</label><input id="lead-phone" placeholder="WhatsApp (DDD + número)" value={lead.phone} onChange={(e) => setLead((s) => ({ ...s, phone: e.target.value }))} required /></div>
+                    <div className="mlp-field"><label className="sr-only" htmlFor="lead-email">E-mail (opcional)</label><input id="lead-email" type="email" placeholder="Seu e-mail (opcional)" value={lead.email} onChange={(e) => setLead((s) => ({ ...s, email: e.target.value }))} /></div>
                     <button className="mlp-btn mlp-btn--primary mlp-btn--block" disabled={leadSending}>
-                      {leadSending ? 'Enviando...' : 'Quero o Plano de Governo'}
+                      {leadSending ? 'Enviando...' : 'Quero receber as propostas'}
                     </button>
-                    <p className="privacy">🔒 Seus dados estão seguros. Sem spam.</p>
+                    <p className="privacy">Seus dados estão protegidos (LGPD) e não serão compartilhados.</p>
                   </form>
                 )}
               </div>
@@ -314,27 +358,10 @@ export default function Landing() {
       {/* VISION */}
       <section className="mlp-block mlp-vision">
         <div className="mlp-wrap">
-          <blockquote>Política se faz <span className="hl">com</span> as pessoas, não <span className="hl">pelas</span> pessoas. Trabalho e idealismo, com ética e coerência — é caminhando junto que a sua cidade muda.</blockquote>
+          <blockquote>Passei a vida do lado de quem precisa de cuidado. Na Assembleia, <span className="hl">meu lado é o da saúde</span> — e o do Rio Grande que trabalha.</blockquote>
           <div className="mlp-by">
-            <img src="/candidato.jpg" alt="Candidato Teste" />
-            <div style={{ textAlign: 'left' }}><b>Candidato Teste</b><span>Vereador · Sua Cidade</span></div>
-          </div>
-        </div>
-      </section>
-
-      {/* TRAJETÓRIA */}
-      <section className="mlp-block mlp-soft" id="trajetoria">
-        <div className="mlp-wrap">
-          <div className="mlp-head mlp-reveal">
-            <span className="mlp-eyebrow">Quem é o candidato</span>
-            <h2>Uma trajetória de resultados</h2>
-            <p>Espaço para a biografia do candidato — formação, atuação e compromissos. Conteúdo ilustrativo de demonstração.</p>
-          </div>
-          <div className="mlp-timeline">
-            <Tl yr="Ano 1" t="Primeiro cargo público" d="Descrição da primeira grande atuação — conteúdo de demonstração." />
-            <Tl yr="Ano 2" t="Segunda função relevante" d="Resumo da atuação nesta etapa — conteúdo de demonstração." />
-            <Tl yr="Ano 3" t="Marco importante" d="Principal conquista deste período — conteúdo de demonstração." />
-            <Tl yr="Hoje" t="Mandato atual" d="Projetos apresentados e frentes de atuação — conteúdo de demonstração." />
+            <img src="/candidato.jpg" alt="Retrato de Airton Artus" loading="lazy" />
+            <div style={{ textAlign: 'left' }}><b>Airton Artus</b><span>Médico · Pré-candidato a Deputado Estadual</span></div>
           </div>
         </div>
       </section>
@@ -344,47 +371,47 @@ export default function Landing() {
         <div className="mlp-wrap">
           <div className="mlp-head mlp-reveal">
             <span className="mlp-eyebrow">Vem com a gente</span>
-            <h2>Acompanhe nas redes</h2>
-            <p>Bastidores, conquistas e a agenda da campanha em primeira mão. Siga, comente e compartilhe — sua voz fortalece o movimento.</p>
+            <h2>Acompanhe de perto</h2>
+            <p>Bastidores, agenda e conquistas da pré-campanha em primeira mão. Siga, comente e compartilhe — sua voz fortalece o movimento.</p>
           </div>
           <div className="mlp-soc-grid">
-            <a href="https://instagram.com/candidatodemo" target="_blank" rel="noopener noreferrer" className="mlp-soc ig mlp-reveal">
+            <a href="https://instagram.com/airton.artus" target="_blank" rel="noopener noreferrer" className="mlp-soc ig mlp-reveal">
               <div className="top">
                 <div className="ic"><IgIcon /></div>
-                <span className="live"><span className="dot" /> Ao vivo</span>
+                <span className="live"><span className="dot" /> No ar</span>
               </div>
               <div>
                 <h3>Instagram</h3>
-                <div className="handle">@candidatodemo</div>
+                <div className="handle">@airton.artus</div>
                 <span className="go">Seguir <ArrowRight size={16} /></span>
               </div>
               <span className="bgnum">IG</span>
             </a>
 
-            <a href="https://facebook.com/candidatodemo" target="_blank" rel="noopener noreferrer" className="mlp-soc fb mlp-reveal">
+            <a href="#apoie" className="mlp-soc wa mlp-reveal">
               <div className="top">
-                <div className="ic"><FbIcon /></div>
-                <span className="live"><span className="dot" /> Online</span>
+                <div className="ic"><WaIcon big /></div>
+                <span className="live"><span className="dot" /> Equipe online</span>
               </div>
               <div>
-                <h3>Facebook</h3>
-                <div className="handle">/candidatodemo</div>
-                <span className="go">Curtir página <ArrowRight size={16} /></span>
+                <h3>WhatsApp</h3>
+                <div className="handle">Grupos da pré-campanha</div>
+                <span className="go">Quero entrar <ArrowRight size={16} /></span>
               </div>
-              <span className="bgnum">f</span>
+              <span className="bgnum">W</span>
             </a>
 
-            <a href="https://youtube.com/channel/UCrLCED_PdfgOHyvvlDseC1w" target="_blank" rel="noopener noreferrer" className="mlp-soc yt mlp-reveal">
+            <a href="#propostas" className="mlp-soc nv mlp-reveal">
               <div className="top">
-                <div className="ic"><YtIcon /></div>
-                <span className="live"><span className="dot" /> Inscreva-se</span>
+                <div className="ic"><CalendarDays size={28} /></div>
+                <span className="live"><span className="dot" /> Toda semana</span>
               </div>
               <div>
-                <h3>YouTube</h3>
-                <div className="handle">Canal Candidato Teste</div>
-                <span className="go">Inscrever-se <ArrowRight size={16} /></span>
+                <h3>Agenda no interior</h3>
+                <div className="handle">Encontros por todo o Vale</div>
+                <span className="go">Receber avisos <ArrowRight size={16} /></span>
               </div>
-              <span className="bgnum">▶</span>
+              <span className="bgnum">AG</span>
             </a>
           </div>
         </div>
@@ -394,15 +421,15 @@ export default function Landing() {
       <section className="mlp-block">
         <div className="mlp-wrap">
           <div className="mlp-head mlp-reveal">
-            <span className="mlp-eyebrow">Vozes da cidade</span>
+            <span className="mlp-eyebrow">Vozes do Rio Grande</span>
             <h2>Quem caminha junto</h2>
           </div>
           <div className="mlp-cards">
-            <Quote ini="RM" nome="Rosa Martins" loc="Moradora · Restinga" txt="Finalmente alguém que escuta o bairro antes de prometer. O candidato esteve aqui e ouviu cada morador." />
-            <Quote ini="JS" nome="João Silveira" loc="Comerciante · Centro" txt="Trabalho sério, de proximidade. É o tipo de representante que a cidade precisa na Câmara." />
-            <Quote ini="AP" nome="Ana Paula" loc="Professora · Partenon" txt="Sinto que minha voz importa. A campanha é da comunidade, não só de um nome." />
+            <Quote ini="RM" nome="Rosane M." loc="Moradora · Venâncio Aires" txt="O doutor Airton atendeu minha família a vida inteira. Como prefeito, cuidou da cidade do mesmo jeito: de perto." />
+            <Quote ini="JS" nome="João S." loc="Produtor rural · Linha Travessa" txt="O asfalto que chegou até a nossa comunidade mudou o dia a dia de quem produz. É trabalho que aparece." />
+            <Quote ini="AP" nome="Ana P." loc="Enfermeira · Lajeado" txt="Ter um médico na Assembleia faz diferença. Ele conhece o SUS por dentro e briga pelas pessoas certas." />
           </div>
-          <p className="mlp-note">* Depoimentos ilustrativos — substituir por depoimentos reais autorizados.</p>
+          <p className="mlp-note">* Depoimentos ilustrativos — serão substituídos por depoimentos reais autorizados.</p>
         </div>
       </section>
 
@@ -410,11 +437,11 @@ export default function Landing() {
       <section className="mlp-block mlp-final" id="apoie">
         <div className="mlp-wrap mlp-final-grid">
           <div>
-            <h2>Faça parte dessa mudança</h2>
-            <p>Sua voz, seu voto e suas mãos constroem a cidade que a gente quer. Some-se à campanha hoje.</p>
+            <h2>Faça parte desse movimento</h2>
+            <p>Voluntariado, faixa na sua casa, divulgação nas redes ou presença nos encontros — cada mão faz o Vale mais forte na Assembleia.</p>
             <div className="row">
-              <a href="https://wa.me/5551993069837" target="_blank" rel="noopener noreferrer" className="mlp-btn mlp-btn--ghost" style={{ borderColor: 'rgba(255,255,255,.7)' }}>
-                Falar no WhatsApp <WaIcon />
+              <a href="https://instagram.com/airton.artus" target="_blank" rel="noopener noreferrer" className="mlp-btn mlp-btn--ghost">
+                Seguir no Instagram <IgIcon small />
               </a>
             </div>
           </div>
@@ -423,22 +450,23 @@ export default function Landing() {
               <div className="mlp-join-ok">
                 <div className="ok"><Check size={30} /></div>
                 <h3>Recebemos seu cadastro!</h3>
-                <p>Em breve entraremos em contato. Obrigado por apoiar. 🙌</p>
+                <p>Em breve a equipe entra em contato. Obrigado por caminhar junto.</p>
               </div>
             ) : (
               <form onSubmit={submitJoin}>
                 <h3>Quero participar</h3>
-                <p className="sub">Voluntário, faixa na casa, eventos e muito mais.</p>
-                <div className="mlp-field"><input placeholder="Seu nome" value={form.name || ''} onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))} required /></div>
-                <div className="mlp-field"><input placeholder="WhatsApp (DDD + número)" value={form.phone || ''} onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))} required /></div>
-                <div className="mlp-field"><input placeholder="Seu bairro" value={form.neighborhood || ''} onChange={(e) => setForm((s) => ({ ...s, neighborhood: e.target.value }))} /></div>
+                <p className="sub">Voluntariado, faixa na casa, eventos e muito mais.</p>
+                <div className="mlp-field"><label className="sr-only" htmlFor="join-name">Seu nome</label><input id="join-name" placeholder="Seu nome" value={form.name || ''} onChange={(e) => setForm((s) => ({ ...s, name: e.target.value }))} required /></div>
+                <div className="mlp-field"><label className="sr-only" htmlFor="join-phone">WhatsApp</label><input id="join-phone" placeholder="WhatsApp (DDD + número)" value={form.phone || ''} onChange={(e) => setForm((s) => ({ ...s, phone: e.target.value }))} required /></div>
+                <div className="mlp-field"><label className="sr-only" htmlFor="join-city">Sua cidade</label><input id="join-city" placeholder="Sua cidade" value={form.cityName || ''} onChange={(e) => setForm((s) => ({ ...s, cityName: e.target.value }))} /></div>
                 <div className="mlp-field">
-                  <select value={form.supportType} onChange={(e) => setForm((s) => ({ ...s, supportType: e.target.value }))}>
+                  <label className="sr-only" htmlFor="join-type">Como quer ajudar</label>
+                  <select id="join-type" value={form.supportType} onChange={(e) => setForm((s) => ({ ...s, supportType: e.target.value }))}>
                     {options('SupportType').map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
                   </select>
                 </div>
                 <button className="mlp-btn mlp-btn--primary mlp-btn--block" disabled={sending}>
-                  {sending ? 'Enviando...' : 'Quero apoiar a campanha'}
+                  {sending ? 'Enviando...' : 'Quero participar'}
                 </button>
               </form>
             )}
@@ -451,31 +479,33 @@ export default function Landing() {
         <div className="mlp-wrap">
           <div className="mlp-foot-grid">
             <div>
-              <div className="mlp-foot-brand"><img className="mlp-mark" src="/partido-mark.svg" alt="Partido Teste" width="34" height="34" /><b>Candidato Teste</b></div>
-              <p style={{ maxWidth: 320 }}>Juntos por você, pela sua cidade. Trabalho e idealismo — uma campanha construída com a comunidade.</p>
+              <div className="mlp-foot-brand">
+                <img className="mlp-mark" src="/marca.svg" alt="" width="38" height="38" />
+                <b>Airton Artus</b>
+              </div>
+              <div className="mlp-foot-stripe" aria-hidden="true"><i className="g" /><i className="r" /><i className="y" /></div>
+              <p style={{ maxWidth: 320 }}>Saúde, trabalho e desenvolvimento para o Vale do Taquari e todo o Rio Grande do Sul.</p>
               <div className="mlp-socials">
-                <a href="https://instagram.com/candidatodemo" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><IgIcon /></a>
-                <a href="https://facebook.com/candidatodemo" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><FbIcon /></a>
-                <a href="https://youtube.com/channel/UCrLCED_PdfgOHyvvlDseC1w" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><YtIcon /></a>
+                <a href="https://instagram.com/airton.artus" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><IgIcon /></a>
               </div>
             </div>
             <div>
               <h4>Navegação</h4>
-              <a href="#bandeiras">Bandeiras</a>
-              <a href="#frentes">Frentes parlamentares</a>
               <a href="#trajetoria">Trajetória</a>
-              <a href="#plano">Plano de Governo</a>
+              <a href="#bandeiras">Bandeiras</a>
+              <a href="#resultados">Resultados</a>
+              <a href="#propostas">Propostas</a>
             </div>
             <div>
               <h4>Contato</h4>
-              <a href="mailto:contato@candidatodemo.com.br">contato@candidatodemo.com.br</a>
-              <a href="https://wa.me/5551993069837" target="_blank" rel="noopener noreferrer">WhatsApp (51) 99306-9837</a>
-              <a href="https://candidatodemo.com.br" target="_blank" rel="noopener noreferrer">candidatodemo.com.br</a>
-              <p>Santa Catarina</p>
+              <a href="mailto:contato@airtonartus.com.br">contato@airtonartus.com.br</a>
+              <a href="https://instagram.com/airton.artus" target="_blank" rel="noopener noreferrer">@airton.artus</a>
+              <p>Venâncio Aires · Vale do Taquari · RS</p>
             </div>
           </div>
           <div className="mlp-foot-bottom">
-            © {new Date().getFullYear()} Candidato Teste · Vereador · Partido Teste · Santa Catarina — Dados públicos; conteúdo de campanha ilustrativo.
+            © {new Date().getFullYear()} Airton Artus · Pré-candidato a Deputado Estadual · PDT · Rio Grande do Sul
+            <span className="mlp-foot-legal">Material de divulgação de pré-candidatura, sem pedido de voto, nos termos da legislação eleitoral.</span>
           </div>
         </div>
       </footer>
@@ -498,8 +528,15 @@ export default function Landing() {
 function Pillar({ ico, t, d }) {
   return (<div className="mlp-pillar mlp-reveal"><div className="ic">{ico}</div><h3>{t}</h3><p>{d}</p></div>);
 }
-function Frente({ n, t, d }) {
-  return (<div className="mlp-frente mlp-reveal"><div className="n">{n}</div><div><h3>{t}</h3><p>{d}</p></div></div>);
+function Resultado({ v, t, d, ico }) {
+  return (
+    <div className="mlp-result mlp-reveal">
+      <div className="ic">{ico}</div>
+      <b>{v}</b>
+      <h3>{t}</h3>
+      <p>{d}</p>
+    </div>
+  );
 }
 function Tl({ yr, t, d }) {
   return (<div className="mlp-tl mlp-reveal"><div className="yr">{yr}</div><h3>{t}</h3><p>{d}</p></div>);
@@ -507,7 +544,7 @@ function Tl({ yr, t, d }) {
 function Quote({ ini, nome, loc, txt }) {
   return (
     <div className="mlp-quote mlp-reveal">
-      <div className="stars">★★★★★</div>
+      <div className="stars" aria-hidden="true">★★★★★</div>
       <p>“{txt}”</p>
       <div className="mlp-who"><div className="av">{ini}</div><div><b>{nome}</b><span>{loc}</span></div></div>
     </div>
@@ -515,15 +552,11 @@ function Quote({ ini, nome, loc, txt }) {
 }
 
 /* ===== Ícones de marca (SVG inline) ===== */
-function IgIcon() {
-  return (<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>);
+function IgIcon({ small }) {
+  const s = small ? 18 : 24;
+  return (<svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="2" width="20" height="20" rx="5" /><circle cx="12" cy="12" r="4" /><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" /></svg>);
 }
-function FbIcon() {
-  return (<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" /></svg>);
-}
-function YtIcon() {
-  return (<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23 12s0-3.5-.46-5.17a3 3 0 00-2.12-2.12C18.75 4.25 12 4.25 12 4.25s-6.75 0-8.42.46A3 3 0 001.46 6.83C1 8.5 1 12 1 12s0 3.5.46 5.17a3 3 0 002.12 2.12c1.67.46 8.42.46 8.42.46s6.75 0 8.42-.46a3 3 0 002.12-2.12C23 15.5 23 12 23 12zM10 15.5v-7l6 3.5z" /></svg>);
-}
-function WaIcon() {
-  return (<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zM6.597 20.13c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.607z" /></svg>);
+function WaIcon({ big }) {
+  const s = big ? 28 : 18;
+  return (<svg width={s} height={s} viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.946C.16 5.335 5.495 0 12.05 0a11.82 11.82 0 018.413 3.488 11.82 11.82 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zM6.597 20.13c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.607z" /></svg>);
 }

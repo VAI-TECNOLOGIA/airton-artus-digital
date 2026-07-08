@@ -378,10 +378,11 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 /* ---------------- Login (identidade Airton Artus) ---------------- */
 .auth { min-height: 100vh; display: grid; grid-template-columns: 1.15fr 0.85fr; background: var(--brand-900); }
 .auth-visual { position: relative; overflow: hidden; background: var(--brand-900); }
-.auth-photo { position: absolute; inset: 0; background-image: var(--candidate-photo); background-size: cover; background-position: center top; filter: grayscale(100%) contrast(1.05); }
-.auth-duo { position: absolute; inset: 0; background: linear-gradient(160deg, var(--brand) 0%, var(--brand-900) 100%); mix-blend-mode: multiply; opacity: 0.88; }
-.auth-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,13,29,0.1) 0%, rgba(12,13,29,0.35) 45%, rgba(8,9,20,0.95) 100%); }
-.auth-grain { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 8px); }
+/* Foto em cores, rosto visível — tinta navy leve no topo e faixa escura só na base (legibilidade do texto) */
+.auth-photo { position: absolute; inset: 0; background-image: var(--candidate-photo); background-size: cover; background-position: center 20%; filter: saturate(0.94) contrast(1.02); }
+.auth-duo { position: absolute; inset: 0; background: linear-gradient(165deg, rgba(27,29,57,0.34) 0%, rgba(27,29,57,0.12) 40%, rgba(12,13,29,0.04) 70%); }
+.auth-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,13,29,0.30) 0%, transparent 30%, transparent 52%, rgba(8,9,20,0.92) 100%); }
+.auth-grain { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 8px); }
 .auth-flag { position: absolute; top: 34px; right: -70px; width: 320px; height: 50px; transform: rotate(38deg); display: flex; box-shadow: 0 14px 40px rgba(0,0,0,0.4); }
 .auth-flag i { flex: 1; }
 .auth-flag .g { background: var(--rs-green); }

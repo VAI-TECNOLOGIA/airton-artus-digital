@@ -6,8 +6,8 @@ import { volunteerRanking } from '../services/score.service.js';
 const include = {
   supporter: {
     select: {
-      id: true, name: true, phone: true, cityName: true, neighborhood: true,
-      photoUrl: true, status: true, regionId: true,
+      id: true, name: true, phone: true, whatsapp: true, cityName: true, neighborhood: true,
+      photoUrl: true, status: true, supportType: true, regionId: true,
     },
   },
   supervisor: { select: { id: true, name: true } },

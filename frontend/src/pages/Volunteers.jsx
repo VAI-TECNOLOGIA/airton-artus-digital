@@ -7,6 +7,7 @@ import { LoadingBox } from '../components/ui/Spinner.jsx';
 import EmptyState from '../components/ui/EmptyState.jsx';
 import { StatusBadge } from '../components/ui/Badge.jsx';
 import Avatar from '../components/ui/Avatar.jsx';
+import WhatsAppMessageModal, { WaIcon } from '../components/WhatsAppMessageModal.jsx';
 import api, { apiError } from '../api/client.js';
 import { useToast } from '../context/ToastContext.jsx';
 
@@ -16,6 +17,14 @@ export default function Volunteers() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('');
+  const [waSupporter, setWaSupporter] = useState(null);
+  const [candidate, setCandidate] = useState('Airton Artus');
+
+  useEffect(() => {
+    api.get('/settings')
+      .then((r) => { const c = r.data?.campaign?.candidate; if (c) setCandidate(c); })
+      .catch(() => {});
+  }, []);
 
   async function load() {
     setLoading(true);
@@ -89,13 +98,29 @@ export default function Volunteers() {
             rows={rows}
             empty={<EmptyState icon={Trophy} title="Nenhum voluntário" message="Cadastros do tipo 'Quero ser voluntário' aparecem aqui." />}
             actions={(row) => (
-              <button className="btn btn-ghost btn-sm" title={row.active ? 'Desativar' : 'Ativar'} onClick={() => toggle(row)}>
-                <Power size={15} />
-              </button>
+              <>
+                <button
+                  className="btn btn-ghost btn-sm"
+                  title="Enviar acesso por WhatsApp"
+                  onClick={() => setWaSupporter({ ...(row.supporter || {}), confirmed: row.confirmed })}
+                >
+                  <WaIcon size={15} />
+                </button>
+                <button className="btn btn-ghost btn-sm" title={row.active ? 'Desativar' : 'Ativar'} onClick={() => toggle(row)}>
+                  <Power size={15} />
+                </button>
+              </>
             )}
           />
         )}
       </Card>
+      {waSupporter && (
+        <WhatsAppMessageModal
+          supporter={waSupporter}
+          candidate={candidate}
+          onClose={() => setWaSupporter(null)}
+        />
+      )}
     </Layout>
   );
 }

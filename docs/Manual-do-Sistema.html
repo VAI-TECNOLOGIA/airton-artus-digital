@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manual do Sistema · Airton Artus Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --navy:#1B1D39; --navy-2:#262A52; --navy-deep:#0C0D1D;
+    --gold:#E8AF3C; --gold-2:#B98618;
+    --rs-green:#398254; --rs-red:#BD2E2F;
+    --ink:#16181D; --muted:#5A616B; --line:#E7E8EF;
+    --paper:#fff; --soft:#F6F7F9; --rad:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:24px}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--soft);line-height:1.65;font-size:15px}
+  h1,h2{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.02em;line-height:1.08}
+  h3,h4{font-family:'Archivo',sans-serif;letter-spacing:-.01em}
+  a{color:var(--gold-2);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  .tricolor{display:flex;height:5px}
+  .tricolor i{flex:1}
+  .tricolor .g{background:var(--rs-green)}.tricolor .r{background:var(--rs-red)}.tricolor .y{background:var(--gold)}
+
+  /* Layout: sumário fixo + conteúdo */
+  .shell{display:grid;grid-template-columns:280px 1fr;max-width:1240px;margin:0 auto;gap:0}
+  .toc{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;background:var(--navy-deep);color:#B8BBD0;padding:28px 20px 40px}
+  .toc .brand{font-family:'Anton';color:#fff;font-size:19px;text-transform:uppercase;letter-spacing:.05em;line-height:1.1}
+  .toc .brand small{display:block;font-family:'Archivo';font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--gold);margin-top:4px}
+  .toc .stripe{display:flex;height:4px;width:100px;margin:14px 0 22px}
+  .toc .stripe i{flex:1}
+  .toc nav a{display:block;color:#B8BBD0;font-size:13px;padding:5px 10px;border-radius:8px;border-left:2px solid transparent}
+  .toc nav a:hover{background:rgba(255,255,255,.06);color:#fff;text-decoration:none}
+  .toc nav .sec{font-family:'Archivo';font-weight:800;font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;color:#6E7394;margin:18px 10px 6px}
+
+  main{background:var(--paper);padding:0 0 80px}
+  .hero{background:radial-gradient(120% 140% at 85% 0%,var(--navy-2) 0%,var(--navy) 60%,var(--navy-deep) 100%);color:#fff;padding:64px 56px 52px}
+  .hero .eyebrow{font-family:'Archivo';font-weight:800;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+  .hero h1{font-size:clamp(38px,5vw,58px);margin:14px 0 12px}
+  .hero p{color:rgba(255,255,255,.82);max-width:640px;font-size:16px}
+  .hero .meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px}
+  .hero .pill{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);padding:7px 14px;border-radius:50px;font-size:13px;font-weight:600}
+  .hero .pill b{color:var(--gold);font-weight:700}
+
+  section{padding:44px 56px 8px;max-width:860px}
+  section h2{font-size:30px;color:var(--navy);margin-bottom:6px;scroll-margin-top:20px}
+  section .lead{color:var(--muted);margin-bottom:18px;font-size:15px}
+  section h3{font-size:18px;font-weight:800;color:var(--navy);margin:24px 0 8px}
+  section p{margin-bottom:12px}
+  section ul,section ol{margin:0 0 14px 22px}
+  section li{margin-bottom:7px}
+  .rule{height:1px;background:var(--line);margin:36px 56px 0;max-width:860px}
+
+  .icon{width:20px;height:20px;stroke:var(--gold-2);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-4px;margin-right:8px}
+  h2 .icon{width:24px;height:24px;stroke:var(--gold);vertical-align:-3px}
+
+  .card{background:var(--soft);border:1px solid var(--line);border-radius:var(--rad);padding:18px 20px;margin:14px 0}
+  .card.gold{border-left:4px solid var(--gold)}
+  .card.green{border-left:4px solid var(--rs-green)}
+  .card.red{border-left:4px solid var(--rs-red)}
+  .card h4{font-size:14px;font-weight:800;margin-bottom:6px;color:var(--navy)}
+  .card p:last-child,.card ul:last-child{margin-bottom:0}
+
+  .steps{counter-reset:step;list-style:none;margin-left:0!important}
+  .steps li{counter-increment:step;position:relative;padding-left:40px;margin-bottom:12px}
+  .steps li::before{content:counter(step);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--navy);color:var(--gold);font-family:'Archivo';font-weight:800;font-size:13px;display:grid;place-items:center}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th{background:var(--navy);color:#fff;text-align:left;padding:9px 12px;font-family:'Archivo';font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.05em}
+  td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:var(--soft)}
+  td.c,th.c{text-align:center}
+  .ok{color:var(--rs-green);font-weight:800}
+  .no{color:#C9CCD6;font-weight:700}
+
+  kbd,.chip{display:inline-block;background:var(--navy);color:var(--gold);font-family:'Archivo';font-weight:700;font-size:12px;padding:2px 9px;border-radius:7px}
+  .path{font-family:'Archivo';font-weight:700;color:var(--navy);background:#EEEFF5;padding:1px 8px;border-radius:6px;font-size:13px;white-space:nowrap}
+  code{font-family:ui-monospace,Menlo,monospace;background:#EEEFF5;padding:1px 6px;border-radius:5px;font-size:13px}
+
+  .status{display:inline-block;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700}
+  .st-navy{background:#E9EAF3;color:var(--navy)}
+  .st-green{background:#E4F4EA;color:#1D6338}
+  .st-amber{background:#FBF1D9;color:#8a6510}
+  .st-red{background:#F9E4E5;color:#8A1F20}
+
+  footer{background:var(--navy-deep);color:rgba(255,255,255,.6);padding:34px 56px;font-size:13px}
+  footer b{color:#fff}
+  footer .stripe{display:flex;height:4px;width:100px;margin-bottom:16px}
+  footer .stripe i{flex:1}
+
+  @media(max-width:900px){
+    .shell{grid-template-columns:1fr}
+    .toc{position:relative;height:auto}
+    section,.hero{padding-left:24px;padding-right:24px}
+    .rule{margin-left:24px;margin-right:24px}
+    footer{padding:28px 24px}
+  }
+  @media print{
+    .toc{display:none}
+    .shell{grid-template-columns:1fr}
+    body{background:#fff}
+    section{page-break-inside:avoid;max-width:none}
+    .hero{padding:40px}
+    a{color:var(--ink)}
+  }
+</style>
+</head>
+<body>
+<div class="tricolor"><i class="g"></i><i class="r"></i><i class="y"></i></div>
+<div class="shell">
+
+  <!-- ==================== SUMÁRIO ==================== -->
+  <aside class="toc">
+    <div class="brand">Airton Artus<small>Manual do Sistema</small></div>
+    <div class="stripe"><i style="background:var(--rs-green)"></i><i style="background:var(--rs-red)"></i><i style="background:var(--gold)"></i></div>
+    <nav>
+      <div class="sec">Começando</div>
+      <a href="#visao-geral">Visão geral</a>
+      <a href="#primeiros-passos">Primeiros passos</a>
+      <a href="#perfis">Perfis de acesso</a>
+      <a href="#landing">Página pública (/lp)</a>
+      <div class="sec">Base de apoio</div>
+      <a href="#dashboard">Dashboard</a>
+      <a href="#apoiadores">Apoiadores</a>
+      <a href="#whatsapp-acesso">Enviar acesso (WhatsApp)</a>
+      <a href="#voluntarios">Voluntários</a>
+      <a href="#antifraude">Suspeitos &amp; Blacklist</a>
+      <div class="sec">Mobilização</div>
+      <a href="#mural">Mural de avisos</a>
+      <a href="#midia-kit">Mídia Kit</a>
+      <a href="#engajamento">Engajamento</a>
+      <a href="#acoes">Ações de rua</a>
+      <a href="#agenda">Agenda</a>
+      <div class="sec">Materiais</div>
+      <a href="#materiais">Pedidos de material</a>
+      <a href="#faixas">Faixas</a>
+      <div class="sec">Comunicação</div>
+      <a href="#comunicacao">WhatsApp (CRM) e Chat interno</a>
+      <a href="#demandas">Demandas</a>
+      <a href="#disparos">Disparos</a>
+      <a href="#automacoes">Automações</a>
+      <div class="sec">Estratégia</div>
+      <a href="#mapa">Mapa político</a>
+      <a href="#relatorios">Relatórios</a>
+      <a href="#painel-tv">Painel TV</a>
+      <div class="sec">Administração</div>
+      <a href="#usuarios">Usuários</a>
+      <a href="#configuracoes">Configurações</a>
+      <a href="#ia">Assistente de IA</a>
+      <div class="sec">Apoio</div>
+      <a href="#boas-praticas">Boas práticas e LGPD</a>
+      <a href="#faq">Perguntas frequentes</a>
+      <a href="#suporte">Suporte</a>
+    </nav>
+  </aside>
+
+  <!-- ==================== CONTEÚDO ==================== -->
+  <main>
+    <div class="hero">
+      <span class="eyebrow">Airton Artus Digital · Pré-campanha 2026</span>
+      <h1>Manual do Sistema</h1>
+      <p>Guia completo da central de comando da pré-campanha: mobilização, base de apoiadores, comunicação, materiais e território — tudo em uma só plataforma.</p>
+      <div class="meta">
+        <span class="pill">Sistema: <b>airton.vai-sistema.com</b></span>
+        <span class="pill">Página pública: <b>airton.vai-sistema.com/lp</b></span>
+        <span class="pill">Versão do manual: <b>Julho/2026</b></span>
+      </div>
+    </div>
+
+    <!-- VISÃO GERAL -->
+    <section id="visao-geral">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Visão geral</h2>
+      <p class="lead">O que é a plataforma e como ela se organiza.</p>
+      <p>O <b>Airton Artus Digital</b> é a central de comando da pré-campanha. Ele reúne, em um único lugar:</p>
+      <ul>
+        <li><b>Base de apoio</b> — cadastro de apoiadores e voluntários, com proteção antifraude;</li>
+        <li><b>Mobilização</b> — mural de avisos, mídia kit para publicação, tarefas com pontuação, ações de rua e agenda;</li>
+        <li><b>Materiais</b> — pedidos de material de campanha e controle de faixas instaladas;</li>
+        <li><b>Comunicação</b> — atendimento por WhatsApp (CRM), chat interno da equipe, demandas da população e disparos em massa;</li>
+        <li><b>Estratégia</b> — dashboard em tempo real, mapa político georreferenciado, relatórios e painel de TV para o comitê.</li>
+      </ul>
+      <div class="card gold">
+        <h4>Endereços</h4>
+        <ul>
+          <li><b>Sistema (equipe):</b> <a href="https://airton.vai-sistema.com/login">airton.vai-sistema.com/login</a></li>
+          <li><b>Página pública de cadastro:</b> <a href="https://airton.vai-sistema.com/lp">airton.vai-sistema.com/lp</a> — é por ela que os apoiadores entram sozinhos na base.</li>
+        </ul>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- PRIMEIROS PASSOS -->
+    <section id="primeiros-passos">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>Primeiros passos</h2>
+      <p class="lead">Login, senha, tema e instalação no celular.</p>
+
+      <h3>Entrar no sistema</h3>
+      <ol class="steps">
+        <li>Acesse <span class="path">airton.vai-sistema.com/login</span>.</li>
+        <li>Informe o <b>e-mail</b> e a <b>senha</b> fornecidos pela coordenação.</li>
+        <li>Clique em <span class="chip">Entrar</span>. Você cai no Dashboard.</li>
+      </ol>
+      <div class="card">
+        <h4>Primeiro acesso do dia um pouco lento?</h4>
+        <p>É normal: o banco de dados hiberna quando fica ocioso e leva 2–3 segundos para despertar no primeiro acesso. Os acessos seguintes são instantâneos.</p>
+      </div>
+
+      <h3>Esqueci minha senha</h3>
+      <p>Na tela de login, clique em <b>Esqueci minha senha</b> e informe seu e-mail. Enquanto o e-mail transacional não estiver ativado na campanha, peça também ao administrador — ele pode definir uma nova senha para você em <span class="path">Usuários</span>.</p>
+
+      <h3>Tema claro e escuro</h3>
+      <p>No canto superior direito há um botão de lua/sol que alterna entre tema claro e escuro. A preferência fica salva no seu navegador.</p>
+
+      <h3>Instalar no celular (como aplicativo)</h3>
+      <p>O sistema é um aplicativo web instalável (PWA):</p>
+      <ul>
+        <li><b>Android (Chrome):</b> abra o sistema, toque no menu <b>⋮</b> e escolha <b>Adicionar à tela inicial</b>;</li>
+        <li><b>iPhone (Safari):</b> toque no botão de compartilhar e escolha <b>Adicionar à Tela de Início</b>.</li>
+      </ul>
+      <p>O ícone da campanha aparece na tela do celular e o sistema abre em tela cheia, como um app.</p>
+
+      <h3>Sair</h3>
+      <p>Botão de saída no canto superior direito (ícone de porta).</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- PERFIS -->
+    <section id="perfis">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Perfis de acesso</h2>
+      <p class="lead">O que cada perfil enxerga e pode fazer.</p>
+      <p>O sistema tem hoje <b>três perfis</b>. O perfil é definido pelo administrador ao criar o usuário em <span class="path">Usuários</span>.</p>
+      <table>
+        <tr><th>Módulo</th><th class="c">Líder de Campanha</th><th class="c">Membro da Equipe</th><th class="c">Parceiro</th></tr>
+        <tr><td>Dashboard</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td></tr>
+        <tr><td>Mapa político · Relatórios</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c no">—</td></tr>
+        <tr><td>Apoiadores · Voluntários</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c no">—</td></tr>
+        <tr><td>Suspeitos · Blacklist</td><td class="c ok">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td>Mural · Mídia Kit · Engajamento · Agenda</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td></tr>
+        <tr><td>Ações de rua · Faixas</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c no">—</td></tr>
+        <tr><td>Pedidos de material</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td></tr>
+        <tr><td>Conversas (CRM) · Chat interno · Demandas</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c no">—</td></tr>
+        <tr><td>Disparos</td><td class="c ok">✓</td><td class="c ok">✓ (enviar: só Líder)</td><td class="c no">—</td></tr>
+        <tr><td>Automações</td><td class="c ok">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td>Usuários · Configurações</td><td class="c ok">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td>Painel TV</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c no">—</td></tr>
+      </table>
+      <div class="card">
+        <h4>Resumo dos papéis</h4>
+        <ul>
+          <li><b>Líder de Campanha</b> — acesso total: estratégia, administração, configurações e disparos.</li>
+          <li><b>Membro da Equipe</b> — operação do dia a dia: base, comunicação, mobilização e materiais.</li>
+          <li><b>Parceiro</b> — apoiador externo com login: vê mural, mídia kit, engajamento, agenda e pede material.</li>
+        </ul>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- LANDING -->
+    <section id="landing">
+      <h2><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>Página pública (/lp)</h2>
+      <p class="lead">A porta de entrada da base: é aqui que o eleitor se cadastra sozinho.</p>
+      <p>A página <span class="path">/lp</span> apresenta a trajetória, as bandeiras e os resultados do Airton, e tem <b>dois formulários</b>:</p>
+      <ul>
+        <li><b>Receba as propostas</b> — a pessoa deixa nome e WhatsApp para receber o material da pré-campanha. Entra na base como apoiador do tipo <i>Material digital</i>;</li>
+        <li><b>Quero participar</b> — cadastro completo: nome, WhatsApp, cidade e como quer ajudar (voluntariado, faixa na casa, adesivo, eventos…).</li>
+      </ul>
+      <p>Todo cadastro da página pública:</p>
+      <ul>
+        <li>passa pelo <b>antifraude</b> (telefone repetido vira <span class="status st-amber">Suspeito</span>; telefone bloqueado vira <span class="status st-red">Blacklist</span>);</li>
+        <li>é <b>georreferenciado</b> automaticamente pela cidade — aparece no Mapa político na hora;</li>
+        <li>se for voluntariado, gera uma <b>conversa de confirmação</b> na Central de Comunicação.</li>
+      </ul>
+      <div class="card gold">
+        <h4>Divulgue sempre o mesmo endereço</h4>
+        <p>Nos posts, bios e materiais impressos, use <b>airton.vai-sistema.com/lp</b> — quanto mais gente passar por ali, mais a base cresce sozinha.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- DASHBOARD -->
+    <section id="dashboard">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>Dashboard</h2>
+      <p class="lead">Visão geral da pré-campanha em tempo real. É a primeira tela após o login.</p>
+      <ul>
+        <li><b>Indicadores</b> — voluntários (total e ativos), apoiadores, pendentes, faixas autorizadas, materiais entregues, pedidos pendentes, ações realizadas, suspeitos, blacklist, demandas e conversas abertas;</li>
+        <li><b>Apoiadores por cidade/bairro</b> — gráfico com as cidades mais fortes da base;</li>
+        <li><b>Por status</b> — distribuição da base entre novo, confirmado, ativo etc.;</li>
+        <li><b>Ranking de voluntários</b> — os mais engajados, pela pontuação de tarefas.</li>
+      </ul>
+      <p>Os números vêm direto do banco — o que a equipe cadastra aparece aqui na hora.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- APOIADORES -->
+    <section id="apoiadores">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>Apoiadores</h2>
+      <p class="lead">A base completa da pré-campanha, com busca, filtros e antifraude.</p>
+
+      <h3>Cadastrar manualmente</h3>
+      <ol class="steps">
+        <li>Clique em <span class="chip">Novo cadastro</span>.</li>
+        <li>Preencha ao menos <b>nome</b> e <b>telefone</b>. Cidade, bairro, tipo de apoio e redes sociais ajudam o mapa e os filtros.</li>
+        <li>Salve. O sistema vincula a cidade à região automaticamente e posiciona a pessoa no mapa.</li>
+      </ol>
+      <div class="card">
+        <h4>Tipos de apoio</h4>
+        <p>Quero ser voluntário · Faixa na casa · Adesivo para carro · Material digital · Participar de caminhada · Ajudar em eventos · Indicar pessoas · Receber notícias.</p>
+      </div>
+
+      <h3>Ações em cada linha</h3>
+      <ul>
+        <li><b>WhatsApp (ícone verde)</b> — abre o envio de acesso/boas-vindas (<a href="#whatsapp-acesso">ver seção</a>);</li>
+        <li><b>Confirmar voluntário (ícone de check)</b> — aparece para quem se cadastrou como voluntário e ainda não confirmou; marca como <span class="status st-green">Confirmado</span> e já abre a mensagem de boas-vindas;</li>
+        <li><b>Blacklist (ícone de bloqueio)</b> — bloqueia o contato (pede o motivo);</li>
+        <li><b>Editar / Excluir</b> — atualiza ou remove o cadastro (excluir é só do Líder).</li>
+      </ul>
+
+      <h3>Status possíveis</h3>
+      <p>
+        <span class="status st-navy">Novo</span>
+        <span class="status st-green">Confirmado</span>
+        <span class="status st-green">Ativo</span>
+        <span class="status st-amber">Pendente</span>
+        <span class="status st-amber">Suspeito</span>
+        <span class="status st-red">Inativo</span>
+        <span class="status st-red">Blacklist</span>
+      </p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- WHATSAPP ACESSO -->
+    <section id="whatsapp-acesso">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Enviar acesso por WhatsApp</h2>
+      <p class="lead">Como mandar a mensagem de boas-vindas/confirmação manualmente, em dois cliques.</p>
+      <p>Enquanto a API oficial do WhatsApp não está conectada, o envio é manual — e o sistema deixa isso fácil:</p>
+      <ol class="steps">
+        <li>Em <span class="path">Apoiadores</span> ou <span class="path">Voluntários</span>, clique no <b>ícone de WhatsApp</b> da pessoa (ou confirme um voluntário — o envio abre sozinho).</li>
+        <li>O sistema monta a <b>mensagem certa para o caso</b>: voluntário sem confirmação recebe o pedido de "responda SIM"; os demais recebem boas-vindas. Edite o texto se quiser.</li>
+        <li>Escolha:
+          <ul>
+            <li><span class="chip">Abrir no WhatsApp</span> — abre o WhatsApp já com o número e a mensagem preenchidos; é só apertar enviar;</li>
+            <li><span class="chip">Copiar mensagem</span> — copia o texto para colar onde preferir.</li>
+          </ul>
+        </li>
+      </ol>
+      <div class="card green">
+        <h4>Dica de fluxo</h4>
+        <p>Chegou cadastro novo de voluntário? <b>Confirmar → Abrir no WhatsApp → Enviar.</b> Menos de dez segundos por pessoa.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- VOLUNTÁRIOS -->
+    <section id="voluntarios">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>Voluntários</h2>
+      <p class="lead">A equipe de base: pontuação, confirmação e situação de cada um.</p>
+      <p>Todo apoiador cadastrado como <i>Quero ser voluntário</i> aparece aqui. A tela mostra:</p>
+      <ul>
+        <li><b>Pontos</b> — soma do engajamento validado (posts, caminhadas, faixas…);</li>
+        <li><b>Confirmação</b> — se a pessoa já confirmou participação;</li>
+        <li><b>Prefere ajudar</b> — a frente preferida (caminhadas, faixa em casa, material digital, eventos);</li>
+        <li><b>Situação</b> — ativo ou inativo.</li>
+      </ul>
+      <p><b>Ações:</b> enviar acesso por WhatsApp (ícone verde) e ativar/desativar (ícone de energia). Use os filtros <i>Somente ativos</i> e <i>Somente confirmados</i> para organizar mutirões.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- ANTIFRAUDE -->
+    <section id="antifraude">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Suspeitos &amp; Blacklist</h2>
+      <p class="lead">Proteção automática contra cadastros duplicados e contatos indesejados. Acesso restrito ao Líder.</p>
+
+      <h3>Suspeitos</h3>
+      <p>Quando duas pessoas se cadastram com o <b>mesmo telefone</b>, ambas ficam marcadas como <span class="status st-amber">Suspeito</span> e aparecem nesta tela para análise manual. Para cada caso você decide:</p>
+      <ul>
+        <li><span class="chip">Aprovar</span> — era legítimo (ex.: casal usando o mesmo número);</li>
+        <li><span class="chip">Blacklist</span> — cadastro malicioso: bloqueia o telefone;</li>
+        <li><span class="chip">Excluir</span> — remove o cadastro duplicado.</li>
+      </ul>
+
+      <h3>Blacklist</h3>
+      <p>Telefones bloqueados <b>não conseguem se cadastrar de novo</b> — nem pela página pública, nem manualmente. Cada bloqueio guarda o motivo e quem bloqueou. Tudo fica registrado em auditoria.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- MURAL -->
+    <section id="mural">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg>Mural de avisos</h2>
+      <p class="lead">Comunicados, convocações e orientações para toda a equipe.</p>
+      <p>Publique avisos com <b>título, descrição, tipo</b> (Aviso, Convocação, Agenda, Orientação) e <b>prioridade</b> (Alta, Média, Baixa). Todos os perfis veem o mural — é o canal oficial de "recado geral" da campanha.</p>
+      <div class="card gold">
+        <h4>Convocações com prioridade alta</h4>
+        <p>Use prioridade <b>Alta</b> para mutirões e caminhadas — o aviso ganha destaque no topo.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- MÍDIA KIT -->
+    <section id="midia-kit">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>Mídia Kit</h2>
+      <p class="lead">Artes, vídeos, jingles e textos prontos para a militância publicar.</p>
+
+      <h3>Para quem publica conteúdo (marketing)</h3>
+      <ol class="steps">
+        <li>Clique em <span class="chip">Publicar material</span>.</li>
+        <li>Informe título, tipo (Arte, Reels, Vídeo, Jingle, Texto), rede de destino e prioridade.</li>
+        <li>Anexe o arquivo e preencha a <b>legenda pronta</b> e as <b>hashtags</b> — é o que a militância vai copiar.</li>
+        <li>Se quiser, adicione uma orientação (ex.: "postar entre 18h e 20h").</li>
+      </ol>
+
+      <h3>Para quem divulga (militância)</h3>
+      <ul>
+        <li><span class="chip">Legenda</span> — copia a legenda pronta;</li>
+        <li><span class="chip"># Hashtags</span> — copia as hashtags;</li>
+        <li><b>Baixar</b> — baixa a arte/vídeo para postar.</li>
+      </ul>
+      <p>Depois de postar, registre no <a href="#engajamento">Engajamento</a> para ganhar pontos.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- ENGAJAMENTO -->
+    <section id="engajamento">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>Engajamento</h2>
+      <p class="lead">Tarefas, pontuação e ranking da militância digital — gamificação da campanha.</p>
+
+      <h3>Como funciona</h3>
+      <p>Cada tarefa vale pontos: publicar no Instagram (15), no Facebook (15), compartilhar no WhatsApp (10), participar de caminhada (30), colocar faixa (25), entregar adesivos (20), convidar pessoas (10), comparecer a evento (25).</p>
+      <ol class="steps">
+        <li>O voluntário faz a ação (ex.: posta a arte do Mídia Kit no Instagram).</li>
+        <li>Registra em <span class="chip">Registrar engajamento</span>, escolhendo a tarefa e o voluntário.</li>
+        <li>A equipe <b>valida</b> o registro — só engajamento validado pontua.</li>
+        <li>Os pontos somam no <b>Ranking</b>, que aparece no Dashboard e no Painel TV.</li>
+      </ol>
+      <div class="card gold">
+        <h4>Por que validar?</h4>
+        <p>A validação evita pontos indevidos e mantém o ranking justo — o ranking é a vitrine de reconhecimento da militância.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- AÇÕES DE RUA -->
+    <section id="acoes">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M4 20 8 4l4 6 4-6 4 16"/></svg>Ações de rua</h2>
+      <p class="lead">Caminhadas, carreatas, visitas, bandeiraços e entregas de material — o histórico do território.</p>
+      <p>Registre cada ação com <b>tipo, título, cidade/bairro, data, pessoas alcançadas e status</b> (Planejada ou Realizada). Cada ação georreferenciada aparece no <a href="#mapa">Mapa político</a> — assim a coordenação enxerga onde a campanha já pisou e onde ainda falta chegar.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- AGENDA -->
+    <section id="agenda">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</h2>
+      <p class="lead">Eventos, reuniões, caminhadas e prazos da pré-campanha.</p>
+      <p>Cada evento tem título, local, cidade/bairro, data, horário, responsável e status (Agendado, Confirmado, Realizado, Cancelado). Os <b>próximos eventos</b> aparecem também no Painel TV, para todo o comitê ver.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- MATERIAIS -->
+    <section id="materiais">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>Pedidos de material</h2>
+      <p class="lead">Fluxo anti-desperdício: pedir, aprovar e entregar com controle de estoque.</p>
+      <p>O catálogo (faixas, bandeiras, adesivos, santinhos, camisetas, bonés) é mantido pelo Líder em Configurações. O fluxo do pedido:</p>
+      <ol class="steps">
+        <li><b>Solicitar</b> — qualquer perfil pede material informando item e quantidade;</li>
+        <li><b>Analisar</b> — a equipe de materiais aprova ou recusa (o sistema mostra o <b>histórico do solicitante</b>, contra pedidos repetidos);</li>
+        <li><b>Entregar</b> — a entrega é registrada e o estoque baixa automaticamente.</li>
+      </ol>
+      <p>Status: <span class="status st-navy">Solicitado</span> <span class="status st-amber">Em análise</span> <span class="status st-green">Aprovado</span> <span class="status st-green">Entregue</span> <span class="status st-red">Recusado</span></p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- FAIXAS -->
+    <section id="faixas">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>Faixas</h2>
+      <p class="lead">Controle de autorizações e instalação de faixas em casas e pontos.</p>
+      <p>Cada faixa registra o <b>responsável pelo local, telefone, endereço, cidade/bairro</b> e se o morador <b>autorizou</b>. O status acompanha o ciclo: <span class="status st-navy">Autorizado</span> → <span class="status st-amber">Aguardando instalação</span> → <span class="status st-green">Instalado</span> (ou <span class="status st-red">Removido</span>). As faixas aparecem como camada própria no Mapa político.</p>
+      <div class="card red">
+        <h4>Importante</h4>
+        <p>Só instale com autorização registrada do morador — isso protege a campanha juridicamente.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- COMUNICAÇÃO -->
+    <section id="comunicacao">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Central de Comunicação</h2>
+      <p class="lead">Duas frentes na mesma tela: atendimento por WhatsApp (externo) e chat interno (equipe).</p>
+
+      <h3>WhatsApp — atendimento externo (CRM)</h3>
+      <ul>
+        <li>As conversas chegam da confirmação de voluntários e dos contatos da campanha;</li>
+        <li>Filtre por status: <span class="status st-navy">Aberta</span> <span class="status st-amber">Aguardando</span> <span class="status st-green">Em atendimento</span> <span class="status st-green">Resolvida</span>;</li>
+        <li>Responda com texto livre, <b>respostas rápidas</b> ou <b>modelos prontos</b> (boas-vindas, convite para evento, material digital, faixa, agradecimento);</li>
+        <li>Classifique o contato com <b>etiquetas</b> (voluntária, apoiador, dúvida, evento…) e mantenha <b>anotações</b> no painel lateral;</li>
+        <li><b>Assumir atendimento</b> vincula a conversa a você — ninguém responde em duplicidade.</li>
+      </ul>
+      <div class="card">
+        <h4>Modo atual: simulado</h4>
+        <p>Enquanto a API oficial do WhatsApp (Meta) não é conectada, as mensagens desta tela <b>não são enviadas de verdade</b> — use o botão <a href="#whatsapp-acesso">Enviar acesso por WhatsApp</a> para envio manual. Quando a API for ativada nas configurações, o envio passa a ser automático, sem mudar o fluxo da equipe.</p>
+      </div>
+
+      <h3>Chat interno — equipe</h3>
+      <ul>
+        <li><b>Direto</b> — conversa 1 a 1 com qualquer colega (cada membro tem um código único, ex.: <code>AA-7K2M</code>);</li>
+        <li><b>Grupos</b> — crie grupos por região ou frente de trabalho;</li>
+        <li><b>Campanha</b> — canal geral com toda a equipe.</li>
+      </ul>
+    </section>
+    <div class="rule"></div>
+
+    <!-- DEMANDAS -->
+    <section id="demandas">
+      <h2><svg class="icon" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>Demandas</h2>
+      <p class="lead">Pedidos da população organizados em quadro Kanban — o "gabinete" da pré-campanha.</p>
+      <p>Cada demanda registra <b>cidadão, telefone, cidade/bairro, categoria</b> (Saúde, Educação, Infraestrutura, Segurança, Emprego, Transporte…) e <b>prioridade</b>. O quadro avança por arrastar-e-soltar:</p>
+      <p><span class="status st-navy">Nova</span> → <span class="status st-amber">Em análise</span> → <span class="status st-amber">Em andamento</span> → <span class="status st-green">Resolvida</span></p>
+      <div class="card green">
+        <h4>Ouro político</h4>
+        <p>Demanda resolvida merece retorno: avise o cidadão pelo WhatsApp. É a diferença entre "político que some" e "político que resolve".</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- DISPAROS -->
+    <section id="disparos">
+      <h2><svg class="icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>Disparos</h2>
+      <p class="lead">Mensagens em massa para segmentos da base (convites, avisos, boas-vindas).</p>
+      <ol class="steps">
+        <li><span class="chip">Nova campanha de disparo</span> — dê um nome e escreva a mensagem. Use variáveis que o sistema substitui por pessoa: <code>{{nome}}</code>, <code>{{cidade}}</code>, <code>{{bairro}}</code>, <code>{{responsavel}}</code>.</li>
+        <li><b>Importe os contatos</b> — da própria base, com filtros.</li>
+        <li><b>Enviar</b> (só o Líder) — acompanhe a barra de progresso: enviados, pendentes e falhas. Dá para <b>pausar</b> a qualquer momento.</li>
+      </ol>
+      <div class="card red">
+        <h4>Responsabilidade</h4>
+        <p>Disparos em massa devem respeitar a legislação eleitoral e a LGPD: só para quem se cadastrou na campanha, sempre com identificação e opção de sair (ex.: "responda SAIR").</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- AUTOMAÇÕES -->
+    <section id="automacoes">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg>Automações</h2>
+      <p class="lead">Mensagens que se enviam sozinhas, todos os dias às 9h. Acesso restrito ao Líder.</p>
+      <ul>
+        <li><b>Aniversário</b> — parabeniza os aniversariantes do dia, automaticamente;</li>
+        <li><b>Data marcada</b> — mensagens de datas específicas (Natal, feriados, véspera de evento);</li>
+        <li><b>Agradecimento a voluntário</b> — boas-vindas automáticas.</li>
+      </ul>
+      <p>Cada automação tem status <span class="status st-green">Ativa</span> ou <span class="status st-navy">Rascunho</span>, aceita as mesmas variáveis dos disparos e registra um log de tudo que enviou. O motor roda diariamente às <b>9h (horário de Brasília)</b> e não repete destinatário no mesmo dia.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- MAPA -->
+    <section id="mapa">
+      <h2><svg class="icon" viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>Mapa político</h2>
+      <p class="lead">Apoiadores, faixas e ações georreferenciados em tempo real sobre o mapa do RS.</p>
+      <ul>
+        <li><b>Camadas</b> — ligue/desligue Apoiadores (azul-marinho), Faixas (vermelho) e Ações de rua (verde), com contadores;</li>
+        <li><b>Ao vivo</b> — o mapa se atualiza sozinho; dá para pausar;</li>
+        <li><b>Clique em um ponto</b> para ver os detalhes do cadastro.</li>
+      </ul>
+      <p>Todo cadastro sem endereço exato é posicionado automaticamente pela cidade — por isso o mapa funciona desde o primeiro dia. O mapa é a ferramenta de leitura do território: onde a base cresce e onde precisamos de ação de rua.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- RELATÓRIOS -->
+    <section id="relatorios">
+      <h2><svg class="icon" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Relatórios</h2>
+      <p class="lead">Consolidado da campanha para acompanhar a evolução e prestar contas.</p>
+      <ul>
+        <li><b>Crescimento da base</b> ao longo do tempo;</li>
+        <li><b>Apoiadores por região</b> e <b>por cidade/bairro</b>;</li>
+        <li><b>Engajamento por tipo</b>, <b>ações de rua por tipo</b>, <b>faixas por status</b> e <b>demandas por categoria</b>.</li>
+      </ul>
+      <p>O botão <span class="chip">Exportar CSV</span> baixa os dados consolidados (<code>relatorio-campanha.csv</code>) para abrir no Excel/Google Sheets.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- PAINEL TV -->
+    <section id="painel-tv">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>Painel TV</h2>
+      <p class="lead">Telão para o comitê: números ao vivo, mapa do RS, ranking e agenda.</p>
+      <p>Feito para ficar aberto em uma TV no comitê. Mostra, com atualização automática a cada 30 segundos: apoiadores, voluntários, faixas, ações realizadas, <b>apoio pelo Rio Grande do Sul</b> (mapa), top voluntários, metas da campanha com barras de progresso e os próximos eventos.</p>
+      <p>Acesse pelo menu <span class="path">Painel TV</span> ou direto em <span class="path">/painel-tv</span> e coloque o navegador em tela cheia (<kbd>F11</kbd>).</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- USUÁRIOS -->
+    <section id="usuarios">
+      <h2><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M6 21v-1a6 6 0 0 1 12 0v1"/><circle cx="19" cy="5" r="2.5"/></svg>Usuários</h2>
+      <p class="lead">Contas de acesso da equipe. Acesso restrito ao Líder.</p>
+      <ol class="steps">
+        <li>Clique em <span class="chip">Novo</span> e informe nome, e-mail, senha e o <b>perfil</b> (Líder, Membro ou Parceiro).</li>
+        <li>Opcional: vincule à <b>região</b> e ao <b>gestor</b> (quem coordena essa pessoa).</li>
+        <li>Para trocar a senha de alguém: edite o usuário e preencha o campo senha.</li>
+        <li>Para desligar alguém da campanha: desative ou exclua a conta.</li>
+      </ol>
+      <div class="card red">
+        <h4>Segurança</h4>
+        <p>Crie <b>uma conta por pessoa</b> (nunca compartilhe login), use senhas fortes e remova acessos de quem saiu da equipe no mesmo dia.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- CONFIGURAÇÕES -->
+    <section id="configuracoes">
+      <h2><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configurações</h2>
+      <p class="lead">Identidade da campanha, metas, catálogos e perfis. Acesso restrito ao Líder.</p>
+      <ul>
+        <li><b>Dados da campanha</b> — nome do candidato, cargo, partido, cidade e slogan (aparecem no painel, na IA e no Painel TV);</li>
+        <li><b>Metas da campanha</b> — alvos de apoiadores, voluntários, faixas e ações (viram as barras de progresso do Painel TV);</li>
+        <li><b>Regiões e cidades</b> — a geografia da campanha, com coordenador por região;</li>
+        <li><b>Catálogos</b> — materiais e tarefas de engajamento;</li>
+        <li><b>Assistente de IA</b> — ativação e credenciais do assistente;</li>
+        <li><b>Integrações</b> — WhatsApp oficial (Meta), e-mail transacional.</li>
+      </ul>
+    </section>
+    <div class="rule"></div>
+
+    <!-- IA -->
+    <section id="ia">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M12 2l1.9 5.8L20 9.7l-5 3.9 1.8 6.1L12 16l-4.8 3.7L9 13.6 4 9.7l6.1-1.9z"/></svg>Assistente de IA</h2>
+      <p class="lead">Um "chefe de gabinete digital" dentro do sistema.</p>
+      <p>O botão flutuante no canto inferior direito abre o assistente. Ele responde com base nos <b>dados reais da campanha</b> — e respeita o seu perfil (cada um só recebe informação do que pode ver). Exemplos de perguntas:</p>
+      <ul>
+        <li>"Quantos voluntários confirmados temos em Venâncio Aires?"</li>
+        <li>"Quais demandas de saúde estão em aberto?"</li>
+        <li>"Resuma o crescimento da base nesta semana."</li>
+      </ul>
+      <p>A ativação e o token do provedor de IA são configurados pelo Líder em <span class="path">Configurações → Assistente de IA</span>.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- BOAS PRÁTICAS -->
+    <section id="boas-praticas">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Boas práticas e LGPD</h2>
+      <p class="lead">Regras de ouro para operar com segurança jurídica.</p>
+      <ul>
+        <li><b>Pré-campanha:</b> o material público não pede voto explicitamente e não usa número de urna — divulgação de pré-candidatura nos termos da lei;</li>
+        <li><b>LGPD:</b> os dados dos apoiadores são da campanha e só para a campanha — nunca exporte ou compartilhe a base com terceiros;</li>
+        <li><b>Mensagens:</b> sempre se identifique ("equipe do Airton Artus") e respeite quem pedir para sair;</li>
+        <li><b>Faixas:</b> apenas com autorização registrada do morador;</li>
+        <li><b>Contas:</b> uma por pessoa, senha forte, remoção imediata de quem sai da equipe;</li>
+        <li><b>Auditoria:</b> o sistema registra as operações sensíveis (criação, bloqueio, exclusão) — tudo tem rastro.</li>
+      </ul>
+    </section>
+    <div class="rule"></div>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <h2><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17"/></svg>Perguntas frequentes</h2>
+
+      <h3>O primeiro acesso do dia demora alguns segundos. É normal?</h3>
+      <p>Sim. O banco hiberna quando ocioso e desperta no primeiro acesso (2–3s). Depois, tudo é instantâneo.</p>
+
+      <h3>Enviei mensagem pela Central de Comunicação e não chegou no WhatsApp da pessoa.</h3>
+      <p>A integração oficial do WhatsApp ainda está em modo <b>simulado</b>. Para enviar de verdade, use o botão verde <b>Enviar acesso por WhatsApp</b> (abre o seu WhatsApp com tudo preenchido). Quando a API oficial for conectada, o envio passa a ser automático.</p>
+
+      <h3>Cadastrei alguém e apareceu "Suspeito". O que houve?</h3>
+      <p>O telefone já existia em outro cadastro. Vá em <span class="path">Suspeitos</span> (Líder) e decida: aprovar, excluir ou bloquear.</p>
+
+      <h3>A pessoa não aparece no mapa.</h3>
+      <p>Verifique se o cadastro tem <b>cidade</b> preenchida — é ela que posiciona o ponto. Cidades fora do catálogo podem ser adicionadas pelo Líder em Configurações.</p>
+
+      <h3>Esqueci minha senha e não recebi o e-mail.</h3>
+      <p>O e-mail transacional pode ainda não estar ativado. Peça ao administrador para definir uma nova senha em <span class="path">Usuários</span>.</p>
+
+      <h3>Como coloco o Painel TV no telão?</h3>
+      <p>No computador da TV, faça login, abra <span class="path">/painel-tv</span> e pressione <kbd>F11</kbd> para tela cheia. Ele se atualiza sozinho.</p>
+
+      <h3>Posso usar no celular?</h3>
+      <p>Sim — todo o sistema é responsivo, e você pode <a href="#primeiros-passos">instalá-lo como aplicativo</a>.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- SUPORTE -->
+    <section id="suporte">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Suporte</h2>
+      <p>O sistema é desenvolvido e mantido pela <b>VAI Tecnologia</b>. Para dúvidas, ajustes, novos recursos ou incidentes, fale com o suporte da VAI pelo canal combinado com a coordenação da campanha.</p>
+      <p>Ao reportar um problema, informe: <b>o que você tentou fazer, em qual tela, o que apareceu</b> (mensagem de erro, se houver) e, se possível, uma captura de tela — isso acelera muito a solução.</p>
+    </section>
+
+    <footer>
+      <div class="stripe"><i style="background:var(--rs-green)"></i><i style="background:var(--rs-red)"></i><i style="background:var(--gold)"></i></div>
+      <b>Airton Artus Digital</b> · Manual do Sistema · Julho/2026<br/>
+      Desenvolvido pela VAI Tecnologia · Material interno da equipe — não distribuir fora da campanha.
+    </footer>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# Nunca subir artefatos locais no deploy (railway up)
+.env
+.env.*
+node_modules
+dist
+dev-dist
+test-results
+playwright-report

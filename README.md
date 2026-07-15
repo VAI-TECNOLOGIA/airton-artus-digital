@@ -120,9 +120,37 @@ WhatsApp Cloud API (oficial), Instagram Direct, Messenger e SMS passam pelo rote
 
 ## Operação em produção (runbook)
 
-**Infra:** Vercel (frontend estático + API Express serverless via `api/index.mjs`) · Postgres Neon · Vercel Blob para uploads.
+**Infra (atual): Railway** — projeto `airton-artus-digital` (workspace VAI TECNOLOGIA):
 
-### Deploy
+| Serviço | O que é | URL |
+|---|---|---|
+| `api` | Express + Prisma (deploy da pasta `backend/`), volume de 5 GB em `/app/uploads` | https://api-production-e419.up.railway.app |
+| `web` | Frontend Vite estático (deploy da pasta `frontend/`, SPA fallback) | https://web-production-3d52.up.railway.app |
+| `Postgres` | Banco de produção | interno (`DATABASE_URL` referenciada pela api) |
+| `cron-automations` | Cron diário 09:00 BRT (imagem `curlimages/curl`) → `GET /api/cron/automations` | — |
+
+### Deploy (Railway)
+
+```bash
+# backend (rodar na raiz do repo)
+railway up ./backend --path-as-root --service api --ci -m "descrição"
+
+# frontend
+railway up ./frontend --path-as-root --service web --ci -m "descrição"
+```
+
+> Alterou o schema do Prisma? Rode antes do deploy:
+> `APP_DATABASE_URL=<DATABASE_PUBLIC_URL do Postgres> npx prisma db push` (na pasta `backend/`).
+
+Variáveis já configuradas na `api`: `APP_DATABASE_URL`/`APP_DIRECT_URL` (referência ao Postgres), `JWT_SECRET`, `CRON_SECRET`, `NODE_ENV`, `UPLOAD_DRIVER=local` + `UPLOAD_PERSISTENT=1` (volume), `CORS_ORIGIN`, `PUBLIC_URL`. Na `web`: `VITE_API_URL`, `RAILPACK_SPA_OUTPUT_DIR=dist`, `NPM_CONFIG_PRODUCTION=false`.
+
+Webhook do WhatsApp (Meta Cloud API): `https://api-production-e419.up.railway.app/api/whatsapp/webhook`.
+
+---
+
+### Deploy alternativo (Vercel — legado)
+
+**Infra:** Vercel (frontend estático + API Express serverless via `api/index.mjs`) · Postgres Neon · Vercel Blob para uploads.
 
 ```bash
 vercel --prod            # deploy manual (raiz do repo, projeto airton-artus)

@@ -35,14 +35,15 @@ if (isProd && (!rawSecret || rawSecret === INSECURE_DEFAULT)) {
 }
 const jwtSecret = rawSecret || INSECURE_DEFAULT;
 
-// === Upload em serverless ===
-// 'local' em Vercel/Lambda escreve em /tmp (efêmero) — arquivos somem entre
-// invocações. Fotos de faixa, mídia kit, etc. seriam perdidos silenciosamente.
+// === Upload ===
+// 'local' em serverless (Vercel/Lambda) escreve em /tmp (efêmero) — arquivos
+// somem entre invocações. Em servidor persistente (Railway com volume montado
+// em UPLOAD_DIR), 'local' é seguro: declare UPLOAD_PERSISTENT=1 pra liberar.
 const uploadDriver = process.env.UPLOAD_DRIVER || 'local';
-if (isProd && uploadDriver === 'local') {
+if (isProd && uploadDriver === 'local' && !process.env.UPLOAD_PERSISTENT) {
   abortProd(
     "UPLOAD_DRIVER='local' não persiste em produção serverless.",
-    "Configure UPLOAD_DRIVER='s3' com credenciais S3 (S3_ENDPOINT/S3_BUCKET/S3_ACCESS_KEY/S3_SECRET_KEY). Alternativa: Vercel Blob (S3-compatível)."
+    "Em serverless use UPLOAD_DRIVER='blob' (Vercel Blob). Em servidor com disco/volume persistente (ex.: Railway + volume), defina UPLOAD_PERSISTENT=1."
   );
 }
 

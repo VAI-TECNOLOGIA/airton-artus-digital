@@ -1,0 +1,6 @@
+# Nunca subir segredos/artefatos locais no deploy (railway up)
+.env
+.env.*
+node_modules
+uploads
+src/generated

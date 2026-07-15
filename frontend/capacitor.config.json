@@ -1,0 +1,25 @@
+{
+  "appId": "br.com.airtonartus.digital",
+  "appName": "Airton Artus Digital",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "launchAutoHide": true,
+      "backgroundColor": "#1B1D39",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    "StatusBar": {
+      "backgroundColor": "#1B1D39",
+      "style": "DARK",
+      "overlaysWebView": false
+    }
+  }
+}

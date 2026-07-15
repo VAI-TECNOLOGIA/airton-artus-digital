@@ -45,3 +45,15 @@ frontend/tests/e2e/.auth/
 frontend/test-results/
 frontend/playwright-report/
 .env*
+
+# Capacitor / Android — arquivos sensíveis (NUNCA commitar)
+frontend/android/key.properties
+frontend/android/app/*.keystore
+frontend/android/app/*.jks
+frontend/android/app/google-services.json
+frontend/android/.gradle/
+frontend/android/local.properties
+frontend/android/app/build/
+frontend/android/build/
+# Assets de origem gerados localmente para a Play Store (regeneráveis)
+frontend/play-store-assets/

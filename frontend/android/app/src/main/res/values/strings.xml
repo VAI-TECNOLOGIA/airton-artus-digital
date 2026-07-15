@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Airton Artus Digital</string>
+    <string name="title_activity_main">Airton Artus Digital</string>
+    <string name="package_name">br.com.airtonartus.digital</string>
+    <string name="custom_url_scheme">br.com.airtonartus.digital</string>
+</resources>

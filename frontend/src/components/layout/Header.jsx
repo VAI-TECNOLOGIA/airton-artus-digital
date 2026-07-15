@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Menu, LogOut, Sun, Moon } from 'lucide-react';
+import { Menu, LogOut, Sun, Moon, UserX } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
+import DeleteAccountModal from '../DeleteAccountModal.jsx';
 
 function getTheme() {
   return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
@@ -9,6 +10,7 @@ function getTheme() {
 export default function Header({ title, subtitle, onMenu }) {
   const { user, logout } = useAuth();
   const [theme, setTheme] = useState(getTheme);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
@@ -38,10 +40,19 @@ export default function Header({ title, subtitle, onMenu }) {
         >
           {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
         </button>
+        <button
+          className="icon-btn"
+          onClick={() => setDeleting(true)}
+          title="Excluir minha conta"
+          aria-label="Excluir minha conta"
+        >
+          <UserX size={18} />
+        </button>
         <button className="icon-btn" onClick={logout} title="Sair">
           <LogOut size={18} />
         </button>
       </div>
+      {deleting && <DeleteAccountModal onClose={() => setDeleting(false)} />}
     </header>
   );
 }

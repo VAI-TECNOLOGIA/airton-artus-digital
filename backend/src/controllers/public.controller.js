@@ -5,6 +5,7 @@ import { sendWhatsApp } from '../services/whatsapp.service.js';
 import { SUPPORT_TYPES } from '../utils/enums.js';
 import { nullifyEmpty, onlyDigits } from '../utils/helpers.js';
 import { fallbackLatLng, linkCityByName } from '../utils/geo.js';
+import { createDeletionRequest, confirmDeletionRequest } from '../services/privacy.service.js';
 
 // ============================================================
 //  Endpoints PÚBLICOS (sem autenticação) — usados pela Landing Page.
@@ -96,6 +97,53 @@ export const join = asyncHandler(async (req, res) => {
   }
 
   res.status(201).json({ ok: true, message: 'Cadastro recebido! Em breve entraremos em contato. 💪' });
+});
+
+// ============================================================
+//  LGPD — exclusão de dados via web (autoatendimento do titular).
+//  Fluxo em 2 passos: pede código → código chega no WhatsApp do
+//  próprio número → confirma → exclusão imediata. A resposta do
+//  passo 1 é sempre genérica (não revela se o telefone existe).
+// ============================================================
+
+const deletionMessage =
+  'Se este número tiver cadastro na pré-campanha, você receberá um código de confirmação no WhatsApp em instantes.';
+
+export const requestDataDeletion = asyncHandler(async (req, res) => {
+  const { phone: raw } = z.object({ phone: z.string().min(8, 'Informe um telefone válido') }).parse(req.body);
+  const phone = onlyDigits(raw);
+
+  const code = await createDeletionRequest(phone, { ip: req.ip });
+  if (code) {
+    await sendWhatsApp({
+      to: phone,
+      body:
+        `Pré-campanha Airton Artus — recebemos um pedido de EXCLUSÃO dos dados deste número. ` +
+        `Código de confirmação: *${code}* (válido por 15 minutos). ` +
+        `Se não foi você, ignore esta mensagem e nada será excluído.`,
+    });
+  }
+
+  // Resposta idêntica com ou sem cadastro (não revela existência do telefone).
+  res.json({ message: deletionMessage, devCode: process.env.NODE_ENV === 'development' ? code || undefined : undefined });
+});
+
+export const confirmDataDeletion = asyncHandler(async (req, res) => {
+  const { phone: raw, code } = z
+    .object({ phone: z.string().min(8), code: z.string().regex(/^\d{6}$/, 'Código de 6 dígitos') })
+    .parse(req.body);
+  const phone = onlyDigits(raw);
+
+  const summary = await confirmDeletionRequest(phone, code, { requestedBy: 'titular (web)', ip: req.ip });
+  if (!summary) {
+    return res.status(400).json({ error: 'Código inválido ou expirado. Solicite um novo código.' });
+  }
+
+  res.json({
+    ok: true,
+    message: 'Seus dados foram excluídos permanentemente da base da pré-campanha.',
+    summary,
+  });
 });
 
 export const stats = asyncHandler(async (req, res) => {

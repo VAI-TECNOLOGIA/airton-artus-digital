@@ -28,6 +28,7 @@ const Automations = lazy(() => import('./pages/Automations.jsx'));
 const Users = lazy(() => import('./pages/Users.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const Landing = lazy(() => import('./pages/Landing.jsx'));
+const DataDeletion = lazy(() => import('./pages/DataDeletion.jsx'));
 const MapView = lazy(() => import('./pages/MapView.jsx'));
 const Reports = lazy(() => import('./pages/Reports.jsx'));
 const TVPanel = lazy(() => import('./pages/TVPanel.jsx'));
@@ -48,6 +49,7 @@ export default function App() {
       <Route path="/esqueci-senha" element={<ForgotPassword />} />
       <Route path="/redefinir-senha" element={<ResetPassword />} />
       <Route path="/lp" element={<Landing />} />
+      <Route path="/excluir-dados" element={<DataDeletion />} />
       <Route path="/painel-tv" element={P(['LIDER', 'MEMBRO'], <TVPanel />)} />
 
       <Route path="/" element={P(null, <Dashboard />)} />

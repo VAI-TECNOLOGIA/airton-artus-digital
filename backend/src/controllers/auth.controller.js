@@ -123,6 +123,44 @@ export const resetPassword = asyncHandler(async (req, res) => {
   res.json({ message: 'Senha redefinida com sucesso.' });
 });
 
+// LGPD/lojas de app: o próprio usuário exclui sua conta, com confirmação de
+// senha. Relações apontam pra ele com onDelete: SetNull (histórico fica
+// anonimizado) e o JWT morre na hora — o authenticate consulta o banco.
+export const deleteAccount = asyncHandler(async (req, res) => {
+  const { password } = z.object({ password: z.string().min(1, 'Senha obrigatória') }).parse(req.body);
+
+  const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+  if (!user || !(await comparePassword(password, user.password))) {
+    throw new AppError('Senha incorreta', 400);
+  }
+
+  if (user.role === 'LIDER') {
+    const otherLeaders = await prisma.user.count({
+      where: { role: 'LIDER', active: true, id: { not: user.id } },
+    });
+    if (otherLeaders === 0) {
+      throw new AppError(
+        'Você é o único Líder ativo. Promova outro usuário a Líder antes de excluir sua conta.',
+        400
+      );
+    }
+  }
+
+  // Auditoria antes do delete: o userId vira null em cascata (SetNull),
+  // então o registro fica sem vínculo com a pessoa — só a trilha do evento.
+  await audit({
+    userId: user.id,
+    action: 'DELETE_ACCOUNT_SELF',
+    entity: 'User',
+    entityId: user.id,
+    changes: { role: user.role },
+    ip: req.ip,
+  });
+  await prisma.user.delete({ where: { id: user.id } });
+
+  res.json({ message: 'Conta excluída permanentemente.' });
+});
+
 export const changePassword = asyncHandler(async (req, res) => {
   const { currentPassword, newPassword } = z
     .object({ currentPassword: z.string(), newPassword: z.string().min(6) })

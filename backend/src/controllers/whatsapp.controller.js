@@ -3,6 +3,12 @@ import env from '../config/env.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendWhatsApp } from '../services/whatsapp.service.js';
 import { onlyDigits } from '../utils/helpers.js';
+import {
+  optOutByPhone,
+  createDeletionRequest,
+  confirmDeletionRequest,
+  hasPendingDeletionRequest,
+} from '../services/privacy.service.js';
 
 /** Verificação do webhook (handshake exigido pela Meta Cloud API). */
 export const verifyWebhook = (req, res) => {
@@ -65,6 +71,56 @@ async function handleInbound({ phone, name, body }) {
     data: { conversationId: convo.id, direction: 'INBOUND', body: body || '', channel: 'WHATSAPP' },
   });
   await prisma.conversation.update({ where: { id: convo.id }, data: { lastMessageAt: new Date() } });
+
+  // LGPD: "EXCLUIR MEUS DADOS" inicia a exclusão total — manda um código de
+  // confirmação pro próprio número (evita exclusão por engano ou por terceiros).
+  if (/^\s*excluir(\s+meus)?\s+dados\b/i.test(body || '')) {
+    const code = await createDeletionRequest(phone, { ip: null });
+    const reply = code
+      ? `Recebemos seu pedido de exclusão de dados. Pra confirmar, responda com o código: *${code}* (válido por 15 minutos). Se não foi você, ignore.`
+      : 'Este número não possui cadastro na nossa base. Nada a excluir. 👍';
+    const r = await sendWhatsApp({ to: phone, body: reply });
+    await prisma.message.create({
+      data: { conversationId: convo.id, direction: 'OUTBOUND', body: reply, channel: 'WHATSAPP', externalId: r.id },
+    });
+    return { conversationId: convo.id, supporterId: supporter?.id || null, deletionRequested: Boolean(code) };
+  }
+
+  // Código de 6 dígitos com pedido de exclusão pendente = confirmação.
+  const codeMatch = (body || '').trim().match(/^(\d{6})$/);
+  if (codeMatch && (await hasPendingDeletionRequest(phone))) {
+    const summary = await confirmDeletionRequest(phone, codeMatch[1], { requestedBy: 'titular (whatsapp)' });
+    if (summary) {
+      // Despedida ANTES da exclusão efetiva já ter removido a conversa — o
+      // confirmDeletionRequest apaga a convo, então só enviamos o WhatsApp.
+      await sendWhatsApp({
+        to: phone,
+        body: 'Confirmado. Seus dados foram excluídos permanentemente da base da pré-campanha. Obrigado por ter caminhado conosco. 👋',
+      });
+      return { deleted: true };
+    }
+    const reply = 'Código inválido ou expirado. Responda EXCLUIR MEUS DADOS pra receber um novo código.';
+    const r = await sendWhatsApp({ to: phone, body: reply });
+    await prisma.message.create({
+      data: { conversationId: convo.id, direction: 'OUTBOUND', body: reply, channel: 'WHATSAPP', externalId: r.id },
+    });
+    return { conversationId: convo.id, deletionConfirmed: false };
+  }
+
+  // LGPD: "SAIR" (e variações) = revogação do consentimento de mensagens.
+  // Marca opt-out, confirma pro titular e encerra o fluxo — nada mais é enviado.
+  if (/^\s*(sair|parar|cancelar|descadastrar|remover)\b/i.test(body || '')) {
+    await optOutByPhone(phone);
+    const bye =
+      'Pronto! Você não receberá mais mensagens da pré-campanha. ' +
+      'Se quiser também EXCLUIR seus dados da nossa base, responda EXCLUIR MEUS DADOS ou acesse a página de privacidade no nosso site.';
+    const r = await sendWhatsApp({ to: phone, body: bye });
+    await prisma.message.create({
+      data: { conversationId: convo.id, direction: 'OUTBOUND', body: bye, channel: 'WHATSAPP', externalId: r.id },
+    });
+    await prisma.conversation.update({ where: { id: convo.id }, data: { status: 'FECHADA' } });
+    return { conversationId: convo.id, supporterId: supporter?.id || null, optOut: true };
+  }
 
   if (supporter && /^\s*sim\b/i.test(body || '')) {
     const v = await prisma.volunteer.findUnique({ where: { supporterId: supporter.id } });

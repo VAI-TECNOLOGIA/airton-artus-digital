@@ -635,6 +635,14 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
   flex-wrap: wrap;
 }
 .auth-links .auth-back { display: inline-flex; }
+.auth-legal {
+  margin-top: 18px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted, #6b6d85);
+}
+.auth-legal a { color: inherit; text-decoration: underline; }
+.auth-legal a:hover { color: var(--brand); }
 
 /* ============================================================
    ASSISTENTE DE IA — botão flutuante + painel lateral direito

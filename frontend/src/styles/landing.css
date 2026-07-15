@@ -161,6 +161,12 @@
 .mlp-field input,.mlp-field select{width:100%;padding:14px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.97);color:var(--ink);font-size:15px;font-family:inherit}
 .mlp-field input:focus,.mlp-field select:focus{outline:2px solid var(--gold)}
 .mlp-form .privacy{font-size:11.5px;color:rgba(255,255,255,.55);margin-top:12px;text-align:center}
+.mlp-consent{display:flex;gap:10px;align-items:flex-start;font-size:12.5px;line-height:1.5;margin:4px 0 14px;cursor:pointer;text-align:left}
+.mlp-consent input{margin-top:3px;flex:none;width:16px;height:16px;accent-color:var(--gold)}
+.mlp-consent a{color:var(--gold);text-decoration:underline}
+.mlp-form .mlp-consent{color:rgba(255,255,255,.75)}
+.mlp-join-form .mlp-consent{color:var(--muted, #6b6d85)}
+.mlp-join-form .mlp-consent a{color:var(--red, #BD2E2F)}
 .mlp-ok{text-align:center;padding:18px 0}
 .mlp-ok svg{width:54px;height:54px;color:var(--gold);margin-bottom:10px}
 .mlp-ok h3{font-size:20px;margin-bottom:6px}
@@ -242,7 +248,7 @@
 
 /* Footer */
 .mlp-footer{background:var(--navy-deep);color:rgba(255,255,255,.65);padding:64px 0 30px}
-.mlp-foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.1)}
+.mlp-foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.1)}
 .mlp-foot-brand{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .mlp-foot-brand b{font-family:'Anton';font-weight:400;color:#fff;font-size:20px;text-transform:uppercase;letter-spacing:.05em}
 .mlp-foot-stripe{display:flex;height:4px;width:120px;margin-bottom:16px}

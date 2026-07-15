@@ -43,10 +43,11 @@ async function eligibleRecipients(audience) {
     });
     return vols
       .map((v) => v.supporter)
-      .filter((s) => s && s.phone && ELIGIBLE_STATUS.includes(s.status));
+      .filter((s) => s && s.phone && ELIGIBLE_STATUS.includes(s.status) && !s.optOutAt);
   }
   return prisma.supporter.findMany({
-    where: { status: { in: ELIGIBLE_STATUS }, phone: { not: '' } },
+    // optOutAt: null — quem respondeu "SAIR" nunca mais recebe automação (LGPD)
+    where: { status: { in: ELIGIBLE_STATUS }, phone: { not: '' }, optOutAt: null },
     take: 5000,
   });
 }
@@ -54,7 +55,7 @@ async function eligibleRecipients(audience) {
 async function birthdayRecipients() {
   const { day, month } = spDayMonth();
   const all = await prisma.supporter.findMany({
-    where: { birthDate: { not: null }, status: { in: ELIGIBLE_STATUS } },
+    where: { birthDate: { not: null }, status: { in: ELIGIBLE_STATUS }, optOutAt: null },
     take: 5000,
   });
   return all.filter((s) => {

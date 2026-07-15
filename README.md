@@ -100,6 +100,15 @@ Acesse **http://localhost:5173** (login) ou **http://localhost:5173/lp** (landin
 ## Módulos
 Autenticação · Dashboard · Apoiadores & Voluntários (antifraude) · Confirmação automática (WhatsApp) · CRM de comunicação · Mural · Mídia Kit · Engajamento (pontuação/ranking) · Pedidos de material (anti-desperdício) · Faixas · Mapa político · Ações de rua · Agenda · Disparador · Automações · Demandas (Kanban) · Relatórios · Painel TV · Configurações · **Landing Page pública** (`/lp`).
 
+## Privacidade / LGPD (exigência Play Store & App Store)
+
+- **Páginas legais públicas** (estáticas, servidas antes do rewrite do SPA): `/legal/politica-de-privacidade.html`, `/legal/termos-de-uso.html`, `/legal/excluir-conta.html`, `/legal/excluir-dados.html`. Fonte em `docs/legal/*.md` — edite o `.md` e rode `node docs/legal/build-html.mjs` pra regenerar.
+- **Exclusão de conta (usuário logado):** ícone "Excluir minha conta" no topo do painel → confirma com senha → `DELETE /api/auth/me` (bloqueia o último Líder ativo; sessões morrem na hora).
+- **Exclusão de dados do apoiador (sem login):** página pública **`/excluir-dados`** — telefone → código de 6 dígitos no WhatsApp do próprio número → exclusão imediata (`/api/public/data-deletion/request|confirm`). Também funciona 100% pelo WhatsApp: **"EXCLUIR MEUS DADOS"** → código → confirmação.
+- **Opt-out de mensagens:** responder **"SAIR"** (ou parar/cancelar/descadastrar) marca `optOutAt` — automações e disparos pulam o contato dali em diante.
+- A exclusão remove/anonimiza também as cópias de PII (conversas, contatos de disparo, faixas, logs de automação) e registra trilha em `AuditLog` com telefone mascarado — ver `backend/src/services/privacy.service.js`.
+- **Consentimento LGPD destacado** (checkbox obrigatório) nos formulários públicos da LP — apoio político é dado sensível (LGPD art. 5º, II / art. 11).
+
 ---
 
 ## Integrações futuras

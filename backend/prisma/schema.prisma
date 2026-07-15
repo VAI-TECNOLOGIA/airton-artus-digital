@@ -341,6 +341,9 @@ model Supporter {
   facebook    String?
   supportType SupportType     @default(NOTICIAS)
   status      SupporterStatus @default(NOVO)
+  // LGPD: quando preenchido, o titular pediu pra não receber mais mensagens
+  // ("SAIR"). Disparos, automações e confirmações pulam quem tem optOutAt.
+  optOutAt    DateTime?
   notes       String?
   flaggedReason String?
   duplicateOfId String?
@@ -822,6 +825,21 @@ model Setting {
   key       String   @unique
   value     Json
   updatedAt DateTime @updatedAt
+}
+
+// LGPD: pedido público de exclusão de dados do apoiador, verificado por
+// código enviado ao próprio telefone (prova de posse do número).
+model DataDeletionRequest {
+  id          String    @id @default(uuid())
+  phone       String
+  codeHash    String    // sha256 do código de 6 dígitos — nunca em claro
+  expiresAt   DateTime
+  attempts    Int       @default(0)
+  confirmedAt DateTime?
+  ip          String?
+  createdAt   DateTime  @default(now())
+
+  @@index([phone])
 }
 
 // ============================================================

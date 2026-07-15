@@ -3,6 +3,7 @@ import prisma from '../config/prisma.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { AppError } from '../utils/AppError.js';
 import { sendViaChannel, renderTemplate } from '../services/messaging.service.js';
+import { optedOutPhones } from '../services/privacy.service.js';
 import { CHANNELS } from '../utils/enums.js';
 
 export const list = asyncHandler(async (req, res) => {
@@ -90,9 +91,21 @@ export const send = asyncHandler(async (req, res) => {
     await prisma.broadcastCampaign.update({ where: { id: campaignId }, data: { status: 'ENVIANDO' } });
   }
 
+  // LGPD: contatos que pediram "SAIR" não recebem — marcamos FALHA com motivo
+  // explícito pra ficar visível no relatório da campanha.
+  const optedOut = await optedOutPhones(batch.map((c) => c.phone));
+
   let sent = 0;
   let failed = 0;
   for (const c of batch) {
+    if (optedOut.has(c.phone)) {
+      await prisma.broadcastContact.update({
+        where: { id: c.id },
+        data: { status: 'FALHA', error: 'Descadastrado (opt-out LGPD) — não enviado' },
+      });
+      failed++;
+      continue;
+    }
     const body = renderTemplate(campaign.message, { nome: c.name, cidade: c.cityName, bairro: c.neighborhood, responsavel: c.responsible });
     try {
       await sendViaChannel(campaign.channel, { to: c.phone, body });

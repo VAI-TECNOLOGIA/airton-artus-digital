@@ -343,6 +343,10 @@ export default function Landing() {
                     <div className="mlp-field"><label className="sr-only" htmlFor="lead-name">Seu nome</label><input id="lead-name" placeholder="Seu nome" value={lead.name} onChange={(e) => setLead((s) => ({ ...s, name: e.target.value }))} required /></div>
                     <div className="mlp-field"><label className="sr-only" htmlFor="lead-phone">WhatsApp</label><input id="lead-phone" placeholder="WhatsApp (DDD + número)" value={lead.phone} onChange={(e) => setLead((s) => ({ ...s, phone: e.target.value }))} required /></div>
                     <div className="mlp-field"><label className="sr-only" htmlFor="lead-email">E-mail (opcional)</label><input id="lead-email" type="email" placeholder="Seu e-mail (opcional)" value={lead.email} onChange={(e) => setLead((s) => ({ ...s, email: e.target.value }))} /></div>
+                    <label className="mlp-consent">
+                      <input type="checkbox" required />
+                      <span>Autorizo o uso dos meus dados para receber comunicações da pré-campanha, conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>.</span>
+                    </label>
                     <button className="mlp-btn mlp-btn--primary mlp-btn--block" disabled={leadSending}>
                       {leadSending ? 'Enviando...' : 'Quero receber as propostas'}
                     </button>
@@ -465,6 +469,10 @@ export default function Landing() {
                     {options('SupportType').map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
                   </select>
                 </div>
+                <label className="mlp-consent">
+                  <input type="checkbox" required />
+                  <span>Declaro meu apoio de forma livre e autorizo o tratamento dos meus dados pela pré-campanha, conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>. Posso sair da base a qualquer momento.</span>
+                </label>
                 <button className="mlp-btn mlp-btn--primary mlp-btn--block" disabled={sending}>
                   {sending ? 'Enviando...' : 'Quero participar'}
                 </button>
@@ -501,6 +509,13 @@ export default function Landing() {
               <a href="mailto:contato@airtonartus.com.br">contato@airtonartus.com.br</a>
               <a href="https://instagram.com/airton.artus" target="_blank" rel="noopener noreferrer">@airton.artus</a>
               <p>Venâncio Aires · Vale do Taquari · RS</p>
+            </div>
+            <div>
+              <h4>Privacidade</h4>
+              <a href="/legal/politica-de-privacidade.html">Política de Privacidade</a>
+              <a href="/legal/termos-de-uso.html">Termos de Uso</a>
+              <a href="/legal/excluir-conta.html">Excluir conta</a>
+              <a href="/legal/excluir-dados.html">Excluir dados</a>
             </div>
           </div>
           <div className="mlp-foot-bottom">

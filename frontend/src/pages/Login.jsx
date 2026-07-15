@@ -86,6 +86,14 @@ export default function Login() {
               <ArrowLeft size={14} /> Conhecer a pré-campanha
             </Link>
           </div>
+
+          <p className="auth-legal">
+            <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Privacidade</a>
+            {' · '}
+            <a href="/legal/termos-de-uso.html" target="_blank" rel="noopener noreferrer">Termos de Uso</a>
+            {' · '}
+            <a href="/legal/excluir-conta.html" target="_blank" rel="noopener noreferrer">Excluir conta</a>
+          </p>
         </form>
       </div>
     </div>

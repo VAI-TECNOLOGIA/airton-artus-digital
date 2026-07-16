@@ -304,7 +304,13 @@
   .mlp-foot-grid{grid-template-columns:1fr;gap:30px}
 }
 @media(max-width:640px){
-  .mlp-menu{display:none}
+  /* No celular somem só os links de seção — "Entrar" e "Participe" ficam
+     SEMPRE visíveis (revisor da loja precisa alcançar o login). */
+  .mlp-menu a.mlp-navlink{display:none}
+  .mlp-menu{gap:10px}
+  .mlp-menu .mlp-enter{padding:9px 14px;font-size:13px;white-space:nowrap}
+  .mlp-menu .mlp-btn{padding:9px 14px;font-size:13px;white-space:nowrap}
+  .mlp-brand .wm small{display:none}
   /* iOS/WebView: >=16px evita zoom forçado ao focar campos */
   .mlp-field input,.mlp-field select{font-size:16px}
   .mlp-stats,.mlp-soc-grid,.mlp-results,.mlp-pillars,.mlp-cards,.mlp-gallery{grid-template-columns:1fr}

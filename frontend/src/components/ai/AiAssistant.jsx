@@ -32,6 +32,10 @@ export default function AiAssistant() {
 
   const active = status?.enabled && status?.hasToken;
 
+  // Sem IA configurada no backend, o FAB não aparece — botão visível que
+  // "não faz nada" é motivo clássico de rejeição nas lojas.
+  if (!active) return null;
+
   async function send(text) {
     const content = (text ?? input).trim();
     if (!content || sending) return;

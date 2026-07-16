@@ -45,7 +45,7 @@
 .mlp-btn svg{width:18px;height:18px}
 
 /* Header */
-.mlp-header{position:fixed;top:0;left:0;right:0;z-index:100;transition:.3s}
+.mlp-header{position:fixed;top:0;left:0;right:0;z-index:100;transition:.3s;padding-top:env(safe-area-inset-top,0px)}
 .mlp-bar{display:flex;align-items:center;justify-content:space-between;height:84px;transition:.3s}
 .mlp-brand{display:flex;align-items:center;gap:13px}
 .mlp-brand .wm b{font-family:'Anton';font-weight:400;font-size:21px;letter-spacing:.04em;text-transform:uppercase;display:block;line-height:1.05;color:#fff;transition:.3s}
@@ -247,7 +247,7 @@
 .mlp-join-ok p{color:var(--muted);font-size:14px}
 
 /* Footer */
-.mlp-footer{background:var(--navy-deep);color:rgba(255,255,255,.65);padding:64px 0 30px}
+.mlp-footer{background:var(--navy-deep);color:rgba(255,255,255,.65);padding:64px 0 calc(30px + env(safe-area-inset-bottom,0px))}
 .mlp-foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.1)}
 .mlp-foot-brand{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .mlp-foot-brand b{font-family:'Anton';font-weight:400;color:#fff;font-size:20px;text-transform:uppercase;letter-spacing:.05em}
@@ -277,7 +277,7 @@
 }
 
 /* Toasts de prova social */
-.mlp-toasts{position:fixed;left:22px;bottom:22px;z-index:200;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.mlp-toasts{position:fixed;left:22px;bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:200;display:flex;flex-direction:column;gap:10px;pointer-events:none}
 .mlp-toast{pointer-events:auto;display:flex;align-items:center;gap:13px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:14px;padding:12px 16px 12px 13px;box-shadow:var(--sh);min-width:285px;max-width:340px;animation:mlp-toast-in .5s cubic-bezier(.2,.8,.2,1)}
 .mlp-toast.out{animation:mlp-toast-out .5s forwards}
 @keyframes mlp-toast-in{from{transform:translateX(-120%);opacity:0}to{transform:none;opacity:1}}
@@ -305,6 +305,8 @@
 }
 @media(max-width:640px){
   .mlp-menu{display:none}
+  /* iOS/WebView: >=16px evita zoom forçado ao focar campos */
+  .mlp-field input,.mlp-field select{font-size:16px}
   .mlp-stats,.mlp-soc-grid,.mlp-results,.mlp-pillars,.mlp-cards,.mlp-gallery{grid-template-columns:1fr}
   .mlp-shot{aspect-ratio:4/3}
   .mlp-shot.wide{aspect-ratio:16/10}
@@ -312,6 +314,6 @@
   .mlp-block{padding:72px 0}
   .mlp-hero-content{padding:120px 20px 90px}
   .mlp-hero-shade{background:linear-gradient(180deg,rgba(12,13,29,.88) 0%,rgba(12,13,29,.72) 45%,rgba(12,13,29,.92) 100%)}
-  .mlp-toasts{left:12px;right:12px;bottom:12px}
+  .mlp-toasts{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px))}
   .mlp-toast{min-width:0;max-width:none;width:100%}
 }

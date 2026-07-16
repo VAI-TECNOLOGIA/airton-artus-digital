@@ -67,8 +67,7 @@ export default function MaterialRequests() {
       <>
         {canManage && (
           <select
-            className="select"
-            style={{ width: 'auto', padding: '5px 8px', fontSize: 12 }}
+            className="select select-compact"
             value={row.status}
             onChange={(e) => changeStatus(row, e.target.value, reload)}
           >

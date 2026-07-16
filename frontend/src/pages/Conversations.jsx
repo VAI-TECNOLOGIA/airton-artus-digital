@@ -150,7 +150,7 @@ function WhatsAppCRM() {
                 </div>
                 <div className="flex items-center gap-8">
                   <StatusBadge group="ConversationStatus" value={active.status} />
-                  <select className="select" style={{ width: 'auto', padding: '5px 8px', fontSize: 12 }} value={active.status} onChange={(e) => changeStatus(e.target.value)}>
+                  <select className="select select-compact" value={active.status} onChange={(e) => changeStatus(e.target.value)}>
                     {options('ConversationStatus').map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
                   </select>
                 </div>

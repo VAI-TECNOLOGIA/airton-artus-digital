@@ -22,12 +22,11 @@ async function getMessaging() {
     return null;
   }
   try {
-    const admin = await import('firebase-admin');
+    const { initializeApp, cert, getApps, getApp } = await import('firebase-admin/app');
+    const { getMessaging } = await import('firebase-admin/messaging');
     const credentials = JSON.parse(Buffer.from(b64, 'base64').toString('utf8'));
-    const app = admin.default.apps.length
-      ? admin.default.app()
-      : admin.default.initializeApp({ credential: admin.default.credential.cert(credentials) });
-    messaging = app.messaging();
+    const app = getApps().length ? getApp() : initializeApp({ credential: cert(credentials) });
+    messaging = getMessaging(app);
     console.log(`[push] firebase-admin inicializado (projeto ${credentials.project_id}).`);
   } catch (e) {
     console.error('[push] falha ao inicializar firebase-admin:', e.message);

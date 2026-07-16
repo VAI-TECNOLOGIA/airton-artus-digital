@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import api from '../api/client.js';
+import { initPushNotifications, teardownPushNotifications } from '../lib/push.js';
 
 const AuthContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
@@ -16,7 +17,10 @@ export function AuthProvider({ children }) {
     }
     api
       .get('/auth/me')
-      .then((r) => setUser(r.data))
+      .then((r) => {
+        setUser(r.data);
+        initPushNotifications(); // sessão reidratada no app → garante token FCM
+      })
       .catch(() => localStorage.removeItem('aad_token'))
       .finally(() => setLoading(false));
   }, []);
@@ -25,10 +29,12 @@ export function AuthProvider({ children }) {
     const { data } = await api.post('/auth/login', { email, password });
     localStorage.setItem('aad_token', data.token);
     setUser(data.user);
+    initPushNotifications(); // no navegador é no-op
     return data.user;
   };
 
   const logout = () => {
+    teardownPushNotifications();
     localStorage.removeItem('aad_token');
     setUser(null);
   };

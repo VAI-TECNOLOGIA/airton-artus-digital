@@ -18,12 +18,14 @@ import reportRoutes from './report.routes.js';
 import settingsRoutes from './settings.routes.js';
 import uploadRoutes from './upload.routes.js';
 import aiRoutes from './ai.routes.js';
+import pushRoutes from './push.routes.js';
 import * as crud from './crud.js';
 
 const router = Router();
 
 // Públicas (login + webhook WhatsApp + landing page + cron protegido por secret)
 router.use('/auth', authRoutes);
+router.use('/push', pushRoutes); // auth por rota (registro de token exige login)
 router.use('/whatsapp', whatsappRoutes);
 router.use('/public', publicRoutes);
 router.use('/cron', cronRoutes);

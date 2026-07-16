@@ -2,10 +2,17 @@
   "appId": "br.com.airtonartus.digital",
   "appName": "Airton Artus Digital",
   "webDir": "dist",
+  "server": {
+    "url": "https://web-production-3d52.up.railway.app",
+    "cleartext": false
+  },
   "android": {
     "allowMixedContent": false
   },
   "plugins": {
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    },
     "SplashScreen": {
       "launchShowDuration": 2000,
       "launchAutoHide": true,

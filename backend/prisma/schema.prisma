@@ -273,6 +273,7 @@ model User {
   messages              Message[]           @relation("MessageSender")
   internalMemberships   InternalMember[]    @relation("IntMember")
   internalMessages      InternalMessage[]   @relation("IntMsgSender")
+  deviceTokens          DeviceToken[]
 
   @@index([role])
   @@index([regionId])
@@ -825,6 +826,20 @@ model Setting {
   key       String   @unique
   value     Json
   updatedAt DateTime @updatedAt
+}
+
+// Token FCM/APNs de um dispositivo logado — push notifications do app.
+// Um token pertence a um usuário; se o usuário some, o token vai junto.
+model DeviceToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  platform  String   @default("android") // android | ios | web
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 // LGPD: pedido público de exclusão de dados do apoiador, verificado por

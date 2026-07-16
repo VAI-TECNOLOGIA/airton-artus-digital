@@ -23,6 +23,9 @@ export function crudFactory(modelKey, options = {}) {
     numberFields = [],
     boolFields = [],
     transformIn = (data) => data,
+    // Efeito colateral pós-criação (ex.: push notification). Fire-and-forget:
+    // erro aqui não pode derrubar a resposta do CRUD.
+    afterCreate = null,
     label = modelKey,
   } = options;
 
@@ -90,6 +93,11 @@ export function crudFactory(modelKey, options = {}) {
     const data = await transformIn(coerce(pick(req.body, writableFields)), req);
     const item = await model().create({ data, include });
     await audit({ userId: req.user?.id, action: 'CREATE', entity: modelKey, entityId: item.id, changes: data, ip: req.ip });
+    if (afterCreate) {
+      Promise.resolve(afterCreate(item, req)).catch((e) =>
+        console.warn(`[${label}] afterCreate falhou:`, e.message)
+      );
+    }
     res.status(201).json(item);
   });
 

@@ -1,6 +1,7 @@
 import { crudFactory } from '../utils/crudFactory.js';
 import { resourceRouter } from './resourceRouter.js';
 import { regionScopeWithGlobal } from '../utils/scope.js';
+import { sendPushToUsers } from '../services/push.service.js';
 
 // Hierarquia: LIDER (total) · MEMBRO (equipe interna) · PARCEIRO (externo).
 // As antigas siglas viram aliases dos novos níveis para preservar a lógica.
@@ -21,6 +22,13 @@ export const notices = resourceRouter(
     dateFields: ['publishDate'],
     writableFields: ['title', 'description', 'type', 'priority', 'publishDate', 'attachmentUrl', 'externalLink', 'status', 'regionId', 'authorId'],
     transformIn: (d, req) => ({ ...d, authorId: d.authorId || req.user?.id }),
+    // Aviso publicado no mural → push pra equipe toda (dispositivos logados).
+    afterCreate: (item) =>
+      sendPushToUsers(null, {
+        title: '📢 Novo aviso no mural',
+        body: item.title,
+        data: { kind: 'notice', id: item.id },
+      }),
   }),
   { writeRoles: [A, C] }
 );

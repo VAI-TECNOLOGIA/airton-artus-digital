@@ -37,10 +37,12 @@ const jwtSecret = rawSecret || INSECURE_DEFAULT;
 
 // === Upload ===
 // 'local' em serverless (Vercel/Lambda) escreve em /tmp (efêmero) — arquivos
-// somem entre invocações. Em servidor persistente (Railway com volume montado
-// em UPLOAD_DIR), 'local' é seguro: declare UPLOAD_PERSISTENT=1 pra liberar.
+// somem entre invocações. Em servidor persistente (VPS, ou Railway com volume
+// montado em UPLOAD_DIR) o disco persiste: a trava só vale em serverless, e
+// UPLOAD_PERSISTENT=1 libera explicitamente em qualquer ambiente.
 const uploadDriver = process.env.UPLOAD_DRIVER || 'local';
-if (isProd && uploadDriver === 'local' && !process.env.UPLOAD_PERSISTENT) {
+const isServerless = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+if (isProd && uploadDriver === 'local' && isServerless && !process.env.UPLOAD_PERSISTENT) {
   abortProd(
     "UPLOAD_DRIVER='local' não persiste em produção serverless.",
     "Em serverless use UPLOAD_DRIVER='blob' (Vercel Blob). Em servidor com disco/volume persistente (ex.: Railway + volume), defina UPLOAD_PERSISTENT=1."

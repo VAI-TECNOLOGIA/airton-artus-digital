@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import {
   ArrowRight, Check, HeartPulse, Stethoscope, Wheat, GraduationCap,
   Landmark, Briefcase, Route, MapPin, Award, CalendarDays,
@@ -8,6 +7,11 @@ import api, { apiError } from '../api/client.js';
 import { useToast } from '../context/ToastContext.jsx';
 import { options } from '../config/enums.js';
 import '../styles/landing.css';
+
+// No domínio do site público (www/apex), "Entrar no sistema" leva ao domínio do app.
+const SITE_HOSTS = ['www.airtonartus.com.br', 'airtonartus.com.br'];
+const IS_SITE_HOST = typeof window !== 'undefined' && SITE_HOSTS.includes(window.location.hostname);
+const LOGIN_URL = IS_SITE_HOST ? 'https://app.airtonartus.com.br/login' : '/login';
 
 /* ===== Dados para a prova social (escopo de módulo: não recriar a cada render) ===== */
 const NOMES = [
@@ -171,7 +175,7 @@ export default function Landing() {
             <a className="mlp-navlink" href="#bandeiras">Bandeiras</a>
             <a className="mlp-navlink" href="#resultados">Resultados</a>
             <a className="mlp-navlink" href="#redes">Redes</a>
-            <Link to="/login" className="mlp-enter">Entrar no sistema</Link>
+            <a href={LOGIN_URL} className="mlp-enter">Entrar no sistema</a>
             <a href="#apoie" className="mlp-btn mlp-btn--primary">Participe</a>
           </nav>
         </div>

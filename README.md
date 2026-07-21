@@ -188,3 +188,25 @@ Cria (idempotente): 3 perfis, 6 regiões do RS, 28 cidades (foco Vale do Taquari
 ### Geolocalização de apoiadores
 
 Todo cadastro (landing pública e manual) recebe automaticamente `cityId`/`regionId` (lookup pelo nome da cidade) e `lat/lng` aproximado (centroide da cidade + dispersão ~2km determinística — `backend/src/utils/geo.js`). Coordenada manual no formulário tem precedência. Default: Venâncio Aires.
+
+---
+
+## Produção definitiva — VPS próprio (desde 21/07/2026)
+
+**Servidor:** VPS Debian 13 · IP `179.197.232.140` · projeto em `/opt/airton-artus`
+**Stack:** Node 22 + PM2 (`airton-api`, porta 4000) · PostgreSQL 17 local (`airton_artus`) · Nginx + Let's Encrypt · UFW (22/80/443)
+
+| Domínio | Papel |
+|---|---|
+| `app.airtonartus.com.br` | Sistema (painel da equipe) — SSL ativo |
+| `www.airtonartus.com.br` | Site público (landing na raiz) — aguardando registro DNS |
+| `airtonartus.com.br` | Redireciona para o www |
+| `airton.vai-sistema.com` | Endereço antigo — redireciona (301) para o app |
+
+**Operação:**
+- Backend: `pm2 ls` / `pm2 logs airton-api` / `pm2 restart airton-api`
+- Uploads: disco local (`/opt/airton-artus/backend/uploads`), servidos via `/uploads`
+- Cron de automações: crontab root, diário 12:00 UTC (09:00 BRT) via `curl localhost:4000/api/cron/automations`
+- SSL do www/apex: rodar `/root/ssl-www.sh` após criar os registros DNS
+- Deploy de atualização: `rsync` do repo para `/opt/airton-artus` (excluir node_modules/.env), `npm --prefix frontend run build` no servidor e `pm2 restart airton-api`
+- Segredos de produção: somente em `/opt/airton-artus/backend/.env` no servidor (chmod 600)

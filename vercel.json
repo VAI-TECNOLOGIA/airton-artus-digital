@@ -3,43 +3,7 @@
   "installCommand": "npm install --prefix frontend && npm install --prefix backend && npm --prefix backend run prisma:generate",
   "buildCommand": "npm --prefix frontend run build",
   "outputDirectory": "frontend/dist",
-  "rewrites": [
-    {
-      "source": "/api/(.*)",
-      "destination": "/api/index"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/index.html"
-    }
-  ],
-  "crons": [
-    {
-      "path": "/api/cron/automations",
-      "schedule": "0 12 * * *"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), payment=()"
-        }
-      ]
-    }
+  "redirects": [
+    { "source": "/(.*)", "destination": "https://app.airtonartus.com.br/$1", "permanent": true }
   ]
 }

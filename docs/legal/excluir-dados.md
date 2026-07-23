@@ -63,4 +63,4 @@ O cadastro exige consentimento. Se você acredita ter sido cadastrado sem autori
 
 ---
 
-**Responsável:** {{RAZAO_SOCIAL}} — CNPJ {{CNPJ}}
+**Responsável pelo aplicativo:** Vai Tecnologia LTDA — CNPJ 52.165.389/0001-29

@@ -66,4 +66,4 @@ Esses registros são **anonimizados** sempre que possível: perdem a ligação c
 
 ---
 
-**Responsável:** {{RAZAO_SOCIAL}} — CNPJ {{CNPJ}}
+**Responsável pelo aplicativo:** Vai Tecnologia LTDA — CNPJ 52.165.389/0001-29

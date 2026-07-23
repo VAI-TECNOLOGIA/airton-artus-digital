@@ -6,8 +6,7 @@
 
 O **Airton Artus Digital** ("aplicativo" ou "plataforma") é a plataforma oficial de organização da pré-campanha de **Airton Artus**, pré-candidato a Deputado Estadual pelo Rio Grande do Sul. A plataforma é utilizada pela equipe da pré-campanha para organizar apoiadores, voluntários, agenda, materiais e atendimento à população.
 
-**Responsável pelo tratamento (controladora):** {{RAZAO_SOCIAL}} — CNPJ {{CNPJ}}, com sede em {{ENDERECO}}.
-**Desenvolvimento e operação técnica (operadora):** VAI Tecnologia.
+**Responsável pelo aplicativo (desenvolvedora e operadora):** **Vai Tecnologia LTDA** — CNPJ **52.165.389/0001-29**, que desenvolve e opera o aplicativo **Airton Artus Digital** para a coordenação da pré-campanha de Airton Artus.
 
 Esta Política descreve como coletamos, usamos, compartilhamos e protegemos dados pessoais, em conformidade com a **Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD)** e com a legislação eleitoral brasileira.
 
@@ -132,7 +131,7 @@ Podemos atualizar esta política periodicamente. Mudanças relevantes serão com
 ## 13. Contato e foro
 
 - **DPO/Privacidade:** privacidade@airtonartus.com.br
-- **Suporte:** contato@airtonartus.com.br
-- **Responsável:** {{RAZAO_SOCIAL}} — CNPJ {{CNPJ}} — {{ENDERECO}}
+- **Suporte:** contato@airtonartus.com.br e vaitecnologialp@gmail.com
+- **Responsável pelo aplicativo:** Vai Tecnologia LTDA — CNPJ 52.165.389/0001-29
 
 Esta política é regida pela legislação brasileira. Fica eleito o foro da Comarca de **Venâncio Aires/RS**, salvo competência diversa estabelecida em lei.

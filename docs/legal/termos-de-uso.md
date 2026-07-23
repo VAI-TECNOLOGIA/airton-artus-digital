@@ -4,7 +4,7 @@
 
 ## 1. Aceitação dos Termos
 
-Ao acessar ou utilizar o aplicativo **Airton Artus Digital** ("aplicativo" ou "plataforma"), operado por **{{RAZAO_SOCIAL}}** (CNPJ {{CNPJ}}, doravante "Organização"), você ("Usuário") concorda integralmente com estes Termos de Uso e com a [Política de Privacidade](politica-de-privacidade.html).
+Ao acessar ou utilizar o aplicativo **Airton Artus Digital** ("aplicativo" ou "plataforma"), desenvolvido e operado pela **Vai Tecnologia LTDA** (CNPJ **52.165.389/0001-29**, doravante "Organização") para a pré-campanha de Airton Artus, você ("Usuário") concorda integralmente com estes Termos de Uso e com a [Política de Privacidade](politica-de-privacidade.html).
 
 Se você não concorda com qualquer disposição, não utilize o aplicativo.
 
@@ -88,6 +88,6 @@ Estes Termos são regidos pela legislação brasileira. Fica eleito o foro da Co
 
 ## 11. Contato
 
-- **Suporte:** contato@airtonartus.com.br
+- **Suporte:** contato@airtonartus.com.br e vaitecnologialp@gmail.com
 - **Privacidade/DPO:** privacidade@airtonartus.com.br
-- **Responsável:** {{RAZAO_SOCIAL}} — CNPJ {{CNPJ}} — {{ENDERECO}}
+- **Responsável pelo aplicativo:** Vai Tecnologia LTDA — CNPJ 52.165.389/0001-29

@@ -3,7 +3,7 @@
   "appName": "Airton Artus Digital",
   "webDir": "dist",
   "server": {
-    "url": "https://web-production-3d52.up.railway.app",
+    "url": "https://app.airtonartus.com.br",
     "cleartext": false,
     "errorPath": "offline.html"
   },

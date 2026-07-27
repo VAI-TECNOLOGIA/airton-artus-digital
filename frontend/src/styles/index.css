@@ -218,6 +218,16 @@ input, select, textarea { font-family: inherit; }
 .user-chip .avatar { background: var(--accent); color: #2b1f04; }
 .user-chip-info strong { color: var(--sidebar-fg-strong); font-size: 13px; display: block; }
 .user-chip-info span { font-size: 11px; color: var(--sidebar-section); }
+.account-actions { display: flex; flex-direction: column; gap: 6px; margin-top: 10px; }
+.account-btn {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 9px 10px; border-radius: 9px; border: 1px solid var(--sidebar-border);
+  background: var(--sidebar-hover); color: var(--sidebar-fg); font-size: 12.5px;
+  font-family: inherit; cursor: pointer; transition: background 0.15s ease, color 0.15s ease;
+}
+.account-btn:hover { color: var(--sidebar-fg-strong); background: rgba(255,255,255,0.10); }
+.account-btn.danger { color: #f2a5a5; }
+.account-btn.danger:hover { color: #fff; background: rgba(196,49,56,0.32); border-color: rgba(196,49,56,0.5); }
 
 /* ---------------- Main ---------------- */
 .main { flex: 1; margin-left: var(--sidebar-w); display: flex; flex-direction: column; min-width: 0; }

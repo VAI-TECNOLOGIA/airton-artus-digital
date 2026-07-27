@@ -3,8 +3,9 @@ import { NavLink } from 'react-router-dom';
 import {
   ChevronDown, Circle, LayoutDashboard, MapPinned, BarChart3, UserPlus, Users,
   ShieldAlert, Ban, Megaphone, Image, Trophy, Footprints, CalendarDays, Package,
-  Flag, MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv,
+  Flag, MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv, LogOut, UserX,
 } from 'lucide-react';
+import DeleteAccountModal from '../DeleteAccountModal.jsx';
 
 // Mapa explícito de ícones da navegação — evita `import * as` (que puxa a
 // biblioteca lucide inteira para o bundle do layout).
@@ -24,8 +25,9 @@ function loadCollapsed() {
 }
 
 export default function Sidebar({ open, onClose }) {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(loadCollapsed);
+  const [deleting, setDeleting] = useState(false);
 
   const groups = [];
   NAV.forEach((item) => {
@@ -96,7 +98,16 @@ export default function Sidebar({ open, onClose }) {
             <span>{label('UserRole', user?.role)}</span>
           </div>
         </div>
+        <div className="account-actions">
+          <button type="button" className="account-btn" onClick={logout}>
+            <LogOut size={15} /> Sair
+          </button>
+          <button type="button" className="account-btn danger" onClick={() => setDeleting(true)}>
+            <UserX size={15} /> Excluir minha conta
+          </button>
+        </div>
       </div>
+      {deleting && <DeleteAccountModal onClose={() => setDeleting(false)} />}
     </aside>
   );
 }

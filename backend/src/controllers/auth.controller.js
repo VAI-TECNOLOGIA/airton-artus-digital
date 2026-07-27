@@ -134,17 +134,8 @@ export const deleteAccount = asyncHandler(async (req, res) => {
     throw new AppError('Senha incorreta', 400);
   }
 
-  if (user.role === 'LIDER') {
-    const otherLeaders = await prisma.user.count({
-      where: { role: 'LIDER', active: true, id: { not: user.id } },
-    });
-    if (otherLeaders === 0) {
-      throw new AppError(
-        'Você é o único Líder ativo. Promova outro usuário a Líder antes de excluir sua conta.',
-        400
-      );
-    }
-  }
+  // Exigência das lojas (Apple 5.1.1v / Google): QUALQUER conta logada pode
+  // excluir a si mesma, sem trava de papel. A senha já é a confirmação.
 
   // Auditoria antes do delete: o userId vira null em cascata (SetNull),
   // então o registro fica sem vínculo com a pessoa — só a trilha do evento.

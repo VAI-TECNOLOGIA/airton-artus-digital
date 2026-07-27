@@ -33,8 +33,25 @@ export async function initPushNotifications() {
       PushNotifications.addListener('registration', async ({ value: token }) => {
         try {
           const platform = Capacitor.getPlatform(); // 'android' | 'ios'
-          await api.post('/push/register', { token, platform });
-          localStorage.setItem(TOKEN_KEY, token);
+          let actualToken = token;
+
+          // No iOS o evento 'registration' entrega o token APNs cru (hex, 64 chars),
+          // que o firebase-admin do backend REJEITA (invalid-registration-token) e
+          // ainda purga o token do banco. O token FCM correto é salvo pelo AppDelegate
+          // (Messaging delegate) em UserDefaults sob 'CapacitorStorage.fcmToken'. Ele
+          // chega alguns ms depois do APNs registration — então fazemos poll via
+          // @capacitor/preferences por até ~5s.
+          if (platform === 'ios') {
+            const { Preferences } = await import('@capacitor/preferences');
+            for (let attempt = 0; attempt < 10; attempt++) {
+              const { value: fcm } = await Preferences.get({ key: 'fcmToken' });
+              if (fcm && fcm.length > 80) { actualToken = fcm; break; }
+              await new Promise((r) => setTimeout(r, 500));
+            }
+          }
+
+          await api.post('/push/register', { token: actualToken, platform });
+          localStorage.setItem(TOKEN_KEY, actualToken);
         } catch (e) {
           console.warn('[push] falha ao registrar token no backend:', e?.message);
         }

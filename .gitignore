@@ -57,3 +57,24 @@ frontend/android/app/build/
 frontend/android/build/
 # Assets de origem gerados localmente para a Play Store (regeneráveis)
 frontend/play-store-assets/
+
+# Capacitor / iOS
+# GoogleService-Info.plist contém as chaves do app iOS no Firebase — NUNCA commitar.
+frontend/ios/App/App/GoogleService-Info.plist
+# Build artifacts / SPM / Pods / signing (regeneráveis)
+frontend/ios/App/build/
+frontend/ios/App/Pods/
+frontend/ios/App/App.xcworkspace/xcuserdata/
+frontend/ios/App/App.xcodeproj/xcuserdata/
+frontend/ios/App/App.xcodeproj/project.xcworkspace/xcuserdata/
+frontend/ios/App/CapApp-SPM/.build/
+frontend/ios/DerivedData/
+frontend/ios/App/ExportOptions.plist
+# Assets iOS gerados localmente para a App Store (regeneráveis)
+frontend/app-store-assets/
+frontend/screenshots/
+frontend/video-raw/
+# NUNCA commitar chaves/segredos iOS
+*.p8
+*.p12
+*.mobileprovision

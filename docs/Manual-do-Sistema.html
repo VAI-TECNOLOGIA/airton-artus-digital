@@ -129,6 +129,7 @@
       <a href="#apoiadores">Apoiadores</a>
       <a href="#whatsapp-acesso">Enviar acesso (WhatsApp)</a>
       <a href="#voluntarios">Voluntários</a>
+      <a href="#importar">Importar contatos</a>
       <a href="#antifraude">Suspeitos &amp; Blacklist</a>
       <div class="sec">Mobilização</div>
       <a href="#mural">Mural de avisos</a>
@@ -136,6 +137,7 @@
       <a href="#engajamento">Engajamento</a>
       <a href="#acoes">Ações de rua</a>
       <a href="#agenda">Agenda</a>
+      <a href="#convidados">Lista de convidados</a>
       <div class="sec">Materiais</div>
       <a href="#materiais">Pedidos de material</a>
       <a href="#faixas">Faixas</a>
@@ -370,6 +372,32 @@
     </section>
     <div class="rule"></div>
 
+    <!-- IMPORTAR -->
+    <section id="importar">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Importar contatos</h2>
+      <p class="lead">Adicione vários apoiadores de uma vez a partir de uma planilha (Excel ou CSV). Fica no menu, logo abaixo de Voluntários.</p>
+
+      <h3>Passo a passo</h3>
+      <ol class="steps">
+        <li>Abra <span class="path">Importar</span> e <b>arraste a planilha</b> (ou clique para escolher). Aceita <b>.xlsx, .xls e .csv</b>. Não tem um modelo? Use o botão <span class="chip">Baixar modelo</span> — ele gera uma planilha de exemplo com as colunas certas.</li>
+        <li><b>Confira o mapeamento das colunas.</b> O sistema reconhece sozinho (ex.: entende "Celular" como Telefone, além de Nome, E-mail, Cidade, Bairro, Endereço, CPF, CEP…). Ajuste se precisar. <b>Nome</b> e <b>Telefone</b> são obrigatórios.</li>
+        <li>Escolha o <b>tipo de apoio padrão</b> (aplicado a todos; dá para reclassificar depois em Apoiadores).</li>
+        <li>Veja a <b>prévia</b> e clique em <span class="chip">Importar</span>. Uma barra mostra o progresso.</li>
+      </ol>
+
+      <h3>O que o sistema faz por você</h3>
+      <ul>
+        <li><b>Antifraude automático</b> — telefone que já existe vira "já cadastrado" (não duplica); telefone na blacklist é bloqueado; telefone inválido é marcado;</li>
+        <li>cada contato entra <b>georreferenciado</b> (aparece no mapa) e, se o tipo for voluntário, já cria o voluntário;</li>
+        <li>ao final, um <b>resumo</b>: importados · já cadastrados · bloqueados · inválidos.</li>
+      </ul>
+      <div class="card gold">
+        <h4>Colunas aceitas</h4>
+        <p>Nome, Telefone, WhatsApp, E-mail, CPF, CEP, Endereço, Número, Complemento, Bairro, Cidade, Instagram, Facebook e Observações. Só Nome e Telefone são obrigatórios — o resto é opcional.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
     <!-- ANTIFRAUDE -->
     <section id="antifraude">
       <h2><svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Suspeitos &amp; Blacklist</h2>
@@ -455,7 +483,32 @@
     <section id="agenda">
       <h2><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</h2>
       <p class="lead">Eventos, reuniões, caminhadas e prazos da pré-campanha.</p>
-      <p>Cada evento tem título, local, cidade/bairro, data, horário, responsável e status (Agendado, Confirmado, Realizado, Cancelado). Os <b>próximos eventos</b> aparecem também no Painel TV, para todo o comitê ver.</p>
+      <p>Cada evento tem título, local, cidade/bairro, data, horário, responsável e status (Agendado, Confirmado, Realizado, Cancelado). Os <b>próximos eventos</b> aparecem também no Painel TV, para todo o comitê ver. Cada evento também tem uma <b>lista de convidados</b> (a seguir).</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- LISTA DE CONVIDADOS -->
+    <section id="convidados">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Lista de convidados</h2>
+      <p class="lead">Confirmação de presença (RSVP) para cada evento — por um link público que você manda no WhatsApp, sem o convidado precisar de login.</p>
+
+      <h3>Do lado da equipe</h3>
+      <ol class="steps">
+        <li>Na <span class="path">Agenda</span>, clique no botão <b>Lista de convidados</b> (ícone de pessoas) do evento.</li>
+        <li>Copie o <b>link do convite</b> (botão <span class="chip">Copiar</span>) ou use <span class="chip">Compartilhar no WhatsApp</span> — já vai com a mensagem pronta.</li>
+        <li>Acompanhe em tempo real: <b>Confirmados</b>, <b>Não vão</b> e <b>Total de pessoas</b> (soma os acompanhantes). A lista mostra cada resposta e permite remover alguém.</li>
+      </ol>
+
+      <h3>Do lado do convidado (link público)</h3>
+      <p>A pessoa abre o link e vê uma página com a identidade da campanha e os dados do evento (data, hora, local). Aí escolhe:</p>
+      <ul>
+        <li><b>Vou participar</b> — informa nome, WhatsApp e <b>quantas pessoas vai levar</b> (opcional);</li>
+        <li><b>Não vou conseguir</b> — informa nome e WhatsApp.</li>
+      </ul>
+      <div class="card green">
+        <h4>Bom saber</h4>
+        <p>Não precisa de cadastro. Se a pessoa reconfirmar, o sistema <b>atualiza</b> a resposta (não duplica). O "total de pessoas" já soma os acompanhantes — ótimo para dimensionar o evento. A página ainda mostra "X pessoas já confirmaram" como incentivo.</p>
+      </div>
     </section>
     <div class="rule"></div>
 

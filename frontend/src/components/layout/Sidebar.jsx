@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import {
   ChevronDown, Circle, LayoutDashboard, MapPinned, BarChart3, UserPlus, Users,
   ShieldAlert, Ban, Megaphone, Image, Trophy, Footprints, CalendarDays, Package,
-  Flag, MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv, LogOut, UserX,
+  Flag, MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv, Upload, LogOut, UserX,
 } from 'lucide-react';
 import DeleteAccountModal from '../DeleteAccountModal.jsx';
 
@@ -12,7 +12,7 @@ import DeleteAccountModal from '../DeleteAccountModal.jsx';
 const ICONS = {
   LayoutDashboard, MapPinned, BarChart3, UserPlus, Users, ShieldAlert, Ban,
   Megaphone, Image, Trophy, Footprints, CalendarDays, Package, Flag,
-  MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv,
+  MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv, Upload,
 };
 import { NAV, can } from '../../lib/permissions.js';
 import { useAuth } from '../../context/AuthContext.jsx';

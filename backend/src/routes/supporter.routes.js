@@ -8,6 +8,7 @@ r.get('/suspects', authorize('LIDER'), supporter.listSuspects);
 r.get('/', authorize('LIDER', 'MEMBRO'), supporter.list);
 r.get('/:id', authorize('LIDER', 'MEMBRO'), supporter.get);
 r.post('/', authorize('LIDER', 'MEMBRO'), supporter.create);
+r.post('/import', authorize('LIDER', 'MEMBRO'), supporter.importBatch);
 r.post('/:id/confirm', authorize('LIDER', 'MEMBRO'), supporter.confirmVolunteer);
 r.post('/:id/blacklist', authorize('LIDER', 'MEMBRO'), supporter.toBlacklist);
 r.put('/:id', authorize('LIDER', 'MEMBRO'), supporter.update);

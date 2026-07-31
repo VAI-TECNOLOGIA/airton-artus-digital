@@ -17,6 +17,7 @@ export const NAV = [
   { section: 'Base' },
   { to: '/apoiadores', label: 'Apoiadores', icon: 'UserPlus', roles: INTERNO },
   { to: '/voluntarios', label: 'Voluntários', icon: 'Users', roles: INTERNO },
+  { to: '/importar', label: 'Importar', icon: 'Upload', roles: INTERNO },
   { to: '/suspeitos', label: 'Suspeitos', icon: 'ShieldAlert', roles: LIDER },
   { to: '/blacklist', label: 'Blacklist', icon: 'Ban', roles: LIDER },
 

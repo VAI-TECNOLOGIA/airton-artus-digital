@@ -12,6 +12,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
 const Supporters = lazy(() => import('./pages/Supporters.jsx'));
 const Volunteers = lazy(() => import('./pages/Volunteers.jsx'));
+const Import = lazy(() => import('./pages/Import.jsx'));
 const Suspects = lazy(() => import('./pages/Suspects.jsx'));
 const Blacklist = lazy(() => import('./pages/Blacklist.jsx'));
 const Notices = lazy(() => import('./pages/Notices.jsx'));
@@ -63,6 +64,7 @@ export default function App() {
 
       <Route path="/apoiadores" element={P(['LIDER', 'MEMBRO'], <Supporters />)} />
       <Route path="/voluntarios" element={P(['LIDER', 'MEMBRO'], <Volunteers />)} />
+      <Route path="/importar" element={P(['LIDER', 'MEMBRO'], <Import />)} />
       <Route path="/suspeitos" element={P(['LIDER'], <Suspects />)} />
       <Route path="/blacklist" element={P(['LIDER'], <Blacklist />)} />
 

@@ -143,6 +143,113 @@ export const remove = asyncHandler(async (req, res) => {
   res.status(204).send();
 });
 
+// ============================================================
+//  Importação em massa (planilha/CSV) — cria vários apoiadores
+//  de uma vez, reaproveitando antifraude, vínculo de cidade e geo.
+//  Recebe um LOTE de linhas por chamada (o front envia em blocos).
+// ============================================================
+const importRowSchema = z.object({
+  name: z.string().trim().min(2).optional(),
+  phone: z.string().trim().optional(),
+  whatsapp: z.string().trim().optional(),
+  email: z.string().trim().optional(),
+  cpf: z.string().trim().optional(),
+  cep: z.string().trim().optional(),
+  street: z.string().trim().optional(),
+  number: z.string().trim().optional(),
+  complement: z.string().trim().optional(),
+  neighborhood: z.string().trim().optional(),
+  cityName: z.string().trim().optional(),
+  instagram: z.string().trim().optional(),
+  facebook: z.string().trim().optional(),
+  notes: z.string().trim().optional(),
+  supportType: z.string().trim().optional(),
+}).passthrough();
+
+const MAX_IMPORT_ROWS = 2000; // por chamada; o front envia em blocos
+
+export const importBatch = asyncHandler(async (req, res) => {
+  const rows = Array.isArray(req.body?.rows) ? req.body.rows : [];
+  const defaults = req.body?.defaults || {};
+  const defaultType = SUPPORT_TYPES.includes(defaults.supportType) ? defaults.supportType : 'MATERIAL_DIGITAL';
+  const coordinatorId = defaults.coordinatorId || null;
+
+  if (!rows.length) throw new AppError('Nenhuma linha para importar.', 400);
+  if (rows.length > MAX_IMPORT_ROWS) throw new AppError(`Envie no máximo ${MAX_IMPORT_ROWS} linhas por vez.`, 400);
+
+  const result = { received: rows.length, imported: 0, duplicates: 0, blacklisted: 0, invalid: 0, errors: [] };
+
+  for (let i = 0; i < rows.length; i++) {
+    const raw = nullifyEmpty(importRowSchema.parse(rows[i] || {}));
+    const name = (raw.name || '').trim();
+    const phone = onlyDigits(raw.phone);
+
+    // Linha inválida: sem nome ou sem telefone válido (mín. 8 dígitos).
+    if (name.length < 2 || phone.length < 8) {
+      result.invalid++;
+      if (result.errors.length < 50) result.errors.push({ row: raw._row || i + 1, reason: !name ? 'sem nome' : 'telefone inválido' });
+      continue;
+    }
+
+    try {
+      const [black, existing] = await Promise.all([
+        prisma.blacklist.findFirst({ where: { phone } }),
+        prisma.supporter.findFirst({ where: { phone }, select: { id: true } }),
+      ]);
+      if (black) { result.blacklisted++; continue; }
+      if (existing) { result.duplicates++; continue; }
+
+      const supportType = SUPPORT_TYPES.includes(raw.supportType) ? raw.supportType : defaultType;
+
+      let cityId = null;
+      let regionId = null;
+      if (raw.cityName) {
+        const city = await linkCityByName(prisma, raw.cityName);
+        if (city) { cityId = city.id; regionId = city.regionId; }
+      }
+      const geo = fallbackLatLng({ cityName: raw.cityName, neighborhood: raw.neighborhood, seed: phone });
+
+      const created = await prisma.supporter.create({
+        data: {
+          name,
+          phone,
+          whatsapp: onlyDigits(raw.whatsapp) || phone,
+          email: raw.email || null,
+          cpf: raw.cpf || null,
+          cep: raw.cep || null,
+          street: raw.street || null,
+          number: raw.number || null,
+          complement: raw.complement || null,
+          neighborhood: raw.neighborhood || null,
+          cityName: raw.cityName || null,
+          cityId,
+          regionId,
+          lat: geo.lat,
+          lng: geo.lng,
+          instagram: raw.instagram || null,
+          facebook: raw.facebook || null,
+          notes: raw.notes || null,
+          supportType,
+          status: 'NOVO',
+          coordinatorId,
+        },
+        select: { id: true },
+      });
+
+      if (supportType === 'VOLUNTARIO') {
+        await prisma.volunteer.create({ data: { supporterId: created.id } });
+      }
+      result.imported++;
+    } catch (e) {
+      result.invalid++;
+      if (result.errors.length < 50) result.errors.push({ row: raw._row || i + 1, reason: 'erro ao gravar' });
+    }
+  }
+
+  await audit({ userId: req.user?.id, action: 'IMPORT', entity: 'Supporter', changes: { imported: result.imported, received: result.received }, ip: req.ip });
+  res.json(result);
+});
+
 export const listSuspects = asyncHandler(async (req, res) => {
   const data = await prisma.supporter.findMany({
     where: { status: 'SUSPEITO' },

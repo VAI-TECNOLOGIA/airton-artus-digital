@@ -19,6 +19,7 @@ import settingsRoutes from './settings.routes.js';
 import uploadRoutes from './upload.routes.js';
 import aiRoutes from './ai.routes.js';
 import pushRoutes from './push.routes.js';
+import rsvpRoutes from './rsvp.routes.js';
 import * as crud from './crud.js';
 
 const router = Router();
@@ -46,6 +47,7 @@ router.use('/reports', reportRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/ai', aiRoutes);
 router.use('/upload', uploadRoutes);
+router.use('/events', rsvpRoutes); // lista de convidados (antes do CRUD genérico)
 
 // CRUDs genéricos
 router.use('/notices', crud.notices);

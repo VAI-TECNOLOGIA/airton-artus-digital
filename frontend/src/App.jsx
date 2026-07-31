@@ -30,6 +30,7 @@ const Users = lazy(() => import('./pages/Users.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const Landing = lazy(() => import('./pages/Landing.jsx'));
 const DataDeletion = lazy(() => import('./pages/DataDeletion.jsx'));
+const Rsvp = lazy(() => import('./pages/Rsvp.jsx'));
 const MapView = lazy(() => import('./pages/MapView.jsx'));
 const Reports = lazy(() => import('./pages/Reports.jsx'));
 const TVPanel = lazy(() => import('./pages/TVPanel.jsx'));
@@ -56,6 +57,7 @@ export default function App() {
       <Route path="/redefinir-senha" element={<ResetPassword />} />
       <Route path="/lp" element={<Landing />} />
       <Route path="/excluir-dados" element={<DataDeletion />} />
+      <Route path="/convite/:token" element={<Rsvp />} />
       <Route path="/painel-tv" element={P(['LIDER', 'MEMBRO'], <TVPanel />)} />
 
       <Route path="/" element={IS_SITE_HOST ? <Landing /> : P(null, <Dashboard />)} />

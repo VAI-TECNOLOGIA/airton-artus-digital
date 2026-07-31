@@ -632,6 +632,11 @@ model StreetAction {
   @@index([status])
 }
 
+enum RsvpStatus {
+  CONFIRMADO
+  RECUSADO
+}
+
 model Event {
   id          String   @id @default(uuid())
   title       String
@@ -646,6 +651,10 @@ model Event {
   participants String?
   status      EventStatus @default(AGENDADO)
 
+  // Lista de convidados: token do link público de confirmação de presença.
+  rsvpToken   String?      @unique
+  guests      EventGuest[]
+
   regionId      String?
   region        Region? @relation(fields: [regionId], references: [id], onDelete: SetNull)
   responsibleId String?
@@ -656,6 +665,22 @@ model Event {
 
   @@index([date])
   @@index([status])
+}
+
+// Confirmação de presença (RSVP) de um convidado num evento.
+model EventGuest {
+  id         String     @id @default(uuid())
+  eventId    String
+  event      Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name       String
+  phone      String
+  status     RsvpStatus
+  companions Int        @default(0) // acompanhantes que a pessoa vai levar
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([eventId, phone])
+  @@index([eventId])
 }
 
 model Conversation {

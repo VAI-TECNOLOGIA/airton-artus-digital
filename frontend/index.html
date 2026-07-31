@@ -41,6 +41,24 @@
         } catch (e) {}
       })();
     </script>
+    <!-- Auto-recuperação de service worker preso em versão antiga.
+         Roda UMA vez por navegador: remove SW + caches obsoletos (que podem
+         apontar para servidor/API antigos e causar "erro do servidor") e
+         recarrega limpo. A guarda em localStorage evita qualquer loop. -->
+    <script>
+      (function () {
+        var KEY = 'aad_sw_reset_v3';
+        try { if (localStorage.getItem(KEY)) return; } catch (e) { return; }
+        if (!('serviceWorker' in navigator)) { try { localStorage.setItem(KEY, '1'); } catch (e) {} return; }
+        var jobs = [ navigator.serviceWorker.getRegistrations().then(function (rs) { return Promise.all(rs.map(function (r) { return r.unregister(); })); }) ];
+        if (window.caches && caches.keys) { jobs.push(caches.keys().then(function (ks) { return Promise.all(ks.map(function (k) { return caches.delete(k); })); })); }
+        Promise.all(jobs).then(function () {
+          var had = false;
+          try { had = !!navigator.serviceWorker.controller; localStorage.setItem(KEY, '1'); } catch (e) {}
+          if (had) location.reload();
+        }).catch(function () { try { localStorage.setItem(KEY, '1'); } catch (e) {} });
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

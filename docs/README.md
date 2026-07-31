@@ -2,6 +2,7 @@
 
 | Arquivo | O que é |
 |---|---|
+| `Manual-Completo-do-Projeto.html` | **Manual de entrega do projeto** — visão completa: o site (LP), o sistema com todos os módulos, infraestrutura, acessos, LGPD, checklist de go-live e suporte (autocontido; Ctrl/Cmd+P gera PDF) |
 | `Manual-do-Sistema.html` | **Manual completo de uso do sistema** — todos os módulos, perfis de acesso, fluxos passo a passo, boas práticas/LGPD e FAQ (autocontido — abrir no navegador; Ctrl/Cmd+P gera PDF) |
 | `Apresentacao-Treinamento-Equipe.html` | Deck de treinamento/adoção da equipe, afiliados e parceiros (11 slides, autocontido — abrir no navegador; setas navegam, Ctrl/Cmd+P gera PDF) |
 | `legal/*.md` | **Fonte das páginas legais** (Política de Privacidade, Termos de Uso, Excluir conta, Excluir dados) — LGPD + exigências Play/App Store. Editou o `.md`? Rode `node docs/legal/build-html.mjs` pra regenerar os HTML públicos em `frontend/public/legal/` |

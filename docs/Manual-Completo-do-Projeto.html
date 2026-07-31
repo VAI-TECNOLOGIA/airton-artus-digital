@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Manual Completo do Projeto · Airton Artus Digital</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --navy:#1B1D39; --navy-2:#262A52; --navy-deep:#0C0D1D;
+    --gold:#E8AF3C; --gold-2:#B98618;
+    --rs-green:#398254; --rs-red:#BD2E2F;
+    --ink:#16181D; --muted:#5A616B; --line:#E7E8EF;
+    --paper:#fff; --soft:#F6F7F9; --rad:14px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth;scroll-padding-top:24px}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--soft);line-height:1.65;font-size:15px}
+  h1,h2{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;letter-spacing:.02em;line-height:1.08}
+  h3,h4{font-family:'Archivo',sans-serif;letter-spacing:-.01em}
+  a{color:var(--gold-2);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  .tricolor{display:flex;height:5px}
+  .tricolor i{flex:1}
+  .tricolor .g{background:var(--rs-green)}.tricolor .r{background:var(--rs-red)}.tricolor .y{background:var(--gold)}
+
+  .shell{display:grid;grid-template-columns:290px 1fr;max-width:1260px;margin:0 auto}
+  .toc{position:sticky;top:0;align-self:start;height:100vh;overflow-y:auto;background:var(--navy-deep);color:#B8BBD0;padding:26px 18px 40px}
+  .toc .brand{font-family:'Anton';color:#fff;font-size:18px;text-transform:uppercase;letter-spacing:.05em;line-height:1.1}
+  .toc .brand small{display:block;font-family:'Archivo';font-weight:700;font-size:10px;letter-spacing:.14em;color:var(--gold);margin-top:4px}
+  .toc .stripe{display:flex;height:4px;width:96px;margin:14px 0 20px}
+  .toc .stripe i{flex:1}
+  .toc nav a{display:block;color:#B8BBD0;font-size:12.5px;padding:5px 10px;border-radius:8px}
+  .toc nav a:hover{background:rgba(255,255,255,.06);color:#fff;text-decoration:none}
+  .toc nav .sec{font-family:'Archivo';font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:#6E7394;margin:16px 10px 5px}
+
+  main{background:var(--paper)}
+  .hero{background:radial-gradient(120% 140% at 85% 0%,var(--navy-2) 0%,var(--navy) 60%,var(--navy-deep) 100%);color:#fff;padding:60px 56px 48px}
+  .hero .eyebrow{font-family:'Archivo';font-weight:800;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold)}
+  .hero h1{font-size:clamp(34px,5vw,54px);margin:14px 0 12px}
+  .hero p{color:rgba(255,255,255,.82);max-width:660px;font-size:16px}
+  .hero .meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+  .hero .pill{background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);padding:7px 14px;border-radius:50px;font-size:12.5px;font-weight:600}
+  .hero .pill b{color:var(--gold)}
+
+  section{padding:42px 56px 6px;max-width:880px}
+  section h2{font-size:29px;color:var(--navy);margin-bottom:6px;scroll-margin-top:20px}
+  section .lead{color:var(--muted);margin-bottom:16px;font-size:15px}
+  section h3{font-size:18px;font-weight:800;color:var(--navy);margin:22px 0 8px}
+  section h4{font-size:14.5px;font-weight:800;color:var(--navy);margin:16px 0 6px}
+  section p{margin-bottom:12px}
+  section ul,section ol{margin:0 0 14px 22px}
+  section li{margin-bottom:7px}
+  .rule{height:1px;background:var(--line);margin:34px 56px 0;max-width:880px}
+
+  .icon{width:22px;height:22px;stroke:var(--gold);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;vertical-align:-3px;margin-right:8px}
+
+  .card{background:var(--soft);border:1px solid var(--line);border-radius:var(--rad);padding:16px 20px;margin:14px 0}
+  .card.gold{border-left:4px solid var(--gold)}
+  .card.green{border-left:4px solid var(--rs-green)}
+  .card.red{border-left:4px solid var(--rs-red)}
+  .card.navy{background:var(--navy);color:#fff;border:0}
+  .card.navy h4,.card.navy a{color:#fff}
+  .card h4{margin-bottom:6px}
+  .card p:last-child,.card ul:last-child{margin-bottom:0}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:680px){.grid2{grid-template-columns:1fr}}
+
+  .steps{counter-reset:step;list-style:none;margin-left:0!important}
+  .steps li{counter-increment:step;position:relative;padding-left:40px;margin-bottom:11px}
+  .steps li::before{content:counter(step);position:absolute;left:0;top:0;width:26px;height:26px;border-radius:50%;background:var(--navy);color:var(--gold);font-family:'Archivo';font-weight:800;font-size:13px;display:grid;place-items:center}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:13px;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  th{background:var(--navy);color:#fff;text-align:left;padding:9px 12px;font-family:'Archivo';font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em}
+  td{padding:9px 12px;border-top:1px solid var(--line);vertical-align:top}
+  tr:nth-child(even) td{background:var(--soft)}
+  td.c,th.c{text-align:center}
+  .ok{color:var(--rs-green);font-weight:800}
+  .no{color:#C9CCD6;font-weight:700}
+
+  kbd,.chip{display:inline-block;background:var(--navy);color:var(--gold);font-family:'Archivo';font-weight:700;font-size:12px;padding:2px 9px;border-radius:7px}
+  .path{font-family:'Archivo';font-weight:700;color:var(--navy);background:#EEEFF5;padding:1px 8px;border-radius:6px;font-size:13px;white-space:nowrap}
+  code{font-family:ui-monospace,Menlo,monospace;background:#EEEFF5;padding:1px 6px;border-radius:5px;font-size:12.5px}
+  .status{display:inline-block;padding:2px 10px;border-radius:999px;font-size:11.5px;font-weight:700;margin:1px}
+  .st-navy{background:#E9EAF3;color:var(--navy)} .st-green{background:#E4F4EA;color:#1D6338}
+  .st-amber{background:#FBF1D9;color:#8a6510} .st-red{background:#F9E4E5;color:#8A1F20}
+
+  .mod{border:1px solid var(--line);border-radius:var(--rad);padding:16px 20px;margin:12px 0;background:#fff}
+  .mod h4{display:flex;align-items:center;gap:8px;font-size:16px;margin-bottom:4px}
+  .mod .who{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:8px}
+  .mod p{margin-bottom:8px;font-size:14px}
+  .mod ul{margin-bottom:4px}
+
+  footer{background:var(--navy-deep);color:rgba(255,255,255,.6);padding:34px 56px;font-size:13px}
+  footer b{color:#fff}
+  footer .stripe{display:flex;height:4px;width:100px;margin-bottom:16px}
+  footer .stripe i{flex:1}
+
+  @media(max-width:900px){
+    .shell{grid-template-columns:1fr}
+    .toc{position:relative;height:auto}
+    section,.hero,.rule,footer{padding-left:24px;padding-right:24px}
+    .rule{margin-left:24px;margin-right:24px}
+  }
+  @media print{
+    .toc{display:none}
+    .shell{grid-template-columns:1fr}
+    body{background:#fff}
+    section{page-break-inside:avoid;max-width:none}
+    .mod,.card,table{page-break-inside:avoid}
+    .hero{padding:36px}
+    a{color:var(--ink)}
+  }
+</style>
+</head>
+<body>
+<div class="tricolor"><i class="g"></i><i class="r"></i><i class="y"></i></div>
+<div class="shell">
+
+  <aside class="toc">
+    <div class="brand">Airton Artus<small>Digital · Manual do Projeto</small></div>
+    <div class="stripe"><i style="background:var(--rs-green)"></i><i style="background:var(--rs-red)"></i><i style="background:var(--gold)"></i></div>
+    <nav>
+      <div class="sec">Apresentação</div>
+      <a href="#entrega">O que foi entregue</a>
+      <a href="#acessos">Endereços e acessos</a>
+      <div class="sec">O Site (público)</div>
+      <a href="#site">A Landing Page</a>
+      <a href="#site-cadastro">Como entram os apoiadores</a>
+      <a href="#site-divulgar">Como divulgar</a>
+      <div class="sec">O Sistema</div>
+      <a href="#sistema">Visão geral</a>
+      <a href="#perfis">Perfis de acesso</a>
+      <a href="#primeiros-passos">Primeiros passos</a>
+      <div class="sec">Módulos (guia de uso)</div>
+      <a href="#m-dashboard">Dashboard</a>
+      <a href="#m-apoiadores">Apoiadores</a>
+      <a href="#m-whatsapp">Enviar acesso (WhatsApp)</a>
+      <a href="#m-voluntarios">Voluntários</a>
+      <a href="#m-antifraude">Suspeitos &amp; Blacklist</a>
+      <a href="#m-mural">Mural de avisos</a>
+      <a href="#m-midiakit">Mídia Kit</a>
+      <a href="#m-engajamento">Engajamento</a>
+      <a href="#m-acoes">Ações de rua</a>
+      <a href="#m-agenda">Agenda</a>
+      <a href="#m-materiais">Pedidos de material</a>
+      <a href="#m-faixas">Faixas</a>
+      <a href="#m-comunicacao">Comunicação e Chat</a>
+      <a href="#m-demandas">Demandas</a>
+      <a href="#m-disparos">Disparos</a>
+      <a href="#m-automacoes">Automações</a>
+      <a href="#m-mapa">Mapa político</a>
+      <a href="#m-relatorios">Relatórios</a>
+      <a href="#m-tv">Painel TV</a>
+      <a href="#m-usuarios">Usuários</a>
+      <a href="#m-config">Configurações</a>
+      <a href="#m-ia">Assistente de IA</a>
+      <div class="sec">Plataforma</div>
+      <a href="#celular">App no celular</a>
+      <a href="#lgpd">Privacidade e LGPD</a>
+      <a href="#infra">Infraestrutura</a>
+      <a href="#seguranca">Segurança</a>
+      <div class="sec">Operação</div>
+      <a href="#golive">Checklist de go-live</a>
+      <a href="#faq">Perguntas frequentes</a>
+      <a href="#suporte">Suporte</a>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="hero">
+      <span class="eyebrow">Airton Artus Digital · Pré-campanha 2026</span>
+      <h1>Manual Completo do Projeto</h1>
+      <p>Documento de entrega da plataforma digital da pré-campanha — o site público e a central de comando da equipe. Reúne o escopo do que foi construído, os acessos e o guia de uso de cada recurso.</p>
+      <div class="meta">
+        <span class="pill">Site: <b>www.airtonartus.com.br</b></span>
+        <span class="pill">Sistema: <b>app.airtonartus.com.br</b></span>
+        <span class="pill">Entrega: <b>Julho/2026</b></span>
+        <span class="pill">Por <b>VAI Tecnologia</b></span>
+      </div>
+    </div>
+
+    <!-- ENTREGA -->
+    <section id="entrega">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M20 7 12 3 4 7l8 4 8-4z"/><path d="M4 7v10l8 4 8-4V7"/><path d="M12 11v10"/></svg>O que foi entregue</h2>
+      <p class="lead">Uma plataforma completa, em dois produtos que trabalham juntos.</p>
+      <div class="grid2">
+        <div class="card gold">
+          <h4>1 · O Site (página pública)</h4>
+          <p>A vitrine da pré-campanha em <b>www.airtonartus.com.br</b>: apresenta a trajetória, as bandeiras e os resultados do Airton, e capta apoiadores e voluntários automaticamente para a base.</p>
+        </div>
+        <div class="card navy">
+          <h4>2 · O Sistema (central de comando)</h4>
+          <p>O painel da equipe em <b>app.airtonartus.com.br</b>: gestão da base, mobilização, comunicação, materiais, território e relatórios — tudo em tempo real.</p>
+        </div>
+      </div>
+
+      <h3>Escopo construído</h3>
+      <ul>
+        <li><b>Identidade visual própria</b> — navy, ouro e a faixa tricolor do RS, tipografia de campanha; nada com cara de template;</li>
+        <li><b>Landing page premium</b> com trajetória real, bandeiras, resultados de mandato, galeria e formulários de captação;</li>
+        <li><b>Sistema de gestão com 20+ módulos</b> — apoiadores, voluntários, mobilização, CRM, materiais, mapa, relatórios e painel de TV;</li>
+        <li><b>Antifraude</b> automático no cadastro (telefone duplicado e blacklist);</li>
+        <li><b>Envio de acesso por WhatsApp</b> em um clique (mensagem pronta + link);</li>
+        <li><b>Conformidade LGPD e lojas de app</b> — páginas legais, exclusão de conta e de dados, opt-out;</li>
+        <li><b>Aplicativo instalável</b> no celular (PWA) e base do app nativo Android;</li>
+        <li><b>Servidor próprio do candidato</b> com banco de dados dedicado, SSL e backups em disco;</li>
+        <li><b>Documentação completa</b> — este manual e o manual de uso do sistema.</li>
+      </ul>
+      <div class="card">
+        <h4>Conformidade de pré-campanha</h4>
+        <p>Todo o conteúdo público respeita a fase de <b>pré-campanha</b>: não há pedido explícito de voto nem número de urna no material aberto, com aviso legal no rodapé. Os dados dos apoiadores são tratados sob a LGPD.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- ACESSOS -->
+    <section id="acessos">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Endereços e acessos</h2>
+      <p class="lead">Onde tudo vive e como entrar.</p>
+      <table>
+        <tr><th>Recurso</th><th>Endereço</th></tr>
+        <tr><td>Site público (campanha)</td><td><b>www.airtonartus.com.br</b></td></tr>
+        <tr><td>Sistema (equipe)</td><td><b>app.airtonartus.com.br</b></td></tr>
+        <tr><td>Login do sistema</td><td>app.airtonartus.com.br/login</td></tr>
+        <tr><td>Painel de TV (comitê)</td><td>app.airtonartus.com.br/painel-tv</td></tr>
+      </table>
+      <div class="card navy">
+        <h4>Acesso administrador</h4>
+        <p>E-mail: <b>admin@airtonartus.com.br</b> · Perfil: Líder de Campanha (acesso total).<br/>
+        A senha inicial foi entregue à coordenação em separado (não fica neste documento por segurança).</p>
+      </div>
+      <div class="card red">
+        <h4>Primeira providência</h4>
+        <p>Troque a senha inicial no primeiro acesso (em <span class="path">Usuários</span>) e crie uma conta individual para cada pessoa da equipe — nunca compartilhe o mesmo login.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- SITE -->
+    <section id="site">
+      <h2><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/></svg>A Landing Page (site público)</h2>
+      <p class="lead">A porta de entrada da campanha, em www.airtonartus.com.br.</p>
+      <p>O site é uma página única, elegante e rápida, com estas seções — na ordem em que o visitante vê:</p>
+      <ul>
+        <li><b>Abertura</b> — foto real do Airton e a frase-âncora <i>"Meu lado é o da saúde"</i>, com médico · ex-prefeito · deputado estadual;</li>
+        <li><b>Trajetória</b> — a linha do tempo real, de 1983 (formado em Medicina) até a pré-candidatura de 2026;</li>
+        <li><b>Bandeiras</b> — Saúde pública, Infraestrutura e estradas, Agricultura familiar, Educação, Municipalismo, Trabalho e desenvolvimento;</li>
+        <li><b>Resultados de mandato</b> — R$ 10,7 mi em pavimentação, 24.319 votos em 2022, mandato na Assembleia e 8 anos de prefeitura;</li>
+        <li><b>Galeria</b> — fotos reais no interior, com apoiadores e em agenda;</li>
+        <li><b>Propostas</b> — formulário para receber o material da pré-campanha;</li>
+        <li><b>Redes e participação</b> — Instagram e o formulário "Quero participar";</li>
+        <li><b>Rodapé</b> — contato e aviso legal de pré-campanha.</li>
+      </ul>
+    </section>
+
+    <section id="site-cadastro">
+      <h3>Como os apoiadores entram sozinhos na base</h3>
+      <p>O site tem dois formulários, e os dois alimentam a base do sistema automaticamente:</p>
+      <ul>
+        <li><b>Receba as propostas</b> — nome + WhatsApp; entra como apoiador do tipo <i>Material digital</i>;</li>
+        <li><b>Quero participar</b> — nome, WhatsApp, cidade e como quer ajudar (voluntariado, faixa, adesivo, eventos…).</li>
+      </ul>
+      <p>Todo cadastro feito pelo site:</p>
+      <ul>
+        <li>passa pelo <b>antifraude</b> (telefone repetido → Suspeito; telefone bloqueado → recusado);</li>
+        <li>é <b>posicionado no mapa</b> automaticamente pela cidade;</li>
+        <li>se for voluntariado, abre uma <b>conversa de confirmação</b> na Central de Comunicação.</li>
+      </ul>
+      <p>Ou seja: a equipe divulga o link, e a base cresce sem digitação manual.</p>
+    </section>
+
+    <section id="site-divulgar">
+      <h3>Como divulgar</h3>
+      <div class="card gold">
+        <p>Use sempre o mesmo endereço em posts, bio do Instagram, WhatsApp e material impresso: <b>www.airtonartus.com.br</b>. Quanto mais gente passar por ali, mais a base cresce sozinha — e tudo já cai organizado no sistema.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- SISTEMA -->
+    <section id="sistema">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>O Sistema — visão geral</h2>
+      <p class="lead">A central de comando da pré-campanha, organizada em blocos.</p>
+      <div class="grid2">
+        <div class="card"><h4>Visão geral</h4><p>Dashboard, Mapa político e Relatórios — a leitura estratégica da campanha.</p></div>
+        <div class="card"><h4>Base</h4><p>Apoiadores, Voluntários, Suspeitos e Blacklist — a base de apoio, com antifraude.</p></div>
+        <div class="card"><h4>Mobilização</h4><p>Mural, Mídia Kit, Engajamento, Ações de rua e Agenda.</p></div>
+        <div class="card"><h4>Materiais</h4><p>Pedidos de material e controle de faixas.</p></div>
+        <div class="card"><h4>Comunicação</h4><p>WhatsApp (CRM), Chat interno, Demandas, Disparos e Automações.</p></div>
+        <div class="card"><h4>Administração</h4><p>Usuários, Configurações, Painel TV e Assistente de IA.</p></div>
+      </div>
+    </section>
+
+    <section id="perfis">
+      <h3>Perfis de acesso</h3>
+      <p>Cada usuário tem um perfil, definido pelo administrador em <span class="path">Usuários</span>. Ele controla o que cada pessoa enxerga:</p>
+      <table>
+        <tr><th>Módulo</th><th class="c">Líder</th><th class="c">Membro</th><th class="c">Parceiro</th></tr>
+        <tr><td>Dashboard</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td></tr>
+        <tr><td>Mapa · Relatórios</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c no">—</td></tr>
+        <tr><td>Apoiadores · Voluntários</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c no">—</td></tr>
+        <tr><td>Suspeitos · Blacklist</td><td class="c ok">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td>Mural · Mídia Kit · Engajamento · Agenda</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td></tr>
+        <tr><td>Ações · Faixas</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c no">—</td></tr>
+        <tr><td>Pedidos de material</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c ok">✓</td></tr>
+        <tr><td>Conversas · Chat · Demandas</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c no">—</td></tr>
+        <tr><td>Disparos · Automações</td><td class="c ok">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td>Usuários · Configurações</td><td class="c ok">✓</td><td class="c no">—</td><td class="c no">—</td></tr>
+        <tr><td>Painel TV</td><td class="c ok">✓</td><td class="c ok">✓</td><td class="c no">—</td></tr>
+      </table>
+      <p><b>Líder</b> = acesso total · <b>Membro</b> = operação do dia a dia · <b>Parceiro</b> = apoiador externo com acesso limitado.</p>
+    </section>
+
+    <section id="primeiros-passos">
+      <h3>Primeiros passos</h3>
+      <ol class="steps">
+        <li>Acesse <span class="path">app.airtonartus.com.br/login</span> e entre com e-mail e senha.</li>
+        <li>Use o botão de <b>lua/sol</b> (canto superior direito) para tema claro ou escuro.</li>
+        <li>No celular, adicione à tela inicial para usar como aplicativo (ver <a href="#celular">App no celular</a>).</li>
+        <li>Botão de <b>sair</b> no canto superior direito.</li>
+      </ol>
+      <div class="card"><p>Se o primeiro acesso do dia demorar 2–3 segundos, é o banco despertando — os seguintes são instantâneos.</p></div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- MÓDULOS -->
+    <section id="modulos">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M4 4h16v4H4z"/><path d="M4 10h16v4H4z"/><path d="M4 16h16v4H4z"/></svg>Guia de uso — módulo por módulo</h2>
+      <p class="lead">O que cada tela faz e como usar no dia a dia.</p>
+
+      <div class="mod" id="m-dashboard">
+        <h4>Dashboard</h4>
+        <div class="who">Tela inicial · todos os perfis</div>
+        <p>Visão geral em tempo real: voluntários, apoiadores, faixas, ações, demandas e conversas, além do gráfico de apoiadores por cidade e do ranking dos voluntários mais engajados.</p>
+      </div>
+
+      <div class="mod" id="m-apoiadores">
+        <h4>Apoiadores</h4>
+        <div class="who">Base · Líder e Membro</div>
+        <p>A base completa, com busca e filtros. Para cadastrar: <span class="chip">Novo cadastro</span> → nome e telefone (mínimo) → salvar. Em cada linha há ações de WhatsApp, confirmar voluntário, blacklist, editar e excluir.</p>
+        <p>Status: <span class="status st-navy">Novo</span> <span class="status st-green">Confirmado</span> <span class="status st-green">Ativo</span> <span class="status st-amber">Pendente</span> <span class="status st-amber">Suspeito</span> <span class="status st-red">Inativo</span> <span class="status st-red">Blacklist</span></p>
+      </div>
+
+      <div class="mod" id="m-whatsapp">
+        <h4>Enviar acesso por WhatsApp</h4>
+        <div class="who">Em Apoiadores e Voluntários</div>
+        <p>Clique no ícone de WhatsApp da pessoa (ou confirme um voluntário — abre sozinho). O sistema monta a mensagem certa (confirmação ou boas-vindas), que você pode editar, e oferece:</p>
+        <ul>
+          <li><span class="chip">Abrir no WhatsApp</span> — abre o app já com número e mensagem prontos;</li>
+          <li><span class="chip">Copiar mensagem</span> — copia o texto para colar onde quiser.</li>
+        </ul>
+        <p><b>Fluxo rápido:</b> Confirmar → Abrir no WhatsApp → Enviar.</p>
+      </div>
+
+      <div class="mod" id="m-voluntarios">
+        <h4>Voluntários</h4>
+        <div class="who">Base · Líder e Membro</div>
+        <p>A equipe de base com pontuação, confirmação, frente preferida e situação. Ações: enviar acesso por WhatsApp e ativar/desativar. Filtros por ativos e por confirmados.</p>
+      </div>
+
+      <div class="mod" id="m-antifraude">
+        <h4>Suspeitos &amp; Blacklist</h4>
+        <div class="who">Base · só Líder</div>
+        <p><b>Suspeitos:</b> cadastros com telefone duplicado, para análise manual (Aprovar, Blacklist ou Excluir). <b>Blacklist:</b> telefones bloqueados não conseguem se cadastrar de novo — nem pelo site, nem manualmente.</p>
+      </div>
+
+      <div class="mod" id="m-mural">
+        <h4>Mural de avisos</h4>
+        <div class="who">Mobilização · todos os perfis</div>
+        <p>Comunicados para toda a equipe, com tipo (aviso, convocação, agenda, orientação) e prioridade. É o canal oficial de recado geral — use prioridade Alta para mutirões e caminhadas.</p>
+      </div>
+
+      <div class="mod" id="m-midiakit">
+        <h4>Mídia Kit</h4>
+        <div class="who">Mobilização · todos os perfis</div>
+        <p>Artes, vídeos, jingles e textos prontos para a militância publicar. Quem cria usa <span class="chip">Publicar material</span> (com legenda e hashtags prontas); quem divulga copia a legenda, as hashtags e baixa o arquivo. Depois de postar, registra no Engajamento para pontuar.</p>
+      </div>
+
+      <div class="mod" id="m-engajamento">
+        <h4>Engajamento</h4>
+        <div class="who">Mobilização · todos os perfis</div>
+        <p>Gamificação: cada tarefa vale pontos (post, compartilhamento, caminhada, faixa, adesivos, convites, eventos). O voluntário registra, a equipe valida e os pontos somam no ranking do Dashboard e do Painel TV.</p>
+      </div>
+
+      <div class="mod" id="m-acoes">
+        <h4>Ações de rua</h4>
+        <div class="who">Mobilização · Líder e Membro</div>
+        <p>Caminhadas, carreatas, visitas e bandeiraços, com cidade, data e pessoas alcançadas. Cada ação aparece como camada no Mapa político — mostra onde a campanha já chegou.</p>
+      </div>
+
+      <div class="mod" id="m-agenda">
+        <h4>Agenda</h4>
+        <div class="who">Mobilização · todos os perfis</div>
+        <p>Eventos, reuniões e prazos, com local, data, horário e responsável. Os próximos eventos aparecem também no Painel TV.</p>
+      </div>
+
+      <div class="mod" id="m-materiais">
+        <h4>Pedidos de material</h4>
+        <div class="who">Materiais · todos os perfis podem solicitar</div>
+        <p>Fluxo anti-desperdício: solicitar → analisar (com histórico do solicitante) → entregar (baixa o estoque). Catálogo: faixas, bandeiras, adesivos, santinhos, camisetas e bonés.</p>
+      </div>
+
+      <div class="mod" id="m-faixas">
+        <h4>Faixas</h4>
+        <div class="who">Materiais · Líder e Membro</div>
+        <p>Controle de faixas em casas e pontos, com responsável, endereço e <b>autorização do morador</b>. Status: Autorizado → Aguardando instalação → Instalado. Aparecem no mapa. <b>Só instale com autorização registrada.</b></p>
+      </div>
+
+      <div class="mod" id="m-comunicacao">
+        <h4>Central de Comunicação (WhatsApp + Chat interno)</h4>
+        <div class="who">Comunicação · Líder e Membro</div>
+        <p><b>WhatsApp (CRM):</b> atendimento externo com filtros por status, respostas rápidas, modelos prontos, etiquetas e anotações. <b>Chat interno:</b> conversa da equipe — direto (1 a 1), grupos e canal geral da campanha.</p>
+        <div class="card"><p><b>Envio real de WhatsApp:</b> a integração oficial (Meta) inicia em modo <b>simulado</b>. Até conectar, use o botão "Enviar acesso por WhatsApp" para envio manual. Quando as credenciais forem cadastradas, o envio passa a automático sem mudar o fluxo.</p></div>
+      </div>
+
+      <div class="mod" id="m-demandas">
+        <h4>Demandas</h4>
+        <div class="who">Comunicação · Líder e Membro</div>
+        <p>Pedidos da população em quadro Kanban, por categoria (saúde, educação, infraestrutura…) e prioridade: Nova → Em análise → Em andamento → Resolvida. Demanda resolvida merece retorno ao cidadão.</p>
+      </div>
+
+      <div class="mod" id="m-disparos">
+        <h4>Disparos</h4>
+        <div class="who">Comunicação · Membro cria, Líder envia</div>
+        <p>Mensagens em massa para segmentos da base, com variáveis (<code>{{nome}}</code>, <code>{{cidade}}</code>). Importa contatos com filtros, envia com barra de progresso e permite pausar. Respeite a LGPD e a legislação eleitoral.</p>
+      </div>
+
+      <div class="mod" id="m-automacoes">
+        <h4>Automações</h4>
+        <div class="who">Comunicação · só Líder</div>
+        <p>Mensagens automáticas diárias (9h): aniversário, datas marcadas e boas-vindas a voluntários. Cada uma tem status Ativa/Rascunho e registra log dos envios.</p>
+      </div>
+
+      <div class="mod" id="m-mapa">
+        <h4>Mapa político</h4>
+        <div class="who">Visão geral · Líder e Membro</div>
+        <p>Apoiadores, faixas e ações no mapa do RS, em camadas que ligam/desligam, com atualização ao vivo. A leitura do território: onde a base cresce e onde falta ação.</p>
+      </div>
+
+      <div class="mod" id="m-relatorios">
+        <h4>Relatórios</h4>
+        <div class="who">Visão geral · Líder e Membro</div>
+        <p>Consolidado da campanha: crescimento da base, apoiadores por região/cidade, engajamento, ações, faixas e demandas. Botão <span class="chip">Exportar CSV</span> para abrir no Excel.</p>
+      </div>
+
+      <div class="mod" id="m-tv">
+        <h4>Painel TV</h4>
+        <div class="who">Administração · Líder e Membro</div>
+        <p>Telão para o comitê: números ao vivo, mapa do RS, ranking e agenda, com atualização automática. Abra em <span class="path">/painel-tv</span> e pressione <kbd>F11</kbd> para tela cheia.</p>
+      </div>
+
+      <div class="mod" id="m-usuarios">
+        <h4>Usuários</h4>
+        <div class="who">Administração · só Líder</div>
+        <p>Contas de acesso da equipe: criar (nome, e-mail, senha, perfil), trocar senha, vincular a região/gestor e desativar quem sai. Uma conta por pessoa.</p>
+      </div>
+
+      <div class="mod" id="m-config">
+        <h4>Configurações</h4>
+        <div class="who">Administração · só Líder</div>
+        <p>Dados da campanha (candidato, cargo, partido, slogan), metas (viram as barras do Painel TV), regiões e cidades, catálogos de material e tarefas, e as integrações (WhatsApp oficial, e-mail, IA).</p>
+      </div>
+
+      <div class="mod" id="m-ia">
+        <h4>Assistente de IA</h4>
+        <div class="who">Botão flutuante · respeita o perfil de cada um</div>
+        <p>Um "chefe de gabinete digital" que responde com base nos dados reais da campanha (ex.: "quantos voluntários confirmados em Venâncio Aires?"). Ativação e credenciais em Configurações.</p>
+      </div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- CELULAR -->
+    <section id="celular">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12" y2="18"/></svg>App no celular</h2>
+      <p class="lead">O sistema funciona como aplicativo no celular.</p>
+      <ul>
+        <li><b>Android (Chrome):</b> abra o sistema → menu <b>⋮</b> → <b>Adicionar à tela inicial</b>;</li>
+        <li><b>iPhone (Safari):</b> botão compartilhar → <b>Adicionar à Tela de Início</b>.</li>
+      </ul>
+      <p>O ícone da campanha vai para a tela do celular e o sistema abre em tela cheia. Toda a interface é responsiva (funciona bem em celular, tablet e computador). A base do <b>app nativo Android</b> (com notificações push) também está preparada no projeto, para publicação futura na Play Store.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- LGPD -->
+    <section id="lgpd">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>Privacidade e LGPD</h2>
+      <p class="lead">A plataforma já nasce em conformidade com a lei e com as exigências das lojas de aplicativos.</p>
+      <ul>
+        <li><b>Páginas legais públicas:</b> Política de Privacidade, Termos de Uso e instruções de exclusão de conta e de dados;</li>
+        <li><b>Exclusão de conta</b> (usuário logado): opção no topo do painel, confirmada por senha;</li>
+        <li><b>Exclusão de dados do apoiador</b> (sem login): página <span class="path">/excluir-dados</span> — o próprio número confirma por código no WhatsApp; também funciona respondendo "EXCLUIR MEUS DADOS" no WhatsApp;</li>
+        <li><b>Opt-out:</b> responder "SAIR" tira a pessoa de automações e disparos;</li>
+        <li><b>Consentimento LGPD</b> destacado (checkbox obrigatório) nos formulários públicos — apoio político é dado sensível;</li>
+        <li><b>Trilha de auditoria</b> das operações sensíveis, com telefone mascarado.</li>
+      </ul>
+      <div class="card gold"><p>Regra de ouro: a base é da campanha e só para a campanha. Nunca exporte ou compartilhe os dados dos apoiadores com terceiros.</p></div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- INFRA -->
+    <section id="infra">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6" y2="6"/><line x1="6" y1="18" x2="6" y2="18"/></svg>Infraestrutura e tecnologia</h2>
+      <p class="lead">Servidor próprio do candidato — dados sob controle da campanha.</p>
+      <table>
+        <tr><th>Item</th><th>Detalhe</th></tr>
+        <tr><td>Servidor</td><td>VPS dedicado do candidato (Linux), com firewall ativo</td></tr>
+        <tr><td>Banco de dados</td><td>PostgreSQL local e dedicado — os dados ficam no próprio servidor</td></tr>
+        <tr><td>Aplicação</td><td>Node.js + gerenciador de processos (reinício automático)</td></tr>
+        <tr><td>Web/SSL</td><td>Nginx + certificado Let's Encrypt (HTTPS), renovação automática</td></tr>
+        <tr><td>Domínios</td><td>app. (sistema) e www. (site), com o endereço raiz redirecionando</td></tr>
+        <tr><td>Arquivos</td><td>Uploads em disco persistente do servidor</td></tr>
+        <tr><td>Automações</td><td>Tarefa agendada diária (9h) para mensagens automáticas</td></tr>
+        <tr><td>Código-fonte</td><td>Versionado em repositório privado da VAI Tecnologia</td></tr>
+      </table>
+      <p><b>Stack:</b> React + Vite (frontend), Node.js + Express + Prisma (backend), PostgreSQL, Leaflet (mapa).</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- SEGURANÇA -->
+    <section id="seguranca">
+      <h2><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Segurança</h2>
+      <ul>
+        <li><b>Login protegido</b> por senha criptografada e sessão com token que expira;</li>
+        <li><b>Perfis de acesso</b> — cada pessoa vê apenas o que o seu papel permite;</li>
+        <li><b>HTTPS</b> em todo o tráfego;</li>
+        <li><b>Segredos</b> (senhas, chaves) ficam apenas no servidor, fora do código;</li>
+        <li><b>Antifraude</b> no cadastro e <b>auditoria</b> das ações sensíveis.</li>
+      </ul>
+      <div class="card red"><p><b>Recomendações à equipe:</b> troque a senha inicial do administrador; uma conta por pessoa; remova o acesso de quem sai da campanha no mesmo dia.</p></div>
+    </section>
+    <div class="rule"></div>
+
+    <!-- GO-LIVE -->
+    <section id="golive">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>Checklist de go-live</h2>
+      <p class="lead">O que já está pronto e o que depende de você para 100%.</p>
+      <h4>Já entregue e no ar</h4>
+      <ul>
+        <li>Sistema em app.airtonartus.com.br com SSL e dados reais;</li>
+        <li>Antifraude, envio de acesso por WhatsApp, LGPD e app instalável;</li>
+        <li>Servidor próprio, banco dedicado, backups em disco e automações agendadas.</li>
+      </ul>
+      <h4>Depende de você / próximos passos</h4>
+      <ul>
+        <li><b>DNS do site:</b> apontar www e o domínio raiz para o servidor (o app já está apontado) — depois ativa-se o SSL do site;</li>
+        <li><b>WhatsApp oficial:</b> cadastrar as credenciais da API Meta para envio automático (hoje é manual);</li>
+        <li><b>E-mail transacional:</b> cadastrar a chave para o "esqueci minha senha" por e-mail;</li>
+        <li><b>Depoimentos reais</b> autorizados para substituir os ilustrativos do site;</li>
+        <li><b>Contas da equipe:</b> criar um login por pessoa e trocar a senha do administrador.</li>
+      </ul>
+    </section>
+    <div class="rule"></div>
+
+    <!-- FAQ -->
+    <section id="faq">
+      <h2><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12" y2="17"/></svg>Perguntas frequentes</h2>
+
+      <h4>Apareceu "erro do servidor" ao logar. O que faço?</h4>
+      <p>Quase sempre é o navegador com uma versão antiga guardada em cache. Abra numa <b>janela anônima</b>, ou atualize forçando com <kbd>Cmd/Ctrl + Shift + R</kbd>. O servidor está no ar.</p>
+
+      <h4>O primeiro acesso do dia demora alguns segundos. É normal?</h4>
+      <p>Sim — o banco desperta no primeiro acesso. Depois, tudo é instantâneo.</p>
+
+      <h4>Mandei mensagem no CRM e não chegou no WhatsApp da pessoa.</h4>
+      <p>A integração oficial começa em modo simulado. Use o botão "Enviar acesso por WhatsApp" para envio manual até conectar a API oficial.</p>
+
+      <h4>A pessoa não aparece no mapa.</h4>
+      <p>Confira se o cadastro tem a <b>cidade</b> preenchida — é ela que posiciona o ponto no mapa.</p>
+
+      <h4>Como coloco o Painel TV no telão do comitê?</h4>
+      <p>Faça login no computador da TV, abra <span class="path">/painel-tv</span> e aperte <kbd>F11</kbd>. Ele se atualiza sozinho.</p>
+    </section>
+    <div class="rule"></div>
+
+    <!-- SUPORTE -->
+    <section id="suporte">
+      <h2><svg class="icon" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Suporte e manutenção</h2>
+      <p>A plataforma é desenvolvida e mantida pela <b>VAI Tecnologia</b>. Para dúvidas, ajustes, novos recursos ou incidentes, fale com o suporte pelo canal combinado com a coordenação.</p>
+      <p>Ao reportar um problema, informe <b>o que tentou fazer, em qual tela e o que apareceu</b> (mensagem de erro, se houver) e, se possível, uma captura de tela — isso acelera a solução.</p>
+      <div class="card"><p>Existe também um <b>manual detalhado de uso do sistema</b> (arquivo <span class="path">Manual-do-Sistema.html</span>), focado tela a tela, como complemento a este documento de entrega.</p></div>
+    </section>
+
+    <footer>
+      <div class="stripe"><i style="background:var(--rs-green)"></i><i style="background:var(--rs-red)"></i><i style="background:var(--gold)"></i></div>
+      <b>Airton Artus Digital</b> · Manual Completo do Projeto · Julho/2026<br/>
+      Site: www.airtonartus.com.br · Sistema: app.airtonartus.com.br<br/>
+      Desenvolvido pela VAI Tecnologia · Documento de entrega — uso interno da campanha.
+    </footer>
+  </main>
+</div>
+</body>
+</html>

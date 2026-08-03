@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ArrowRight, Check, HeartPulse, Stethoscope, Wheat, GraduationCap,
+  ArrowRight, Check, HeartPulse, Stethoscope, HeartHandshake, GraduationCap,
   Landmark, Briefcase, Route, MapPin, Award, CalendarDays,
 } from 'lucide-react';
 import api, { apiError } from '../api/client.js';
@@ -191,7 +191,7 @@ export default function Landing() {
           <p className="mlp-lead">
             Uma vida inteira cuidando de gente: 40 anos de medicina, dois mandatos de prefeito
             e um mandato de deputado trabalhando por saúde, infraestrutura e desenvolvimento
-            para o Vale do Taquari e todo o Rio Grande do Sul.
+            para os Vales e todo o Rio Grande do Sul.
           </p>
           <div className="mlp-cta">
             <a href="#apoie" className="mlp-btn mlp-btn--primary">Quero participar <ArrowRight size={18} /></a>
@@ -209,8 +209,8 @@ export default function Landing() {
       {/* MARQUEE */}
       <div className="mlp-marquee" aria-hidden="true">
         <div className="mlp-track">
-          <span>Saúde <i>•</i> Vale do Taquari <i>•</i> Agricultura Familiar <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
-          <span>Saúde <i>•</i> Vale do Taquari <i>•</i> Agricultura Familiar <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
+          <span>Saúde <i>•</i> Vale do Taquari <i>•</i> Terceira Idade <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
+          <span>Saúde <i>•</i> Vale do Taquari <i>•</i> Terceira Idade <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
         </div>
       </div>
 
@@ -265,7 +265,7 @@ export default function Landing() {
           <div className="mlp-pillars">
             <Pillar ico={<HeartPulse size={26} />} t="Saúde pública de verdade" d="Menos fila e mais atendimento: fortalecimento dos hospitais regionais, dos postos de saúde e do SUS que o Airton ajudou a implantar." />
             <Pillar ico={<Route size={26} />} t="Infraestrutura e estradas" d="Pavimentação e manutenção das estradas do interior, ligando as comunidades à cidade e o produtor ao mercado." />
-            <Pillar ico={<Wheat size={26} />} t="Agricultura familiar" d="Apoio a quem produz: assistência técnica, escoamento da produção e valorização do produtor do Vale." />
+            <Pillar ico={<HeartHandshake size={26} />} t="Terceira Idade Protegida" d="Ampliação do cuidado e financiamento de internação geriátrica para famílias sem condições de cuidar de seus idosos." />
             <Pillar ico={<GraduationCap size={26} />} t="Educação e futuro" d="Escola de qualidade e oportunidades para os jovens ficarem e crescerem na própria região." />
             <Pillar ico={<Landmark size={26} />} t="Municipalismo" d="Quem foi prefeito sabe: recursos e autonomia para os municípios resolverem a vida das pessoas na ponta." />
             <Pillar ico={<Briefcase size={26} />} t="Trabalho e desenvolvimento" d="Ambiente favorável para a indústria, o comércio e os serviços gerarem emprego e renda no interior." />
@@ -496,7 +496,7 @@ export default function Landing() {
                 <b>Airton Artus</b>
               </div>
               <div className="mlp-foot-stripe" aria-hidden="true"><i className="g" /><i className="r" /><i className="y" /></div>
-              <p style={{ maxWidth: 320 }}>Saúde, trabalho e desenvolvimento para o Vale do Taquari e todo o Rio Grande do Sul.</p>
+              <p style={{ maxWidth: 320 }}>Saúde, trabalho e desenvolvimento para os Vales e todo o Rio Grande do Sul.</p>
               <div className="mlp-socials">
                 <a href="https://instagram.com/airton.artus" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><IgIcon /></a>
               </div>

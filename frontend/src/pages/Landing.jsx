@@ -209,8 +209,8 @@ export default function Landing() {
       {/* MARQUEE */}
       <div className="mlp-marquee" aria-hidden="true">
         <div className="mlp-track">
-          <span>Saúde <i>•</i> Vale do Taquari <i>•</i> Terceira Idade <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
-          <span>Saúde <i>•</i> Vale do Taquari <i>•</i> Terceira Idade <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
+          <span>Saúde <i>•</i> Os Vales <i>•</i> Terceira Idade <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
+          <span>Saúde <i>•</i> Os Vales <i>•</i> Terceira Idade <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
         </div>
       </div>
 

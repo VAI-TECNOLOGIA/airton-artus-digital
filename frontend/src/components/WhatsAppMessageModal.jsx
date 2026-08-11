@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Send } from 'lucide-react';
 import Modal from './ui/Modal.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import { waLink, prettyPhone, phoneDigits, defaultMessage } from '../lib/whatsapp.js';
+import api, { apiError } from '../api/client.js';
 
 /** Ícone do WhatsApp (mesmo traço usado na landing). */
 export function WaIcon({ size = 16 }) {
@@ -21,6 +22,23 @@ export default function WhatsAppMessageModal({ supporter, candidate = 'Airton Ar
   const toast = useToast();
   const [msg, setMsg] = useState(() => defaultMessage(supporter, candidate));
   const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  async function sendNow() {
+    const id = supporter?.supporterId || supporter?.id;
+    if (!id) { toast.error('Registro sem identificação.'); return; }
+    setSending(true);
+    try {
+      const { data } = await api.post(`/supporters/${id}/send-access`);
+      if (data?.simulated) toast.success('Registrado em modo simulado — conecte o número real para entregar de fato.');
+      else toast.success('Acesso enviado pela API oficial do WhatsApp!');
+      onClose?.();
+    } catch (e) {
+      toast.error(apiError(e));
+    } finally {
+      setSending(false);
+    }
+  }
 
   const phone = supporter?.whatsapp || supporter?.phone;
   const hasPhone = !!phoneDigits(phone);
@@ -47,6 +65,11 @@ export default function WhatsAppMessageModal({ supporter, candidate = 'Airton Ar
           <button className="btn" onClick={copy}>
             {copied ? <Check size={15} /> : <Copy size={15} />} Copiar mensagem
           </button>
+          {hasPhone && (
+            <button className="btn btn-primary" disabled={sending} onClick={sendNow} title="Enviar automaticamente pela API oficial">
+              <Send size={15} /> {sending ? 'Enviando…' : 'Enviar agora'}
+            </button>
+          )}
           {hasPhone ? (
             <a className="btn btn-green" href={link} target="_blank" rel="noopener noreferrer" onClick={onClose}>
               <WaIcon /> Abrir no WhatsApp
@@ -75,8 +98,8 @@ export default function WhatsAppMessageModal({ supporter, candidate = 'Airton Ar
           onChange={(e) => setMsg(e.target.value)}
         />
         <p className="field-hint">
-          Edite se quiser e então <b>copie</b> a mensagem ou <b>abra no WhatsApp</b> já preenchido para enviar
-          manualmente. Assim que a API oficial for conectada, o envio passa a ser automático.
+          <b>Enviar agora</b> dispara automaticamente pela API oficial (requer o número real conectado e o template aprovado).
+          Ou use <b>Abrir no WhatsApp</b> para enviar manualmente já.
         </p>
       </div>
     </Modal>

@@ -21,6 +21,7 @@ export const supporters = {
   lookups: [
     { key: 'regions', endpoint: '/regions' },
     { key: 'coordinators', endpoint: '/users', params: { role: 'MEMBRO' } },
+    { key: 'cities', endpoint: '/supporters/cities', valueKey: 'name', labelKey: 'name' },
   ],
   columns: [
     {
@@ -53,7 +54,7 @@ export const supporters = {
     { name: 'number', label: 'Número' },
     { name: 'complement', label: 'Complemento' },
     { name: 'neighborhood', label: 'Bairro' },
-    { name: 'cityName', label: 'Cidade' },
+    { name: 'cityName', label: 'Cidade', type: 'datalist', optionsFrom: 'cities', placeholder: 'Digite e selecione a cidade' },
     { name: 'regionId', label: 'Região', optionsFrom: 'regions' },
     { name: 'coordinatorId', label: 'Coordenador responsável', optionsFrom: 'coordinators' },
     { name: 'supportType', label: 'Tipo de apoio', enumGroup: 'SupportType', required: true },

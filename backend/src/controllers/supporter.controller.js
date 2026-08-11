@@ -52,6 +52,13 @@ const createSchema = z.object({
   coordinatorId: z.string().uuid().nullable().optional(),
 });
 
+/** Normaliza cidade: trim + espaço único + Title Case (preserva acentos) — reduz duplicidade. */
+function normCity(s) {
+  if (!s) return s;
+  return s.trim().replace(/\s+/g, ' ').toLowerCase()
+    .replace(/(^|[\s\-'])(\p{L})/gu, (_, sep, ch) => sep + ch.toUpperCase());
+}
+
 export const create = asyncHandler(async (req, res) => {
   const data = createSchema.parse(nullifyEmpty(req.body));
   const phone = onlyDigits(data.phone);
@@ -85,8 +92,10 @@ export const create = asyncHandler(async (req, res) => {
     if (city) {
       data.cityId = city.id;
       if (!data.regionId) data.regionId = city.regionId;
+      data.cityName = city.name; // nome canônico da tabela City
     }
   }
+  if (data.cityName) data.cityName = normCity(data.cityName);
   if (data.lat == null || data.lng == null) {
     const geo = fallbackLatLng({ cityName: data.cityName, neighborhood: data.neighborhood, seed: phone });
     data.lat = geo.lat;
@@ -132,9 +141,39 @@ export const update = asyncHandler(async (req, res) => {
   delete data.region;
   delete data.city;
   delete data.coordinator;
+  if (data.cityName) data.cityName = normCity(data.cityName);
   const supporter = await prisma.supporter.update({ where: { id: req.params.id }, data, include });
   await audit({ userId: req.user?.id, action: 'UPDATE', entity: 'Supporter', entityId: supporter.id, ip: req.ip });
   res.json(supporter);
+});
+
+/** Cidades já cadastradas (distintas) — alimenta o autocomplete e evita duplicidade. */
+export const listCities = asyncHandler(async (req, res) => {
+  const rows = await prisma.supporter.findMany({
+    where: { cityName: { not: null } },
+    distinct: ['cityName'],
+    select: { cityName: true },
+    orderBy: { cityName: 'asc' },
+  });
+  res.json({ data: rows.map((r) => ({ name: r.cityName })).filter((r) => r.name) });
+});
+
+/** Envia o acesso/boas-vindas pela API OFICIAL (template airton_bem_vindo). */
+export const sendAccess = asyncHandler(async (req, res) => {
+  const s = await prisma.supporter.findUnique({ where: { id: req.params.id } });
+  if (!s) throw new AppError('Apoiador não encontrado', 404);
+  const phone = onlyDigits(s.whatsapp || s.phone);
+  if (!phone) throw new AppError('Apoiador sem telefone cadastrado.', 400);
+  const result = await sendWhatsApp({
+    to: phone,
+    template: {
+      name: 'airton_bem_vindo',
+      language: { code: 'pt_BR' },
+      components: [{ type: 'body', parameters: [{ type: 'text', text: s.name || 'tudo bem' }] }],
+    },
+  });
+  if (result?.raw?.error) throw new AppError(result.raw.error.message || 'Falha no envio pela Meta.', 400);
+  res.json({ ok: true, provider: result?.provider, id: result?.id, simulated: !!result?.simulated });
 });
 
 export const remove = asyncHandler(async (req, res) => {

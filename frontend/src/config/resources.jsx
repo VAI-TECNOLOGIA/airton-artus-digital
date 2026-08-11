@@ -273,7 +273,7 @@ export const users = {
   fields: [
     { name: 'name', label: 'Nome', required: true },
     { name: 'email', label: 'E-mail', type: 'email', required: true },
-    { name: 'password', label: 'Senha', type: 'password', hint: 'Mín. 6 caracteres. Em branco ao editar = mantém a atual.' },
+    { name: 'password', label: 'Senha', type: 'password', hint: 'Opcional: em branco, a pessoa cria a própria senha pelo link enviado no WhatsApp. Ao editar, em branco mantém a atual.' },
     { name: 'role', label: 'Perfil', enumGroup: 'UserRole', required: true },
     { name: 'phone', label: 'Telefone', type: 'tel' },
     { name: 'regionId', label: 'Região', optionsFrom: 'regions' },

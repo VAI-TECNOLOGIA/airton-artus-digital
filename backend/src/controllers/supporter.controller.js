@@ -7,7 +7,9 @@ import { crudFactory } from '../utils/crudFactory.js';
 import { supporterScope } from '../utils/scope.js';
 import { sendWhatsApp } from '../services/whatsapp.service.js';
 import { SUPPORT_TYPES, SUPPORTER_STATUS } from '../utils/enums.js';
-import { nullifyEmpty, onlyDigits } from '../utils/helpers.js';
+import { nullifyEmpty, onlyDigits, brDigits } from '../utils/helpers.js';
+import { hashPassword } from '../utils/password.js';
+import { signResetToken } from '../utils/jwt.js';
 import { fallbackLatLng, linkCityByName } from '../utils/geo.js';
 
 const include = {
@@ -158,22 +160,48 @@ export const listCities = asyncHandler(async (req, res) => {
   res.json({ data: rows.map((r) => ({ name: r.cityName })).filter((r) => r.name) });
 });
 
-/** Envia o acesso/boas-vindas pela API OFICIAL (template airton_bem_vindo). */
+/** Provisiona o acesso do apoiador (telefone = login) e envia o link de definir senha pela API OFICIAL. */
 export const sendAccess = asyncHandler(async (req, res) => {
   const s = await prisma.supporter.findUnique({ where: { id: req.params.id } });
   if (!s) throw new AppError('Apoiador não encontrado', 404);
-  const phone = onlyDigits(s.whatsapp || s.phone);
+  const phone = brDigits(s.whatsapp || s.phone);
   if (!phone) throw new AppError('Apoiador sem telefone cadastrado.', 400);
+
+  // Cria (ou reaproveita) a conta de acesso; o telefone é o login.
+  let user = await prisma.user.findFirst({ where: { phone } });
+  if (!user) {
+    let email = s.email && s.email.includes('@') ? s.email.toLowerCase() : `${phone}@wa.airtonartus.app`;
+    if (await prisma.user.findUnique({ where: { email } })) email = `${phone}.${Date.now()}@wa.airtonartus.app`;
+    user = await prisma.user.create({
+      data: {
+        name: s.name || 'Apoiador',
+        email,
+        phone,
+        role: 'PARCEIRO',
+        password: await hashPassword(`${Math.random().toString(36).slice(2, 10)}Aa1!`),
+      },
+    });
+  }
+
+  // Link de "Definir senha" (token) enviado pelo template oficial.
+  const token = signResetToken({ sub: user.id });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { resetToken: token, resetTokenExpires: new Date(Date.now() + 48 * 3600_000) },
+  });
   const result = await sendWhatsApp({
     to: phone,
     template: {
-      name: 'airton_bem_vindo',
+      name: 'airton_redefinir_senha',
       language: { code: 'pt_BR' },
-      components: [{ type: 'body', parameters: [{ type: 'text', text: s.name || 'tudo bem' }] }],
+      components: [
+        { type: 'body', parameters: [{ type: 'text', text: user.name || 'tudo bem' }] },
+        { type: 'button', sub_type: 'url', index: 0, parameters: [{ type: 'text', text: token }] },
+      ],
     },
   });
   if (result?.raw?.error) throw new AppError(result.raw.error.message || 'Falha no envio pela Meta.', 400);
-  res.json({ ok: true, provider: result?.provider, id: result?.id, simulated: !!result?.simulated });
+  res.json({ ok: true, login: phone, provider: result?.provider, simulated: !!result?.simulated });
 });
 
 export const remove = asyncHandler(async (req, res) => {

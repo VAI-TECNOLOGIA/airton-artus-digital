@@ -68,8 +68,8 @@ export default function Login() {
           <p className="muted">Entre com suas credenciais da equipe.</p>
 
           <div className="field">
-            <label htmlFor="login-email">E-mail</label>
-            <input id="login-email" className="input" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <label htmlFor="login-email">E-mail ou telefone</label>
+            <input id="login-email" className="input" type="text" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="seu e-mail ou telefone" />
           </div>
           <div className="field">
             <label htmlFor="login-password">Senha</label>

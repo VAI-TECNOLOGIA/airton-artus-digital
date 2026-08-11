@@ -9,10 +9,11 @@ import { USER_ROLES } from '../utils/enums.js';
 import { nullifyEmpty } from '../utils/helpers.js';
 import { sendEmail, resetPasswordEmail } from '../services/email.service.js';
 import { notifyPasswordReset } from '../services/whatsappTemplates.service.js';
+import { brDigits } from '../utils/helpers.js';
 import env from '../config/env.js';
 
 const loginSchema = z.object({
-  email: z.string().email('E-mail inválido'),
+  email: z.string().min(3, 'Informe e-mail ou telefone'), // aceita e-mail OU telefone
   password: z.string().min(1, 'Senha obrigatória'),
 });
 
@@ -33,11 +34,10 @@ function publicUser(u) {
 }
 
 export const login = asyncHandler(async (req, res) => {
-  const { email, password } = loginSchema.parse(req.body);
-  const user = await prisma.user.findUnique({
-    where: { email: email.toLowerCase() },
-    include: { region: true },
-  });
+  const { email: identifier, password } = loginSchema.parse(req.body);
+  const user = identifier.includes('@')
+    ? await prisma.user.findUnique({ where: { email: identifier.toLowerCase() }, include: { region: true } })
+    : await prisma.user.findFirst({ where: { phone: brDigits(identifier) }, include: { region: true } });
   if (!user || !(await comparePassword(password, user.password))) {
     throw new AppError('Credenciais inválidas', 401);
   }

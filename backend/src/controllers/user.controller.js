@@ -5,6 +5,7 @@ import { AppError } from '../utils/AppError.js';
 import { hashPassword } from '../utils/password.js';
 import { USER_ROLES } from '../utils/enums.js';
 import { nullifyEmpty } from '../utils/helpers.js';
+import { notifyAccessGranted } from '../services/whatsappTemplates.service.js';
 
 const select = {
   id: true, name: true, email: true, role: true, phone: true, active: true,
@@ -43,6 +44,8 @@ export const create = asyncHandler(async (req, res) => {
     data: { ...data, email: data.email.toLowerCase(), password: await hashPassword(data.password) },
     select,
   });
+  // Acesso liberado → boas-vindas por WhatsApp (best-effort) se houver telefone.
+  await notifyAccessGranted({ name: user.name, phone: user.phone });
   res.status(201).json(user);
 });
 

@@ -8,6 +8,7 @@ import { audit } from '../utils/audit.js';
 import { USER_ROLES } from '../utils/enums.js';
 import { nullifyEmpty } from '../utils/helpers.js';
 import { sendEmail, resetPasswordEmail } from '../services/email.service.js';
+import { notifyPasswordReset } from '../services/whatsappTemplates.service.js';
 import env from '../config/env.js';
 
 const loginSchema = z.object({
@@ -93,6 +94,9 @@ export const forgotPassword = asyncHandler(async (req, res) => {
       // Não vaza a falha pro solicitante (evita enumeração); loga pra operação.
       console.error('[forgot-password] falha ao enviar e-mail:', e.message);
     }
+
+    // Também envia pelo template OFICIAL de WhatsApp (best-effort) se houver telefone.
+    await notifyPasswordReset({ name: user.name, phone: user.phone, token });
 
     return res.json({
       message,

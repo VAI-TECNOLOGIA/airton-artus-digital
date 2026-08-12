@@ -81,3 +81,6 @@ frontend/video-raw/
 
 # Screenshots crus do manual (contem dados reais) — o manual embute versoes otimizadas
 docs/img/
+
+# PDFs gerados a partir dos HTML dos docs
+docs/*.pdf

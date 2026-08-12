@@ -107,8 +107,10 @@ export default function Broadcasts() {
     <Layout title="Disparador da equipe" subtitle="Campanhas com variáveis e relatório — pronto para API Oficial">
       <div className="warning-box" style={{ marginBottom: 16 }}>
         <span>
-          Envios <strong>simulados</strong> pela arquitetura segura. Para produção, conecte um provedor oficial
-          (WhatsApp Cloud API / SMS autorizado) — sem alterar este fluxo.
+          WhatsApp oficial já <strong>conectado</strong> (Meta Cloud API), hoje em <strong>número de teste</strong> —
+          a Meta só entrega a contatos liberados no painel. Para disparar à base inteira, falta conectar o
+          <strong> número oficial</strong> da campanha e usar um <strong>modelo (template) aprovado</strong>.
+          Até lá, use esta tela para montar e segmentar as campanhas.
         </span>
       </div>
 

@@ -46,3 +46,19 @@ export function defaultMessage(supporter, candidate = 'Airton Artus') {
   }
   return `${ola} Aqui é da equipe do ${candidate}. Muito obrigado pelo seu apoio! Em breve enviaremos as novidades da pré-campanha e como você pode ajudar de perto. Conte com a gente!`;
 }
+
+/**
+ * Mensagem de ACESSO à plataforma: inclui o link para a pessoa criar a própria senha
+ * e explica que o login é o telefone dela. É o que resolve o "como a pessoa entra?".
+ */
+export function accessMessage(supporter, link, candidate = 'Airton Artus') {
+  const first = firstName(supporter?.name);
+  const ola = first ? `Olá, ${first}!` : 'Olá!';
+  const tel = prettyPhone(supporter?.whatsapp || supporter?.phone);
+  return (
+    `${ola} Aqui é da equipe do ${candidate}. Seu acesso à nossa plataforma já está liberado.\n\n` +
+    `1) Crie a sua senha neste link (vale 48 horas):\n${link}\n\n` +
+    `2) Depois, entre em app.airtonartus.com.br usando o seu telefone${tel ? ` (${tel})` : ''} e a senha que você criar.\n\n` +
+    `Qualquer dúvida, é só chamar aqui. Conte com a gente!`
+  );
+}

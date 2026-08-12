@@ -160,8 +160,14 @@ export const listCities = asyncHandler(async (req, res) => {
   res.json({ data: rows.map((r) => ({ name: r.cityName })).filter((r) => r.name) });
 });
 
-/** Provisiona o acesso do apoiador (telefone = login) e envia o link de definir senha pela API OFICIAL. */
+/**
+ * Provisiona o acesso do apoiador (telefone = login) e devolve o link de "definir senha".
+ * - mode 'link' (padrão): só gera/atualiza o token e retorna o LINK — a equipe envia pelo próprio
+ *   WhatsApp (Web/app). Funciona sempre, sem depender do número oficial nem de template aprovado.
+ * - mode 'api': além disso, dispara o template OFICIAL (airton_redefinir_senha) pela Meta.
+ */
 export const sendAccess = asyncHandler(async (req, res) => {
+  const mode = req.body?.mode === 'api' ? 'api' : 'link';
   const s = await prisma.supporter.findUnique({ where: { id: req.params.id } });
   if (!s) throw new AppError('Apoiador não encontrado', 404);
   const phone = brDigits(s.whatsapp || s.phone);
@@ -183,12 +189,21 @@ export const sendAccess = asyncHandler(async (req, res) => {
     });
   }
 
-  // Link de "Definir senha" (token) enviado pelo template oficial.
+  // Token de "definir senha" (48h). O login é sempre o telefone.
   const token = signResetToken({ sub: user.id });
   await prisma.user.update({
     where: { id: user.id },
     data: { resetToken: token, resetTokenExpires: new Date(Date.now() + 48 * 3600_000) },
   });
+  const base = req.headers.origin || process.env.PUBLIC_URL || 'https://app.airtonartus.com.br';
+  const link = `${base}/redefinir-senha?token=${encodeURIComponent(token)}`;
+
+  // Modo "link": a equipe envia pelo próprio WhatsApp — devolve login + link prontos.
+  if (mode === 'link') {
+    return res.json({ ok: true, login: phone, link, mode: 'link' });
+  }
+
+  // Modo "api": dispara o template oficial pela Meta.
   const result = await sendWhatsApp({
     to: phone,
     template: {
@@ -200,8 +215,18 @@ export const sendAccess = asyncHandler(async (req, res) => {
       ],
     },
   });
-  if (result?.raw?.error) throw new AppError(result.raw.error.message || 'Falha no envio pela Meta.', 400);
-  res.json({ ok: true, login: phone, provider: result?.provider, simulated: !!result?.simulated });
+  if (result?.raw?.error) {
+    const err = result.raw.error;
+    const code = String(err.code || err?.error_data?.code || '');
+    let msg = err.message || 'Falha no envio pela Meta.';
+    if (code === '131030' || /not in allowed list/i.test(msg)) {
+      msg = 'O WhatsApp oficial ainda está em número de TESTE — a Meta só entrega a contatos liberados no painel. Use "Abrir no WhatsApp" para enviar pelo seu número agora, ou conclua a conexão do número oficial da campanha.';
+    } else if (code === '131049' || code === '131047' || code === '131026') {
+      msg = 'A Meta não entregou a este contato agora (limite/janela de 24h ou contato indisponível). Use "Abrir no WhatsApp" para enviar manualmente.';
+    }
+    throw new AppError(msg, 400);
+  }
+  res.json({ ok: true, login: phone, link, provider: result?.provider, simulated: !!result?.simulated });
 });
 
 export const remove = asyncHandler(async (req, res) => {

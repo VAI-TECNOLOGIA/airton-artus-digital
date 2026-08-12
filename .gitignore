@@ -78,3 +78,6 @@ frontend/video-raw/
 *.p8
 *.p12
 *.mobileprovision
+
+# Screenshots crus do manual (contem dados reais) — o manual embute versoes otimizadas
+docs/img/

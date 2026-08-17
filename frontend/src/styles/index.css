@@ -2,8 +2,24 @@
    Airton Artus Digital — Design System
    Identidade oficial da pré-campanha: navy profundo + ouro
    + faixa tricolor do RS (verde · vermelho · ouro)
-   Tipografia display condensada (Anton) + Archivo/Inter
+   Tipografia display da marca (Kaisar, do KV oficial) + Archivo/Inter
    ============================================================ */
+
+/* Fonte oficial da marca (KV) — Kaisar, self-hosted (woff2 + ttf fallback) */
+@font-face {
+  font-family: 'Kaisar';
+  src: url('/fonts/Kaisar-Black.woff2') format('woff2'), url('/fonts/Kaisar-Black.ttf') format('truetype');
+  font-weight: 400 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Kaisar';
+  src: url('/fonts/Kaisar-BlackItalic.woff2') format('woff2'), url('/fonts/Kaisar-BlackItalic.ttf') format('truetype');
+  font-weight: 400 900;
+  font-style: italic;
+  font-display: swap;
+}
 
 /* ----------------------------------------------------------------
    TEMA CLARO NEUTRO (padrão) — superfícies calmas, acento pontual.
@@ -80,8 +96,8 @@
   --shadow-lg: 0 16px 48px rgba(20, 28, 40, 0.18);
   --sidebar-w: 246px;
 
-  /* Tipografia — Anton (display condensado da identidade) + Archivo/Inter */
-  --font-display: 'Anton', 'Archivo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Tipografia — Kaisar (display da marca, do KV) + Archivo/Inter */
+  --font-display: 'Kaisar', 'Archivo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-strong: 'Archivo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --candidate-photo: url('/candidato.jpg'), url('/candidato.svg');
 }

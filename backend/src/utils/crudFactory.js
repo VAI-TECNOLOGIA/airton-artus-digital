@@ -26,6 +26,9 @@ export function crudFactory(modelKey, options = {}) {
     // Efeito colateral pós-criação (ex.: push notification). Fire-and-forget:
     // erro aqui não pode derrubar a resposta do CRUD.
     afterCreate = null,
+    // Efeito colateral pós-atualização. Recebe (item, req, prev) — prev é o
+    // estado ANTES do update, pra detectar transições (ex.: status -> RESOLVIDA).
+    afterUpdate = null,
     label = modelKey,
   } = options;
 
@@ -103,8 +106,14 @@ export function crudFactory(modelKey, options = {}) {
 
   const update = asyncHandler(async (req, res) => {
     const data = await transformIn(coerce(pick(req.body, writableFields)), req);
+    const prev = afterUpdate ? await model().findUnique({ where: { id: req.params.id } }) : null;
     const item = await model().update({ where: { id: req.params.id }, data, include });
     await audit({ userId: req.user?.id, action: 'UPDATE', entity: modelKey, entityId: item.id, changes: data, ip: req.ip });
+    if (afterUpdate) {
+      Promise.resolve(afterUpdate(item, req, prev)).catch((e) =>
+        console.warn(`[${label}] afterUpdate falhou:`, e.message)
+      );
+    }
     res.json(item);
   });
 

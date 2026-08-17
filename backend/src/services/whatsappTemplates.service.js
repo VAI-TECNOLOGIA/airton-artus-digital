@@ -26,6 +26,23 @@ export async function notifyAccessGranted({ name, phone }) {
   }
 }
 
+/** Demanda resolvida — retorno ao cidadão de que a solicitação foi resolvida (UTILITY). */
+export async function notifyDemandResolved({ name, phone }) {
+  if (!phone) return;
+  try {
+    await sendWhatsApp({
+      to: phone,
+      template: {
+        name: 'airton_demanda_resolvida',
+        language: { code: LANG },
+        components: [{ type: 'body', parameters: [{ type: 'text', text: (name || '').split(' ')[0] || 'tudo bem' }] }],
+      },
+    });
+  } catch (e) {
+    console.error('[wa:demanda_resolvida] falha:', e.message);
+  }
+}
+
 /** Voluntário confirmado — mensagem de confirmação da participação (template UTILITY). */
 export async function notifyVolunteerConfirmed({ name, phone }) {
   if (!phone) return;

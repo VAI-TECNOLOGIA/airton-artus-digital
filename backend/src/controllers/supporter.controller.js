@@ -6,6 +6,7 @@ import { audit } from '../utils/audit.js';
 import { crudFactory } from '../utils/crudFactory.js';
 import { supporterScope } from '../utils/scope.js';
 import { sendWhatsApp } from '../services/whatsapp.service.js';
+import { notifyVolunteerConfirmed } from '../services/whatsappTemplates.service.js';
 import { SUPPORT_TYPES, SUPPORTER_STATUS } from '../utils/enums.js';
 import { nullifyEmpty, onlyDigits, brDigits } from '../utils/helpers.js';
 import { hashPassword } from '../utils/password.js';
@@ -381,6 +382,9 @@ export const confirmVolunteer = asyncHandler(async (req, res) => {
       changedById: req.user?.id,
     },
   });
+
+  // Jornada: avisa o voluntário pela API oficial (template aprovado, best-effort).
+  notifyVolunteerConfirmed({ name: supporter.name, phone: supporter.whatsapp || supporter.phone }).catch(() => {});
 
   res.json(updated);
 });

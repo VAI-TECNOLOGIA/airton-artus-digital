@@ -41,6 +41,7 @@ export const supporters = {
     { key: 'local', label: 'Local', render: (r) => [r.neighborhood, r.cityName].filter(Boolean).join(', ') || '—' },
     { key: 'region', label: 'Região', render: (r) => r.region?.name || '—' },
     { key: 'status', label: 'Status', render: (r) => <StatusBadge group="SupporterStatus" value={r.status} /> },
+    { key: 'createdAt', label: 'Cadastro', render: (r) => (r.createdAt ? new Date(r.createdAt).toLocaleDateString('pt-BR') : '—') },
   ],
   fields: [
     { name: 'name', label: 'Nome completo', required: true, full: true },

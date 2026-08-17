@@ -25,6 +25,18 @@ export const verifyWebhook = (req, res) => {
 export const receiveWebhook = asyncHandler(async (req, res) => {
   try {
     const value = req.body?.entry?.[0]?.changes?.[0]?.value;
+
+    // Status de entrega (sent/delivered/read/failed). Loga as FALHAS com o código
+    // da Meta para diagnosticar quando "diz enviado mas não chega".
+    for (const st of value?.statuses || []) {
+      if (st.status === 'failed') {
+        const err = st.errors?.[0] || {};
+        console.warn(
+          `[whatsapp:status] FALHA -> ${st.recipient_id} | code ${err.code} | ${err.title || err.message || ''} | ${err.error_data?.details || ''}`,
+        );
+      }
+    }
+
     const message = value?.messages?.[0];
     if (message) {
       await handleInbound({

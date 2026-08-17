@@ -26,6 +26,23 @@ export async function notifyAccessGranted({ name, phone }) {
   }
 }
 
+/** Voluntário confirmado — mensagem de confirmação da participação (template UTILITY). */
+export async function notifyVolunteerConfirmed({ name, phone }) {
+  if (!phone) return;
+  try {
+    await sendWhatsApp({
+      to: phone,
+      template: {
+        name: 'airton_voluntario_confirmado',
+        language: { code: LANG },
+        components: [{ type: 'body', parameters: [{ type: 'text', text: name || 'tudo bem' }] }],
+      },
+    });
+  } catch (e) {
+    console.error('[wa:voluntario_confirmado] falha:', e.message);
+  }
+}
+
 /** Redefinição de senha — botão dinâmico com o token no fim da URL (/redefinir-senha?token={{1}}). */
 export async function notifyPasswordReset({ name, phone, token }) {
   if (!phone || !token) return;

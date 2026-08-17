@@ -470,7 +470,9 @@ export default function Landing() {
                 <div className="mlp-field">
                   <label className="sr-only" htmlFor="join-type">Como quer ajudar</label>
                   <select id="join-type" value={form.supportType} onChange={(e) => setForm((s) => ({ ...s, supportType: e.target.value }))}>
-                    {options('SupportType').map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
+                    {options('SupportType')
+                      .filter((o) => ['VOLUNTARIO', 'FAIXA_CASA', 'ADESIVO_CARRO', 'MATERIAL_DIGITAL'].includes(o.value))
+                      .map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
                   </select>
                 </div>
                 <label className="mlp-consent">

@@ -47,7 +47,7 @@ const TILE_ATTR =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
 
 const LAYERS = [
-  { key: 'supporters',    lbl: 'Apoiadores',     color: '#1B1D39', icon: Users },
+  { key: 'supporters',    lbl: 'Apoiadores',     color: '#0B33C2', icon: Users },
   { key: 'banners',       lbl: 'Faixas',         color: '#BD2E2F', icon: MapPin },
   { key: 'streetActions', lbl: 'Ações de rua',   color: '#398254', icon: Activity },
 ];

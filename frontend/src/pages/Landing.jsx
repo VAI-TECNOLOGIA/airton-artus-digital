@@ -36,7 +36,7 @@ const CIDADES = [
 ];
 const VERBOS = ['apoia a pré-campanha!','entrou no movimento!','virou voluntário!','se juntou à caminhada!','quer o Vale mais forte!'];
 const TEMPOS = ['agora mesmo','há poucos segundos','há instantes'];
-const CORES = [['#1B1D39','#0C0D1D'],['#398254','#1D4630'],['#BD2E2F','#8A1F20'],['#B98618','#7d5a0d'],['#3554A5','#22376e']];
+const CORES = [['#0B33C2','#05186F'],['#398254','#1D4630'],['#BD2E2F','#8A1F20'],['#B98618','#7d5a0d'],['#3554A5','#22376e']];
 
 function gerarPool() {
   const pool = [];

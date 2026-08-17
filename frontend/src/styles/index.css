@@ -39,11 +39,11 @@
   color-scheme: light;
 
   /* Marca — navy oficial Airton Artus */
-  --brand: #1B1D39;
-  --brand-600: #262A52;
-  --brand-700: #14162B;
-  --brand-900: #0C0D1D;
-  --brand-soft: #E9EAF3;
+  --brand: #0B33C2;
+  --brand-600: #1747E0;
+  --brand-700: #0824A0;
+  --brand-900: #05186F;
+  --brand-soft: #E1E8FF;
   --accent: #E8AF3C;
   --accent-700: #B98618;
 
@@ -72,7 +72,7 @@
   --border: #D7DADF;
 
   /* Sidebar — navy premium (central de comando) */
-  --sidebar-bg: #14162B;
+  --sidebar-bg: #0824A0;
   --sidebar-fg: #A9ADC7;
   --sidebar-fg-strong: #ffffff;
   --sidebar-section: #6E7394;
@@ -140,10 +140,10 @@
   --sidebar-border: #1f2337;
 
   /* Navy legível sobre fundo escuro */
-  --brand: #5F67C0;
-  --brand-600: #4F57AC;
-  --brand-700: #434A97;
-  --brand-soft: rgba(95, 103, 192, 0.22);
+  --brand: #5B7CFF;
+  --brand-600: #3F5FF0;
+  --brand-700: #2E49D0;
+  --brand-soft: rgba(91, 124, 255, 0.22);
   --green-soft: rgba(58, 63, 71, 0.20);
   --amber-soft: rgba(184, 115, 10, 0.20);
   --red-soft: rgba(220, 38, 38, 0.18);
@@ -208,7 +208,7 @@ input, select, textarea { font-family: inherit; }
   background: linear-gradient(135deg, var(--brand), var(--brand-700));
   color: #fff; display: grid; place-items: center;
   font-weight: 800; font-size: 18px; flex-shrink: 0; overflow: hidden;
-  box-shadow: 0 6px 16px rgba(12, 13, 29, 0.5);
+  box-shadow: 0 6px 16px rgba(5, 24, 111, 0.5);
   border: 1px solid rgba(232, 175, 60, 0.35);
 }
 .brand-mark img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -292,7 +292,7 @@ input, select, textarea { font-family: inherit; }
 }
 .btn:hover { background: var(--border); }
 .btn:disabled { opacity: 0.55; cursor: not-allowed; }
-.btn-primary { background: linear-gradient(135deg, var(--brand-600), var(--brand-700)); color: #fff; border-color: var(--brand-700); box-shadow: 0 6px 18px rgba(20, 22, 43, 0.3); }
+.btn-primary { background: linear-gradient(135deg, var(--brand-600), var(--brand-700)); color: #fff; border-color: var(--brand-700); box-shadow: 0 6px 18px rgba(8, 36, 120, 0.3); }
 .btn-primary:hover { filter: brightness(1.05); }
 .btn-gold { background: var(--accent); color: #3a2600; border-color: var(--accent-700); }
 .btn-gold:hover { filter: brightness(1.04); }
@@ -434,8 +434,8 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .auth-visual { position: relative; overflow: hidden; background: var(--brand-900); }
 /* Foto em cores, rosto visível — tinta navy leve no topo e faixa escura só na base (legibilidade do texto) */
 .auth-photo { position: absolute; inset: 0; background-image: var(--candidate-photo); background-size: cover; background-position: center 20%; filter: saturate(0.94) contrast(1.02); }
-.auth-duo { position: absolute; inset: 0; background: linear-gradient(165deg, rgba(27,29,57,0.34) 0%, rgba(27,29,57,0.12) 40%, rgba(12,13,29,0.04) 70%); }
-.auth-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,13,29,0.30) 0%, transparent 30%, transparent 52%, rgba(8,9,20,0.92) 100%); }
+.auth-duo { position: absolute; inset: 0; background: linear-gradient(165deg, rgba(11, 51, 194,0.34) 0%, rgba(11, 51, 194,0.12) 40%, rgba(5, 24, 111,0.04) 70%); }
+.auth-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5, 24, 111,0.30) 0%, transparent 30%, transparent 52%, rgba(4, 16, 70,0.92) 100%); }
 .auth-grain { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 8px); }
 .auth-flag { position: absolute; top: 34px; right: -70px; width: 320px; height: 50px; transform: rotate(38deg); display: flex; box-shadow: 0 14px 40px rgba(0,0,0,0.4); }
 .auth-flag i { flex: 1; }
@@ -616,7 +616,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .legend-dot { width: 12px; height: 12px; border-radius: 50%; }
 
 /* ---------------- TV panel ---------------- */
-.tv { min-height: 100vh; background: radial-gradient(circle at top, #262A52, var(--brand-900) 70%); color: #fff; padding: 32px 40px; }
+.tv { min-height: 100vh; background: radial-gradient(circle at top, #1747E0, var(--brand-900) 70%); color: #fff; padding: 32px 40px; }
 .tv-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
 .tv-head h1 { font-size: 30px; font-family: var(--font-display); }
 .tv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px; }
@@ -641,7 +641,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .tv-stat .v { text-shadow: 0 4px 24px rgba(232,175,60,0.35); }
 .tv-rs .leaflet-container, .tv-rs .recharts-wrapper { background: transparent; }
 .tv-map { position: relative; height: 460px; border-radius: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.12); margin-top: 6px; }
-.tv-map .leaflet-container { height: 100%; width: 100%; background: #0C0D1D; }
+.tv-map .leaflet-container { height: 100%; width: 100%; background: #05186F; }
 .leaflet-tooltip.tv-tip { background: rgba(14,15,18,0.88); border: 1px solid rgba(232,175,60,0.55); color: #ffe9a8; font-weight: 600; font-size: 12px; padding: 3px 8px; border-radius: 7px; box-shadow: 0 4px 14px rgba(0,0,0,0.4); white-space: nowrap; }
 .leaflet-tooltip.tv-tip b { color: #fff; }
 .leaflet-tooltip.tv-tip::before { display: none; }

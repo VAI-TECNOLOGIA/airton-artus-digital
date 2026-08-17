@@ -1,20 +1,20 @@
 /* ============================================================
    Landing executiva — Airton Artus (pré-campanha 2026)
-   Identidade oficial: navy #1B1D39 + ouro #E8AF3C + tricolor RS.
+   Identidade oficial: navy #0B33C2 + ouro #E8AF3C + tricolor RS.
    Tipografia: Anton (display) · Archivo (títulos) · Inter (texto).
    Estilos 100% escopados sob `.mlp` para NÃO conflitar com o
    design system do painel (index.css).
    ============================================================ */
 
 .mlp{
-  --navy:#1B1D39; --navy-2:#262A52; --navy-deep:#0C0D1D;
+  --navy:#0B33C2; --navy-2:#1747E0; --navy-deep:#05186F;
   --gold:#E8AF3C; --gold-2:#B98618;
   --rs-green:#398254; --rs-red:#BD2E2F;
   --ink:#16181D; --muted:#5A616B;
   --line:#E7E8EF; --paper:#fff; --paper-soft:#F6F7F9; --rad:18px;
-  --sh-sm:0 4px 14px rgba(12,13,29,.06);
-  --sh:0 18px 50px rgba(12,13,29,.12);
-  --sh-lg:0 30px 80px rgba(12,13,29,.24);
+  --sh-sm:0 4px 14px rgba(5, 24, 111,.06);
+  --sh:0 18px 50px rgba(5, 24, 111,.12);
+  --sh-lg:0 30px 80px rgba(5, 24, 111,.24);
   font-family:'Inter',system-ui,sans-serif;
   color:var(--ink);background:var(--paper);line-height:1.6;
   -webkit-font-smoothing:antialiased;
@@ -69,8 +69,8 @@
 .mlp-hero{position:relative;min-height:100vh;display:flex;align-items:center;color:#fff;overflow:hidden;background:var(--navy-deep)}
 .mlp-hero-photo{position:absolute;inset:0;background-image:url('/img/hero.jpg');background-size:cover;background-position:72% 20%;filter:saturate(.72) contrast(1.04)}
 .mlp-hero-shade{position:absolute;inset:0;background:
-  linear-gradient(90deg,rgba(12,13,29,.96) 0%,rgba(12,13,29,.86) 34%,rgba(27,29,57,.45) 66%,rgba(27,29,57,.35) 100%),
-  linear-gradient(180deg,rgba(12,13,29,.35) 0%,transparent 30%,rgba(12,13,29,.9) 100%)}
+  linear-gradient(90deg,rgba(5, 24, 111,.96) 0%,rgba(5, 24, 111,.86) 34%,rgba(11, 51, 194,.45) 66%,rgba(11, 51, 194,.35) 100%),
+  linear-gradient(180deg,rgba(5, 24, 111,.35) 0%,transparent 30%,rgba(5, 24, 111,.9) 100%)}
 .mlp-hero-content{position:relative;z-index:2;padding:140px 28px 110px;max-width:1180px}
 .mlp-hero .mlp-eyebrow{color:var(--gold)}
 .mlp-hero h1{font-size:clamp(52px,7.4vw,108px);margin:24px 0 22px;text-shadow:0 10px 44px rgba(0,0,0,.45)}
@@ -110,7 +110,7 @@
 .mlp-bio{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
 .mlp-bio-photo{position:relative;border-radius:22px;overflow:hidden;box-shadow:var(--sh);position:sticky;top:110px}
 .mlp-bio-photo img{display:block;width:100%;height:auto}
-.mlp-bio-photo figcaption{position:absolute;left:0;right:0;bottom:0;padding:40px 22px 16px;background:linear-gradient(transparent,rgba(12,13,29,.85));color:#fff;font-weight:600;font-size:14px}
+.mlp-bio-photo figcaption{position:absolute;left:0;right:0;bottom:0;padding:40px 22px 16px;background:linear-gradient(transparent,rgba(5, 24, 111,.85));color:#fff;font-weight:600;font-size:14px}
 
 /* Pillars */
 .mlp-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
@@ -142,7 +142,7 @@
 .mlp-shot.wide{grid-column:1/-1;aspect-ratio:21/9}
 .mlp-shot img{width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
 .mlp-shot:hover img{transform:scale(1.04)}
-.mlp-shot figcaption{position:absolute;left:0;right:0;bottom:0;padding:44px 20px 16px;background:linear-gradient(transparent,rgba(12,13,29,.82));color:#fff;font-weight:700;font-size:14.5px;font-family:'Archivo'}
+.mlp-shot figcaption{position:absolute;left:0;right:0;bottom:0;padding:44px 20px 16px;background:linear-gradient(transparent,rgba(5, 24, 111,.82));color:#fff;font-weight:700;font-size:14.5px;font-family:'Archivo'}
 
 /* Lead magnet */
 .mlp-magnet{position:relative;border-radius:28px;overflow:hidden;color:#fff;background:radial-gradient(120% 140% at 85% 0%,var(--navy-2) 0%,var(--navy) 60%,var(--navy-deep) 100%);box-shadow:var(--sh-lg)}
@@ -196,7 +196,7 @@
 .mlp-tl p{color:var(--muted);font-size:15px}
 
 /* Social */
-.mlp-social{background:radial-gradient(120% 120% at 10% 0%,#23253F,var(--navy-deep) 70%);color:#fff;position:relative;overflow:hidden}
+.mlp-social{background:radial-gradient(120% 120% at 10% 0%,#1E4AE6,var(--navy-deep) 70%);color:#fff;position:relative;overflow:hidden}
 .mlp-social .mlp-head .mlp-eyebrow{color:var(--gold)}
 .mlp-social .mlp-head h2{color:#fff}
 .mlp-social .mlp-head p{color:rgba(255,255,255,.7)}
@@ -319,7 +319,7 @@
   .mlp-wrap{padding:0 20px}
   .mlp-block{padding:72px 0}
   .mlp-hero-content{padding:120px 20px 90px}
-  .mlp-hero-shade{background:linear-gradient(180deg,rgba(12,13,29,.88) 0%,rgba(12,13,29,.72) 45%,rgba(12,13,29,.92) 100%)}
+  .mlp-hero-shade{background:linear-gradient(180deg,rgba(5, 24, 111,.88) 0%,rgba(5, 24, 111,.72) 45%,rgba(5, 24, 111,.92) 100%)}
   .mlp-toasts{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px))}
   .mlp-toast{min-width:0;max-width:none;width:100%}
 }
@@ -327,7 +327,7 @@
 /* ============================================================
    RSVP — página pública de confirmação de presença (/convite/:token)
    ============================================================ */
-.rsvp{min-height:100vh;background:radial-gradient(120% 90% at 50% 0%,#23253F 0%,#1B1D39 45%,#0C0D1D 100%);color:#fff;font-family:'Inter',system-ui,sans-serif;display:flex;flex-direction:column}
+.rsvp{min-height:100vh;background:radial-gradient(120% 90% at 50% 0%,#1E4AE6 0%,#0B33C2 45%,#05186F 100%);color:#fff;font-family:'Inter',system-ui,sans-serif;display:flex;flex-direction:column}
 .rsvp-wrap{width:100%;max-width:540px;margin:0 auto;padding:28px 20px 40px;flex:1;display:flex;flex-direction:column}
 .rsvp-brand{text-align:center;margin:12px 0 22px}
 .rsvp-brand b{font-family:'Kaisar';font-weight:400;font-size:24px;letter-spacing:.05em;text-transform:uppercase;display:block}
@@ -335,14 +335,14 @@
 .rsvp-card{background:#fff;color:#16181D;border-radius:20px;padding:30px 26px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
 .rsvp-center{text-align:center}
 .rsvp-eyebrow{display:inline-block;font-family:'Archivo';font-weight:800;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#B98618;margin-bottom:8px}
-.rsvp-title{font-family:'Kaisar';font-weight:400;text-transform:uppercase;line-height:1.05;font-size:clamp(28px,7vw,40px);color:#1B1D39;letter-spacing:.01em}
+.rsvp-title{font-family:'Kaisar';font-weight:400;text-transform:uppercase;line-height:1.05;font-size:clamp(28px,7vw,40px);color:#0B33C2;letter-spacing:.01em}
 .rsvp-desc{color:#5A616B;margin-top:10px;font-size:15px}
 .rsvp-info{margin:20px 0;display:flex;flex-direction:column;gap:10px;padding:16px;background:#F6F7F9;border:1px solid #E7E8EF;border-radius:14px}
 .rsvp-info-row{display:flex;align-items:center;gap:11px;font-size:14.5px;font-weight:600;color:#16181D}
 .rsvp-info-row svg{color:#B98618;flex:none}
 .rsvp-social{display:inline-flex;align-items:center;gap:7px;background:#E4F4EA;color:#1D6338;font-weight:700;font-size:13px;padding:7px 13px;border-radius:50px;margin-bottom:6px}
 .rsvp-form{margin-top:18px}
-.rsvp-form h3{font-family:'Archivo';font-weight:800;font-size:17px;color:#1B1D39;margin-bottom:14px}
+.rsvp-form h3{font-family:'Archivo';font-weight:800;font-size:17px;color:#0B33C2;margin-bottom:14px}
 .rsvp-field{margin-bottom:13px}
 .rsvp-field label{display:block;font-size:13px;font-weight:600;color:#3A3F47;margin-bottom:5px}
 .rsvp-opt{color:#8A9099;font-weight:500}
@@ -359,11 +359,11 @@
 .rsvp-badge{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px}
 .rsvp-badge.green{background:#E4F4EA;color:#1D6338}
 .rsvp-badge.red{background:#F9E4E5;color:#8A1F20}
-.rsvp-badge.navy{background:#E9EAF3;color:#1B1D39}
-.rsvp-card.rsvp-center h2{font-family:'Kaisar';font-weight:400;text-transform:uppercase;color:#1B1D39;font-size:26px;letter-spacing:.01em;margin-bottom:8px}
+.rsvp-badge.navy{background:#E9EAF3;color:#0B33C2}
+.rsvp-card.rsvp-center h2{font-family:'Kaisar';font-weight:400;text-transform:uppercase;color:#0B33C2;font-size:26px;letter-spacing:.01em;margin-bottom:8px}
 .rsvp-muted{color:#5A616B;font-size:14.5px}
 .rsvp-recap{margin-top:18px;padding-top:16px;border-top:1px solid #E7E8EF}
-.rsvp-recap b{display:block;color:#1B1D39;font-size:15px}
+.rsvp-recap b{display:block;color:#0B33C2;font-size:15px}
 .rsvp-recap span{color:#5A616B;font-size:13.5px}
 .rsvp-foot{text-align:center;color:rgba(255,255,255,.55);font-size:12.5px;margin-top:24px}
 .rsvp-foot .mlp-foot-stripe{margin:0 auto 10px;width:90px}

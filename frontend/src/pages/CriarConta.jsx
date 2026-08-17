@@ -64,7 +64,7 @@ export default function CriarConta() {
         <div className="auth-slash" />
         <div className="auth-content">
           <div className="auth-top">
-            <div className="auth-name">Airton Artus · Digital</div>
+            <img src="/logo-horizontal-branco.png" alt="Airton Artus — Deputado Estadual" style={{ height: 42, width: 'auto', display: 'block' }} />
           </div>
           <div>
             <h1 className="auth-headline">

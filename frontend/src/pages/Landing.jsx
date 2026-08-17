@@ -165,10 +165,11 @@ export default function Landing() {
         <div className="mlp-tricolor" aria-hidden="true"><i className="g" /><i className="r" /><i className="y" /></div>
         <div className="mlp-wrap mlp-bar">
           <a href="#topo" className="mlp-brand">
-            <span className="wm">
-              <b>Airton Artus</b>
-              <small>Pré-candidato a Deputado Estadual · RS</small>
-            </span>
+            <img
+              src={scrolled ? '/logo-horizontal-azul.png' : '/logo-horizontal-branco.png'}
+              alt="Airton Artus — Deputado Estadual"
+              style={{ height: 40, width: 'auto', display: 'block', transition: '.3s' }}
+            />
           </a>
           <nav className="mlp-menu" aria-label="Navegação principal">
             <a className="mlp-navlink" href="#trajetoria">Trajetória</a>
@@ -494,8 +495,7 @@ export default function Landing() {
           <div className="mlp-foot-grid">
             <div>
               <div className="mlp-foot-brand">
-                <img className="mlp-mark" src="/marca.svg" alt="" width="38" height="38" />
-                <b>Airton Artus</b>
+                <img src="/logo-horizontal-branco.png" alt="Airton Artus — Deputado Estadual" style={{ height: 38, width: 'auto', display: 'block' }} />
               </div>
               <div className="mlp-foot-stripe" aria-hidden="true"><i className="g" /><i className="r" /><i className="y" /></div>
               <p style={{ maxWidth: 320 }}>Saúde, trabalho e desenvolvimento para os Vales e todo o Rio Grande do Sul.</p>

@@ -9,6 +9,7 @@ import Layout from '../components/layout/Layout.jsx';
 import api, { apiError } from '../api/client.js';
 import { label } from '../config/enums.js';
 import { formatPhone } from '../lib/format.js';
+import { waLink } from '../lib/whatsapp.js';
 import 'leaflet/dist/leaflet.css';
 
 const RS_CENTER = [-29.7, -52.0];
@@ -220,6 +221,7 @@ export default function MapView() {
 
 function Detail({ layer, p }) {
   if (layer === 'supporters') {
+    const first = String(p.name || '').trim().split(/\s+/)[0];
     return (
       <div className="map-popup">
         <div className="map-popup-title">{p.name}</div>
@@ -230,6 +232,19 @@ function Detail({ layer, p }) {
         <div className="map-popup-sub">
           {[p.neighborhood, p.cityName].filter(Boolean).join(' · ')}
         </div>
+        {p.phone && (
+          <a
+            className="map-popup-wa"
+            href={waLink(p.phone, `Olá ${first ? first : ''}!`.replace(' !', '!'))}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.9c0 1.76.46 3.45 1.34 4.95L2 22l5.3-1.39a9.9 9.9 0 0 0 4.74 1.2h.01c5.46 0 9.9-4.44 9.9-9.9C21.95 6.45 17.5 2 12.04 2Zm5.8 14.14c-.24.68-1.4 1.3-1.94 1.34-.5.05-.98.24-3.3-.69-2.79-1.1-4.55-3.96-4.69-4.15-.14-.19-1.12-1.49-1.12-2.84s.71-2.02.96-2.29c.24-.27.53-.34.71-.34.18 0 .36 0 .51.01.16.01.39-.06.6.46.24.58.79 1.99.86 2.14.07.14.11.31.02.5-.09.19-.14.31-.27.48-.14.16-.29.37-.41.49-.14.14-.28.29-.12.56.16.27.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.21 1.37.27.14.43.11.59-.07.16-.19.68-.79.86-1.06.18-.27.36-.22.6-.13.24.09 1.55.73 1.82.86.27.14.45.2.51.31.07.11.07.63-.17 1.31Z" />
+            </svg>
+            Chamar no WhatsApp
+          </a>
+        )}
       </div>
     );
   }

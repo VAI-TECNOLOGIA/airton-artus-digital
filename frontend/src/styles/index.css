@@ -20,14 +20,6 @@
   font-style: italic;
   font-display: swap;
 }
-/* Fonte oficial de NÚMEROS (KV) — Tusker Grotesk (condensada), self-hosted */
-@font-face {
-  font-family: 'Tusker Grotesk';
-  src: url('/fonts/Tusker-2700Bold.woff2') format('woff2'), url('/fonts/Tusker-2700Bold.ttf') format('truetype');
-  font-weight: 400 900;
-  font-style: normal;
-  font-display: swap;
-}
 
 /* ----------------------------------------------------------------
    TEMA CLARO NEUTRO (padrão) — superfícies calmas, acento pontual.
@@ -106,7 +98,9 @@
 
   /* Tipografia — Kaisar (display da marca, do KV) + Archivo/Inter */
   --font-display: 'Kaisar', 'Archivo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  --font-number: 'Tusker Grotesk', 'Kaisar', 'Archivo', sans-serif;
+  /* Números de dados (KPIs, stats): sans legível com dígitos tabulares.
+     A Tusker (condensada do KV) é só para o número-arte gigante, nunca para dados. */
+  --font-number: 'Archivo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --font-strong: 'Archivo', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --candidate-photo: url('/candidato.jpg'), url('/candidato.svg');
 }
@@ -177,8 +171,8 @@ a { color: inherit; text-decoration: none; }
 h1, h2, h3, h4 { margin: 0; font-weight: 700; letter-spacing: -0.01em; font-family: var(--font-strong); }
 .display { font-family: var(--font-display); letter-spacing: 0.2px; }
 /* Anton é single-weight (400): evita negrito sintético nos usos do display */
-.stat-meta .stat-value, .auth-number, .auth-headline, .auth-card h3, .code-badge b,
-.tv-head h1, .tv-stat .v, .display { font-weight: 400; letter-spacing: 0.02em; }
+.auth-number, .auth-headline, .auth-card h3, .code-badge b,
+.tv-head h1, .display { font-weight: 400; letter-spacing: 0.02em; }
 button { font-family: inherit; cursor: pointer; }
 input, select, textarea { font-family: inherit; }
 
@@ -330,7 +324,7 @@ input, select, textarea { font-family: inherit; }
 /* ---------------- Stat card ---------------- */
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; align-items: flex-start; justify-content: space-between; box-shadow: var(--shadow-sm); }
 .stat-meta .stat-label { font-size: 12.5px; color: var(--muted); font-weight: 500; }
-.stat-meta .stat-value { font-size: 36px; font-weight: 700; letter-spacing: 0; margin-top: 2px; font-family: var(--font-number); line-height: 1.05; }
+.stat-meta .stat-value { font-size: 34px; font-weight: 800; letter-spacing: -0.01em; margin-top: 2px; font-family: var(--font-number); font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; line-height: 1.05; color: var(--ink); }
 .stat-meta .stat-hint { font-size: 11.5px; color: var(--muted-2); margin-top: 4px; }
 .stat-icon { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; flex-shrink: 0; }
 .stat-icon.red { background: var(--brand-soft); color: var(--brand); }
@@ -381,6 +375,11 @@ input, select, textarea { font-family: inherit; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; }
 .form-grid .full { grid-column: 1 / -1; }
 .field-hint { font-size: 11.5px; color: var(--muted); }
+.tpl-preview {
+  background: var(--brand-soft); border: 1px solid var(--brand-100, rgba(11,51,194,0.18));
+  border-radius: 10px; padding: 12px 14px; font-size: 13px; line-height: 1.5;
+  color: var(--ink-700); white-space: pre-wrap;
+}
 .field-error { font-size: 11.5px; color: var(--red); }
 /* Bug 10: campo inválido */
 .input[aria-invalid="true"], .select[aria-invalid="true"], .textarea[aria-invalid="true"] { border-color: var(--red); box-shadow: 0 0 0 3px var(--red-soft); }
@@ -621,7 +620,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .tv-head h1 { font-size: 30px; font-family: var(--font-display); }
 .tv-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 24px; }
 .tv-stat { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 18px; padding: 24px; }
-.tv-stat .v { font-size: 52px; font-weight: 700; color: var(--accent); font-family: var(--font-number); }
+.tv-stat .v { font-size: 52px; font-weight: 800; letter-spacing: -0.01em; color: var(--accent); font-family: var(--font-number); font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
 .tv-stat .l { color: #C9CCE3; font-size: 15px; }
 .tv-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .tv-card { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 18px; padding: 22px; }
@@ -1173,6 +1172,16 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 }
 .map-popup-line { font-size: 12.5px; color: var(--ink-600); margin-bottom: 3px; }
 .map-popup-sub { font-size: 11.5px; color: var(--muted); margin-top: 2px; }
+.map-popup-wa {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 10px; padding: 7px 12px; border-radius: 9px;
+  background: #25D366; color: #ffffff !important;
+  font-size: 12.5px; font-weight: 700; line-height: 1;
+  box-shadow: 0 4px 12px rgba(37,211,102,0.35);
+  transition: filter .15s, transform .15s;
+}
+.map-popup-wa:hover { filter: brightness(1.05); transform: translateY(-1px); }
+.map-popup-wa svg { flex: none; }
 
 /* Zoom control refinado */
 .leaflet-control-zoom {

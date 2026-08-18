@@ -5,6 +5,12 @@ import { AppError } from '../utils/AppError.js';
 import { sendViaChannel, renderTemplate } from '../services/messaging.service.js';
 import { optedOutPhones } from '../services/privacy.service.js';
 import { CHANNELS } from '../utils/enums.js';
+import { CAMPAIGN_TEMPLATES, findTemplate, buildTemplatePayload } from '../config/waTemplates.js';
+
+// Catálogo de templates oficiais aprovados disponíveis para campanha.
+export const templates = asyncHandler(async (_req, res) => {
+  res.json({ data: CAMPAIGN_TEMPLATES });
+});
 
 export const list = asyncHandler(async (req, res) => {
   const where = {};
@@ -30,16 +36,35 @@ const schema = z.object({
   name: z.string().min(2),
   message: z.string().min(2),
   channel: z.enum(CHANNELS).optional(),
+  templateName: z.string().nullable().optional(),
+  templateVars: z.record(z.string()).nullable().optional(),
   scheduledAt: z.string().nullable().optional(),
 });
 
 export const create = asyncHandler(async (req, res) => {
   const data = schema.parse(req.body);
+
+  // Se a campanha usa template oficial, valida o nome e as variáveis fixas.
+  let templateName = null;
+  let templateVars = null;
+  if (data.templateName) {
+    const tpl = findTemplate(data.templateName);
+    if (!tpl) throw new AppError('Template não encontrado ou indisponível para campanha.', 400);
+    const fixed = tpl.vars.filter((v) => !v.auto);
+    const vars = data.templateVars || {};
+    const missing = fixed.filter((v) => !String(vars[v.key] || '').trim()).map((v) => v.label || v.key);
+    if (missing.length) throw new AppError(`Preencha as variáveis do template: ${missing.join(', ')}.`, 400);
+    templateName = tpl.name;
+    templateVars = Object.fromEntries(fixed.map((v) => [v.key, String(vars[v.key]).trim()]));
+  }
+
   const c = await prisma.broadcastCampaign.create({
     data: {
       name: data.name,
       message: data.message,
       channel: data.channel || 'WHATSAPP',
+      templateName,
+      templateVars,
       scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : null,
       ownerId: req.user?.id,
     },
@@ -95,6 +120,9 @@ export const send = asyncHandler(async (req, res) => {
   // explícito pra ficar visível no relatório da campanha.
   const optedOut = await optedOutPhones(batch.map((c) => c.phone));
 
+  // Campanha via template oficial (entrega fora da janela de 24h) vs texto livre.
+  const tpl = campaign.templateName ? findTemplate(campaign.templateName) : null;
+
   let sent = 0;
   let failed = 0;
   for (const c of batch) {
@@ -106,9 +134,14 @@ export const send = asyncHandler(async (req, res) => {
       failed++;
       continue;
     }
-    const body = renderTemplate(campaign.message, { nome: c.name, cidade: c.cityName, bairro: c.neighborhood, responsavel: c.responsible });
     try {
-      await sendViaChannel(campaign.channel, { to: c.phone, body });
+      if (tpl) {
+        const template = buildTemplatePayload(tpl, { name: c.name, phone: c.phone }, campaign.templateVars || {});
+        await sendViaChannel(campaign.channel, { to: c.phone, template });
+      } else {
+        const body = renderTemplate(campaign.message, { nome: c.name, cidade: c.cityName, bairro: c.neighborhood, responsavel: c.responsible });
+        await sendViaChannel(campaign.channel, { to: c.phone, body });
+      }
       await prisma.broadcastContact.update({ where: { id: c.id }, data: { status: 'ENVIADO', sentAt: new Date() } });
       sent++;
     } catch (e) {

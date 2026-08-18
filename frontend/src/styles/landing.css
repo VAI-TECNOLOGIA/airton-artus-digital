@@ -79,7 +79,7 @@
 .mlp-cta{display:flex;gap:16px;flex-wrap:wrap}
 .mlp-trust{display:flex;align-items:center;gap:14px;margin-top:42px;flex-wrap:wrap}
 .mlp-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);padding:8px 15px;border-radius:50px;font-weight:600;color:rgba(255,255,255,.85);font-size:14px}
-.mlp-pill b{color:var(--gold);font-family:var(--font-number);font-weight:400;letter-spacing:.03em}
+.mlp-pill b{color:var(--gold);font-family:var(--font-number);font-weight:700;letter-spacing:0;font-variant-numeric:tabular-nums}
 .mlp-scroll{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.6);font-size:12px;letter-spacing:.2em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px}
 .mlp-mouse{width:24px;height:38px;border:2px solid rgba(255,255,255,.5);border-radius:14px;position:relative}
 .mlp-mouse::after{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:4px;height:7px;border-radius:3px;background:rgba(255,255,255,.7);animation:mlp-wheel 1.6s infinite}
@@ -103,7 +103,7 @@
 .mlp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
 .mlp-stat{text-align:center;padding:34px 18px;border-radius:var(--rad);background:#fff;box-shadow:var(--sh-sm);border:1px solid var(--line);position:relative;overflow:hidden}
 .mlp-stat::before{content:"";position:absolute;left:0;top:0;height:4px;width:100%;background:linear-gradient(90deg,var(--rs-green) 0 33.3%,var(--rs-red) 33.3% 66.6%,var(--gold) 66.6%)}
-.mlp-stat b{font-family:var(--font-number);font-size:clamp(38px,4.4vw,58px);font-weight:400;color:var(--navy);display:block;line-height:1;letter-spacing:0}
+.mlp-stat b{font-family:var(--font-number);font-size:clamp(38px,4.4vw,58px);font-weight:800;color:var(--navy);display:block;line-height:1;letter-spacing:-0.01em;font-variant-numeric:tabular-nums}
 .mlp-stat span{color:var(--muted);font-weight:600;font-size:14.5px;margin-top:8px;display:block}
 
 /* Bio / trajetória */
@@ -132,7 +132,7 @@
 .mlp-result{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);border-radius:var(--rad);padding:30px 26px;transition:.3s;position:relative;overflow:hidden}
 .mlp-result:hover{transform:translateY(-6px);background:rgba(255,255,255,.08);border-color:rgba(232,175,60,.4)}
 .mlp-result .ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:rgba(232,175,60,.16);color:var(--gold);margin-bottom:18px}
-.mlp-result b{font-family:var(--font-number);font-weight:400;font-size:clamp(32px,3.2vw,46px);color:var(--gold);display:block;line-height:1;letter-spacing:0}
+.mlp-result b{font-family:var(--font-number);font-weight:800;font-size:clamp(32px,3.2vw,46px);color:var(--gold);display:block;line-height:1;letter-spacing:-0.01em;font-variant-numeric:tabular-nums}
 .mlp-result h3{font-size:16.5px;font-weight:800;margin:10px 0 8px;color:#fff}
 .mlp-result p{color:rgba(255,255,255,.68);font-size:13.5px}
 

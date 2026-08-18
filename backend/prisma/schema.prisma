@@ -752,6 +752,8 @@ model BroadcastCampaign {
   message     String
   channel     Channel  @default(WHATSAPP)
   status      BroadcastStatus @default(RASCUNHO)
+  templateName String?          // template oficial aprovado (null = texto livre)
+  templateVars Json?            // valores fixos das variáveis do template (evento/data/local...)
   scheduledAt DateTime?
   totalContacts Int    @default(0)
   sentCount     Int    @default(0)

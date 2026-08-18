@@ -34,7 +34,7 @@ const CIDADES = [
   'Caxias do Sul','Bento Gonçalves','Farroupilha','Passo Fundo','Santa Maria','Erechim','Ijuí','Santo Ângelo',
   'Pelotas','Rio Grande','Bagé','Uruguaiana','Alegrete','Gramado','Canela','Torres','Osório','Tramandaí',
 ];
-const VERBOS = ['apoia a pré-campanha!','entrou no movimento!','virou voluntário!','se juntou à caminhada!','quer o Vale mais forte!'];
+const VERBOS = ['apoia a campanha!','entrou no movimento!','virou voluntário!','se juntou à caminhada!','quer o Vale mais forte!'];
 const TEMPOS = ['agora mesmo','há poucos segundos','há instantes'];
 const CORES = [['#0B33C2','#05186F'],['#398254','#1D4630'],['#BD2E2F','#8A1F20'],['#B98618','#7d5a0d'],['#3554A5','#22376e']];
 
@@ -62,7 +62,7 @@ export default function Landing() {
   const [stats, setStats] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
-  // imã — propostas da pré-campanha
+  // imã — propostas da campanha
   const [lead, setLead] = useState({ name: '', email: '', phone: '' });
   const [leadSent, setLeadSent] = useState(false);
   const [leadSending, setLeadSending] = useState(false);
@@ -327,7 +327,7 @@ export default function Landing() {
               <div>
                 <span className="mlp-eyebrow">Material exclusivo · Grátis</span>
                 <h2>Receba as propostas completas</h2>
-                <p>Deixe seu contato e receba no WhatsApp o material da pré-campanha — prioridades por área, agenda de encontros e as novidades em primeira mão.</p>
+                <p>Deixe seu contato e receba no WhatsApp o material da campanha — prioridades por área, agenda de encontros e as novidades em primeira mão.</p>
                 <ul>
                   <li><Check size={22} /> Prioridades detalhadas por área</li>
                   <li><Check size={22} /> Resultados e prestação de contas</li>
@@ -350,7 +350,7 @@ export default function Landing() {
                     <div className="mlp-field"><label className="sr-only" htmlFor="lead-email">E-mail (opcional)</label><input id="lead-email" type="email" placeholder="Seu e-mail (opcional)" value={lead.email} onChange={(e) => setLead((s) => ({ ...s, email: e.target.value }))} /></div>
                     <label className="mlp-consent">
                       <input type="checkbox" required />
-                      <span>Autorizo o uso dos meus dados para receber comunicações da pré-campanha, conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>.</span>
+                      <span>Autorizo o uso dos meus dados para receber comunicações da campanha, conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>.</span>
                     </label>
                     <button className="mlp-btn mlp-btn--primary mlp-btn--block" disabled={leadSending}>
                       {leadSending ? 'Enviando...' : 'Quero receber as propostas'}
@@ -381,7 +381,7 @@ export default function Landing() {
           <div className="mlp-head mlp-reveal">
             <span className="mlp-eyebrow">Vem com a gente</span>
             <h2>Acompanhe de perto</h2>
-            <p>Bastidores, agenda e conquistas da pré-campanha em primeira mão. Siga, comente e compartilhe — sua voz fortalece o movimento.</p>
+            <p>Bastidores, agenda e conquistas da campanha em primeira mão. Siga, comente e compartilhe — sua voz fortalece o movimento.</p>
           </div>
           <div className="mlp-soc-grid">
             <a href="https://instagram.com/airton.artus" target="_blank" rel="noopener noreferrer" className="mlp-soc ig mlp-reveal">
@@ -404,7 +404,7 @@ export default function Landing() {
               </div>
               <div>
                 <h3>WhatsApp</h3>
-                <div className="handle">Grupos da pré-campanha</div>
+                <div className="handle">Grupos da campanha</div>
                 <span className="go">Quero entrar <ArrowRight size={16} /></span>
               </div>
               <span className="bgnum">W</span>
@@ -478,7 +478,7 @@ export default function Landing() {
                 </div>
                 <label className="mlp-consent">
                   <input type="checkbox" required />
-                  <span>Declaro meu apoio de forma livre e autorizo o tratamento dos meus dados pela pré-campanha, conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>. Posso sair da base a qualquer momento.</span>
+                  <span>Declaro meu apoio de forma livre e autorizo o tratamento dos meus dados pela campanha, conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>. Posso sair da base a qualquer momento.</span>
                 </label>
                 <button className="mlp-btn mlp-btn--primary mlp-btn--block" disabled={sending}>
                   {sending ? 'Enviando...' : 'Quero participar'}

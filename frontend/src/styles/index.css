@@ -430,11 +430,11 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 
 /* ---------------- Login (identidade Airton Artus) ---------------- */
 .auth { min-height: 100vh; min-height: 100dvh; display: grid; grid-template-columns: 1.15fr 0.85fr; background: var(--brand-900); }
-.auth-visual { position: relative; overflow: hidden; background: var(--brand-900); }
-/* Foto em cores, rosto visível — tinta navy leve no topo e faixa escura só na base (legibilidade do texto) */
-.auth-photo { position: absolute; inset: 0; background-image: var(--candidate-photo); background-size: cover; background-position: center 20%; filter: saturate(0.94) contrast(1.02); }
-.auth-duo { position: absolute; inset: 0; background: linear-gradient(165deg, rgba(11, 51, 194,0.34) 0%, rgba(11, 51, 194,0.12) 40%, rgba(5, 24, 111,0.04) 70%); }
-.auth-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(5, 24, 111,0.30) 0%, transparent 30%, transparent 52%, rgba(4, 16, 70,0.92) 100%); }
+.auth-visual { position: relative; overflow: hidden; background: radial-gradient(120% 90% at 50% 0%, #1E4AE6 0%, #0B33C2 45%, #05186F 100%); }
+/* Foto em cores, rosto visível — duotone no AZUL VIVO da campanha + base azul (identidade + legibilidade) */
+.auth-photo { position: absolute; inset: 0; background-image: var(--candidate-photo); background-size: cover; background-position: center 20%; filter: saturate(0.98) contrast(1.02); }
+.auth-duo { position: absolute; inset: 0; background: linear-gradient(165deg, rgba(11, 51, 194,0.52) 0%, rgba(23, 71, 224,0.20) 42%, rgba(30, 74, 230,0.08) 72%); mix-blend-mode: multiply; }
+.auth-shade { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(11, 51, 194,0.34) 0%, transparent 28%, transparent 48%, rgba(8, 36, 160,0.86) 100%); }
 .auth-grain { position: absolute; inset: 0; background: repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0 2px, transparent 2px 8px); }
 .auth-flag { position: absolute; top: 34px; right: -70px; width: 320px; height: 50px; transform: rotate(38deg); display: flex; box-shadow: 0 14px 40px rgba(0,0,0,0.4); }
 .auth-flag i { flex: 1; }

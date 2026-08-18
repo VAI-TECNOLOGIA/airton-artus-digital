@@ -60,7 +60,7 @@ export default function Rsvp() {
       <div className="mlp-tricolor" aria-hidden="true"><i className="g" /><i className="r" /><i className="y" /></div>
       <div className="rsvp-wrap">
         <div className="rsvp-brand">
-          <b>Airton Artus</b>
+          <img src="/logo-horizontal-branco.png" alt="Airton Artus" className="rsvp-logo" />
           <small>Pré-candidato a Deputado Estadual · RS</small>
         </div>
 
@@ -143,7 +143,7 @@ export default function Rsvp() {
 
         <div className="rsvp-foot">
           <div className="mlp-foot-stripe" aria-hidden="true"><i className="g" /><i className="r" /><i className="y" /></div>
-          Airton Artus · Pré-campanha 2026
+          Airton Artus · Campanha 2026
         </div>
       </div>
     </div>

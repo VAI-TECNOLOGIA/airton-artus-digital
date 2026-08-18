@@ -12,6 +12,21 @@ export const templates = asyncHandler(async (_req, res) => {
   res.json({ data: CAMPAIGN_TEMPLATES });
 });
 
+/** Valida a escolha de template + variáveis fixas. Retorna {templateName, templateVars} ou lança. */
+function resolveTemplateSelection(templateName, templateVars) {
+  if (!templateName) return { templateName: null, templateVars: null };
+  const tpl = findTemplate(templateName);
+  if (!tpl) throw new AppError('Template não encontrado ou indisponível para campanha.', 400);
+  const fixed = tpl.vars.filter((v) => !v.auto);
+  const vars = templateVars || {};
+  const missing = fixed.filter((v) => !String(vars[v.key] || '').trim()).map((v) => v.label || v.key);
+  if (missing.length) throw new AppError(`Preencha as variáveis do template: ${missing.join(', ')}.`, 400);
+  return {
+    templateName: tpl.name,
+    templateVars: Object.fromEntries(fixed.map((v) => [v.key, String(vars[v.key]).trim()])),
+  };
+}
+
 export const list = asyncHandler(async (req, res) => {
   const where = {};
   if (req.query.status) where.status = req.query.status;
@@ -43,20 +58,7 @@ const schema = z.object({
 
 export const create = asyncHandler(async (req, res) => {
   const data = schema.parse(req.body);
-
-  // Se a campanha usa template oficial, valida o nome e as variáveis fixas.
-  let templateName = null;
-  let templateVars = null;
-  if (data.templateName) {
-    const tpl = findTemplate(data.templateName);
-    if (!tpl) throw new AppError('Template não encontrado ou indisponível para campanha.', 400);
-    const fixed = tpl.vars.filter((v) => !v.auto);
-    const vars = data.templateVars || {};
-    const missing = fixed.filter((v) => !String(vars[v.key] || '').trim()).map((v) => v.label || v.key);
-    if (missing.length) throw new AppError(`Preencha as variáveis do template: ${missing.join(', ')}.`, 400);
-    templateName = tpl.name;
-    templateVars = Object.fromEntries(fixed.map((v) => [v.key, String(vars[v.key]).trim()]));
-  }
+  const { templateName, templateVars } = resolveTemplateSelection(data.templateName, data.templateVars);
 
   const c = await prisma.broadcastCampaign.create({
     data: {
@@ -176,6 +178,37 @@ export const send = asyncHandler(async (req, res) => {
 export const pause = asyncHandler(async (req, res) => {
   const c = await prisma.broadcastCampaign.update({ where: { id: req.params.id }, data: { status: 'PAUSADA' } });
   res.json({ ok: true, status: c.status });
+});
+
+/** Vincula (ou remove) um template oficial numa campanha já criada. */
+export const setTemplate = asyncHandler(async (req, res) => {
+  const { templateName, templateVars } = resolveTemplateSelection(req.body.templateName, req.body.templateVars);
+  const c = await prisma.broadcastCampaign.update({
+    where: { id: req.params.id },
+    data: { templateName, templateVars },
+  });
+  res.json(c);
+});
+
+/**
+ * Reinicia o envio: volta os contatos ENVIADO/FALHA para PENDENTE e zera os
+ * contadores — permite reenviar a campanha (ex.: depois de vincular um template
+ * às que "não dispararam" por terem ido como texto livre fora da janela de 24h).
+ */
+export const resetContacts = asyncHandler(async (req, res) => {
+  const campaignId = req.params.id;
+  const campaign = await prisma.broadcastCampaign.findUnique({ where: { id: campaignId } });
+  if (!campaign) throw new AppError('Campanha não encontrada', 404);
+  await prisma.broadcastContact.updateMany({
+    where: { campaignId, status: { in: ['ENVIADO', 'FALHA'] } },
+    data: { status: 'PENDENTE', error: null, sentAt: null },
+  });
+  const total = await prisma.broadcastContact.count({ where: { campaignId } });
+  const c = await prisma.broadcastCampaign.update({
+    where: { id: campaignId },
+    data: { sentCount: 0, failedCount: 0, pendingCount: total, status: 'RASCUNHO' },
+  });
+  res.json({ ok: true, pending: total, status: c.status });
 });
 
 export const remove = asyncHandler(async (req, res) => {

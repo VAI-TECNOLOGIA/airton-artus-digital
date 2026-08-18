@@ -39,7 +39,7 @@ export default function CriarConta() {
         cityName: form.cityName.trim() || null,
         password: form.password,
       });
-      toast.success('Conta criada! Bem-vindo à pré-campanha!');
+      toast.success('Conta criada! Bem-vindo à campanha!');
       nav('/');
     } catch (err) {
       toast.error(apiError(err, 'Não foi possível criar a conta. Tente novamente.'));
@@ -68,7 +68,7 @@ export default function CriarConta() {
           </div>
           <div>
             <h1 className="auth-headline">
-              Faça parte da <em>pré-campanha</em>
+              Faça parte da <em>campanha</em>
             </h1>
             <p className="auth-tagline">
               Crie a sua conta em segundos e entre para a rede de apoiadores de Airton Artus.

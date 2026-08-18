@@ -20,7 +20,7 @@ export default function Login() {
     setSubmitting(true);
     try {
       await login(email, password);
-      toast.success('Bem-vindo à central da pré-campanha!');
+      toast.success('Bem-vindo à central da campanha!');
       nav('/');
     } catch (err) {
       toast.error(apiError(err, 'Não foi possível entrar. Verifique suas credenciais.'));
@@ -51,10 +51,10 @@ export default function Login() {
             <h1 className="auth-headline">
               A central de <em>comando</em>
               <br />
-              da pré-campanha
+              da campanha
             </h1>
             <p className="auth-tagline">
-              Mobilização, dados, atendimento e território — a pré-campanha de Airton Artus
+              Mobilização, dados, atendimento e território — a campanha de Airton Artus
               numa só plataforma.
             </p>
           </div>
@@ -88,7 +88,7 @@ export default function Login() {
           <div className="auth-links">
             <Link to="/esqueci-senha" className="auth-back">Esqueci minha senha</Link>
             <Link to="/lp" className="auth-back">
-              <ArrowLeft size={14} /> Conhecer a pré-campanha
+              <ArrowLeft size={14} /> Conhecer a campanha
             </Link>
           </div>
 

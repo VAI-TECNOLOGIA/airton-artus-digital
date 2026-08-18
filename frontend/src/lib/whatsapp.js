@@ -44,7 +44,7 @@ export function defaultMessage(supporter, candidate = 'Airton Artus') {
   if (isVolunteer && !confirmed) {
     return `${ola} Aqui é da equipe do ${candidate}. Recebemos seu cadastro como voluntário(a) — que bom ter você com a gente! Para confirmar sua participação, responda *SIM*. Juntos pelo Rio Grande!`;
   }
-  return `${ola} Aqui é da equipe do ${candidate}. Muito obrigado pelo seu apoio! Em breve enviaremos as novidades da pré-campanha e como você pode ajudar de perto. Conte com a gente!`;
+  return `${ola} Aqui é da equipe do ${candidate}. Muito obrigado pelo seu apoio! Em breve enviaremos as novidades da campanha e como você pode ajudar de perto. Conte com a gente!`;
 }
 
 /**

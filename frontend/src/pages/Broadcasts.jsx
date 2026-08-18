@@ -19,7 +19,10 @@ export default function Broadcasts() {
   const [templates, setTemplates] = useState([]);
   const [createOpen, setCreateOpen] = useState(false);
   const [form, setForm] = useState({});
+  const [tplForm, setTplForm] = useState({});
+  const [savingTpl, setSavingTpl] = useState(false);
   const selectedTpl = templates.find((t) => t.name === form.templateName) || null;
+  const detailTpl = templates.find((t) => t.name === tplForm.templateName) || null;
   const [detail, setDetail] = useState(null);
   const [csv, setCsv] = useState('nome,telefone,cidade,bairro\nMaria,5551999990000,Porto Alegre,Centro');
   const [sendingState, setSendingState] = useState(null); // { sent, failed, total, pct } | null
@@ -81,6 +84,40 @@ export default function Broadcasts() {
   async function openDetail(row) {
     const { data } = await api.get(`/broadcasts/${row.id}`);
     setDetail(data);
+    setTplForm({ templateName: data.templateName || null, templateVars: data.templateVars || {} });
+  }
+
+  function pickDetailTemplate(name) {
+    setTplForm({ templateName: name || null, templateVars: {} });
+  }
+
+  async function saveTemplate() {
+    setSavingTpl(true);
+    try {
+      await api.post(`/broadcasts/${detail.id}/template`, {
+        templateName: tplForm.templateName || null,
+        templateVars: tplForm.templateVars || {},
+      });
+      toast.success(tplForm.templateName ? 'Modelo vinculado à campanha!' : 'Modelo removido (voltou a texto livre).');
+      openDetail(detail);
+      load();
+    } catch (e) {
+      toast.error(apiError(e));
+    } finally {
+      setSavingTpl(false);
+    }
+  }
+
+  async function resetSend() {
+    if (!window.confirm('Reiniciar o envio? Todos os contatos voltam para "pendente" e a campanha poderá ser disparada de novo.')) return;
+    try {
+      const { data } = await api.post(`/broadcasts/${detail.id}/reset`);
+      toast.success(`Envio reiniciado — ${data.pending} contatos pendentes.`);
+      openDetail(detail);
+      load();
+    } catch (e) {
+      toast.error(apiError(e));
+    }
   }
   async function importContacts() {
     try {
@@ -229,6 +266,48 @@ export default function Broadcasts() {
           <div className="field">
             <label>Mensagem</label>
             <div className="media-caption">{detail.message}</div>
+          </div>
+
+          {/* Vincular modelo oficial — sem template, campanha não entrega à base fria. */}
+          <div className="field">
+            <label>Modelo oficial (API) — necessário para disparar à base</label>
+            <select className="select" value={tplForm.templateName || ''} onChange={(e) => pickDetailTemplate(e.target.value)}>
+              <option value="">Texto livre (só entrega na janela de 24h)</option>
+              <optgroup label="Modelos aprovados (entregam mesmo sem conversa aberta)">
+                {templates.map((t) => (
+                  <option key={t.name} value={t.name}>{t.label} · {t.category === 'UTILITY' ? 'Utilidade' : 'Marketing'}</option>
+                ))}
+              </optgroup>
+            </select>
+            {detailTpl ? (
+              <div className="field-hint">{detailTpl.description}</div>
+            ) : (
+              <div className="field-hint" style={{ color: '#B45309' }}>
+                Sem modelo, esta campanha só chega a quem falou com o número nas últimas 24h — é por isso que “não dispara”.
+              </div>
+            )}
+          </div>
+          {detailTpl && detailTpl.vars.filter((v) => !v.auto).map((v) => (
+            <Field
+              key={v.key}
+              field={{ name: v.key, label: v.label, required: true, placeholder: v.placeholder }}
+              value={tplForm.templateVars?.[v.key] || ''}
+              onChange={(n, val) => setTplForm((s) => ({ ...s, templateVars: { ...(s.templateVars || {}), [n]: val } }))}
+            />
+          ))}
+          {detailTpl && (
+            <div className="field">
+              <label>Prévia da mensagem</label>
+              <div className="tpl-preview">{renderPreview(detailTpl, tplForm.templateVars || {})}</div>
+            </div>
+          )}
+          <div className="flex gap-8" style={{ marginBottom: 16 }}>
+            <button className="btn btn-primary" onClick={saveTemplate} disabled={savingTpl}>
+              {savingTpl ? 'Salvando…' : 'Salvar modelo'}
+            </button>
+            {(detail.sentCount > 0 || detail.failedCount > 0) && (
+              <button className="btn" onClick={resetSend} disabled={!!sendingState}>Reiniciar envio</button>
+            )}
           </div>
 
           <div className="field">

@@ -11,7 +11,8 @@ import { SUPPORT_TYPES, SUPPORTER_STATUS } from '../utils/enums.js';
 import { nullifyEmpty, onlyDigits, brDigits } from '../utils/helpers.js';
 import { hashPassword } from '../utils/password.js';
 import { signResetToken } from '../utils/jwt.js';
-import { fallbackLatLng, linkCityByName } from '../utils/geo.js';
+import { fallbackLatLng } from '../utils/geo.js';
+import { resolveCity, cleanPlace, canonicalCityName } from '../utils/cityNormalize.js';
 
 const include = {
   region: { select: { id: true, name: true } },
@@ -55,13 +56,6 @@ const createSchema = z.object({
   coordinatorId: z.string().uuid().nullable().optional(),
 });
 
-/** Normaliza cidade: trim + espaço único + Title Case (preserva acentos) — reduz duplicidade. */
-function normCity(s) {
-  if (!s) return s;
-  return s.trim().replace(/\s+/g, ' ').toLowerCase()
-    .replace(/(^|[\s\-'])(\p{L})/gu, (_, sep, ch) => sep + ch.toUpperCase());
-}
-
 export const create = asyncHandler(async (req, res) => {
   const data = createSchema.parse(nullifyEmpty(req.body));
   const phone = onlyDigits(data.phone);
@@ -88,17 +82,14 @@ export const create = asyncHandler(async (req, res) => {
     });
   }
 
-  // Conexão com o mapa: sem lat/lng manual, usa centroide da cidade + jitter.
-  // Sem cityId, tenta vincular pela cidade digitada (habilita filtro por região).
-  if (!data.cityId && data.cityName) {
-    const city = await linkCityByName(prisma, data.cityName);
-    if (city) {
-      data.cityId = city.id;
-      if (!data.regionId) data.regionId = city.regionId;
-      data.cityName = city.name; // nome canônico da tabela City
-    }
+  // Padrão de cidade: nome canônico (colapsa acento/caixa/espaço/typo) + vínculo
+  // cityId/regionId quando existe na tabela City. Único ponto de verdade.
+  if (data.cityName) {
+    const r = await resolveCity(prisma, data.cityName);
+    data.cityName = r.cityName;
+    if (!data.cityId && r.cityId) { data.cityId = r.cityId; if (!data.regionId) data.regionId = r.regionId; }
   }
-  if (data.cityName) data.cityName = normCity(data.cityName);
+  if (data.neighborhood) data.neighborhood = cleanPlace(data.neighborhood);
   if (data.lat == null || data.lng == null) {
     const geo = fallbackLatLng({ cityName: data.cityName, neighborhood: data.neighborhood, seed: phone });
     data.lat = geo.lat;
@@ -144,21 +135,30 @@ export const update = asyncHandler(async (req, res) => {
   delete data.region;
   delete data.city;
   delete data.coordinator;
-  if (data.cityName) data.cityName = normCity(data.cityName);
+  if (data.cityName) {
+    const r = await resolveCity(prisma, data.cityName);
+    data.cityName = r.cityName;
+    if (r.cityId) { data.cityId = r.cityId; data.regionId = r.regionId; }
+  }
+  if (data.neighborhood) data.neighborhood = cleanPlace(data.neighborhood);
   const supporter = await prisma.supporter.update({ where: { id: req.params.id }, data, include });
   await audit({ userId: req.user?.id, action: 'UPDATE', entity: 'Supporter', entityId: supporter.id, ip: req.ip });
   res.json(supporter);
 });
 
-/** Cidades já cadastradas (distintas) — alimenta o autocomplete e evita duplicidade. */
+/** Cidades já cadastradas (canônicas e distintas) — alimenta o autocomplete e evita duplicidade. */
 export const listCities = asyncHandler(async (req, res) => {
   const rows = await prisma.supporter.findMany({
     where: { cityName: { not: null } },
     distinct: ['cityName'],
     select: { cityName: true },
-    orderBy: { cityName: 'asc' },
   });
-  res.json({ data: rows.map((r) => ({ name: r.cityName })).filter((r) => r.name) });
+  const set = new Set();
+  for (const r of rows) {
+    const name = canonicalCityName(r.cityName);
+    if (name) set.add(name);
+  }
+  res.json({ data: [...set].sort((a, b) => a.localeCompare(b, 'pt-BR')).map((name) => ({ name })) });
 });
 
 /**
@@ -296,11 +296,13 @@ export const importBatch = asyncHandler(async (req, res) => {
 
       let cityId = null;
       let regionId = null;
+      let cityName = null;
       if (raw.cityName) {
-        const city = await linkCityByName(prisma, raw.cityName);
-        if (city) { cityId = city.id; regionId = city.regionId; }
+        const r = await resolveCity(prisma, raw.cityName);
+        cityName = r.cityName; cityId = r.cityId; regionId = r.regionId;
       }
-      const geo = fallbackLatLng({ cityName: raw.cityName, neighborhood: raw.neighborhood, seed: phone });
+      const neighborhood = cleanPlace(raw.neighborhood) || null;
+      const geo = fallbackLatLng({ cityName, neighborhood, seed: phone });
 
       const created = await prisma.supporter.create({
         data: {
@@ -313,8 +315,8 @@ export const importBatch = asyncHandler(async (req, res) => {
           street: raw.street || null,
           number: raw.number || null,
           complement: raw.complement || null,
-          neighborhood: raw.neighborhood || null,
-          cityName: raw.cityName || null,
+          neighborhood,
+          cityName,
           cityId,
           regionId,
           lat: geo.lat,

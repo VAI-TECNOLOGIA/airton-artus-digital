@@ -4,7 +4,8 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendWhatsApp } from '../services/whatsapp.service.js';
 import { SUPPORT_TYPES } from '../utils/enums.js';
 import { nullifyEmpty, onlyDigits } from '../utils/helpers.js';
-import { fallbackLatLng, linkCityByName } from '../utils/geo.js';
+import { fallbackLatLng } from '../utils/geo.js';
+import { resolveCity, cleanPlace } from '../utils/cityNormalize.js';
 import { createDeletionRequest, confirmDeletionRequest } from '../services/privacy.service.js';
 
 // ============================================================
@@ -58,11 +59,11 @@ export const join = asyncHandler(async (req, res) => {
     });
   }
 
-  // Conexão com o mapa/filtros: vincula cidade→região e garante lat/lng
-  // aproximado (centroide da cidade + jitter) quando não há coordenada.
-  const cityName = data.cityName || 'Porto Alegre';
-  const city = await linkCityByName(prisma, cityName);
-  const geo = fallbackLatLng({ cityName, neighborhood: data.neighborhood, seed: phone });
+  // Conexão com o mapa/filtros: nome canônico da cidade (padrão único) + vínculo
+  // região e lat/lng aproximado (centroide + jitter) quando não há coordenada.
+  const { cityName, cityId, regionId } = await resolveCity(prisma, data.cityName || 'Porto Alegre');
+  const neighborhood = cleanPlace(data.neighborhood) || null;
+  const geo = fallbackLatLng({ cityName, neighborhood, seed: phone });
 
   const supporter = await prisma.supporter.create({
     data: {
@@ -70,10 +71,10 @@ export const join = asyncHandler(async (req, res) => {
       phone,
       whatsapp: phone,
       email: data.email || null,
-      neighborhood: data.neighborhood || null,
+      neighborhood,
       cityName,
-      cityId: city?.id || null,
-      regionId: city?.regionId || null,
+      cityId,
+      regionId,
       lat: geo.lat,
       lng: geo.lng,
       supportType: data.supportType || 'NOTICIAS',

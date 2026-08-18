@@ -10,7 +10,8 @@ import { nullifyEmpty, onlyDigits } from '../utils/helpers.js';
 import { sendEmail, resetPasswordEmail } from '../services/email.service.js';
 import { notifyPasswordReset } from '../services/whatsappTemplates.service.js';
 import { brDigits } from '../utils/helpers.js';
-import { linkCityByName, fallbackLatLng } from '../utils/geo.js';
+import { fallbackLatLng } from '../utils/geo.js';
+import { resolveCity, cleanPlace } from '../utils/cityNormalize.js';
 import env from '../config/env.js';
 
 const loginSchema = z.object({
@@ -122,19 +123,19 @@ export const signup = asyncHandler(async (req, res) => {
         data: { status: 'SUSPEITO', flaggedReason: 'Telefone usado em mais de um cadastro.' },
       });
     }
-    const cityName = data.cityName || 'Porto Alegre';
-    const city = await linkCityByName(prisma, cityName);
-    const geo = fallbackLatLng({ cityName, neighborhood: data.neighborhood, seed: phone });
+    const { cityName, cityId, regionId } = await resolveCity(prisma, data.cityName || 'Porto Alegre');
+    const neighborhood = cleanPlace(data.neighborhood) || null;
+    const geo = fallbackLatLng({ cityName, neighborhood, seed: phone });
     await prisma.supporter.create({
       data: {
         name: data.name,
         phone,
         whatsapp: phone,
         email,
-        neighborhood: data.neighborhood || null,
+        neighborhood,
         cityName,
-        cityId: city?.id || null,
-        regionId: city?.regionId || null,
+        cityId,
+        regionId,
         lat: geo.lat,
         lng: geo.lng,
         supportType: 'NOTICIAS',

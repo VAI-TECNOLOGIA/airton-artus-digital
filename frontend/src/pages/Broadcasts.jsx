@@ -16,8 +16,13 @@ export default function Broadcasts() {
   const toast = useToast();
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [templates, setTemplates] = useState([]);
   const [createOpen, setCreateOpen] = useState(false);
   const [form, setForm] = useState({});
+  const [tplForm, setTplForm] = useState({});
+  const [savingTpl, setSavingTpl] = useState(false);
+  const selectedTpl = templates.find((t) => t.name === form.templateName) || null;
+  const detailTpl = templates.find((t) => t.name === tplForm.templateName) || null;
   const [detail, setDetail] = useState(null);
   const [csv, setCsv] = useState('nome,telefone,cidade,bairro\nMaria,5551999990000,Porto Alegre,Centro');
   const [sendingState, setSendingState] = useState(null); // { sent, failed, total, pct } | null
@@ -36,12 +41,37 @@ export default function Broadcasts() {
   }
   useEffect(() => {
     load();
+    api.get('/broadcasts/templates').then(({ data }) => setTemplates(data.data || [])).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Prévia do template com as variáveis fixas preenchidas (o que a pessoa vai receber).
+  function renderPreview(tpl, vars = {}) {
+    return (tpl?.preview || '').replace(/\{(\w+)\}/g, (_, k) => {
+      const v = tpl.vars.find((x) => x.key === k);
+      if (v?.auto) return '(nome do contato)';
+      return (vars[k] || '').trim() || `{${k}}`;
+    });
+  }
+
+  function pickTemplate(name) {
+    const tpl = templates.find((t) => t.name === name) || null;
+    setForm((s) => ({
+      ...s,
+      templateName: name || null,
+      templateVars: {},
+      // guarda a prévia como "mensagem" pra passar a validação e aparecer no relatório
+      message: tpl ? renderPreview(tpl, {}) : (s.message || ''),
+    }));
+  }
+
   async function create() {
     try {
-      await api.post('/broadcasts', form);
+      const payload = { ...form };
+      if (form.templateName && selectedTpl) {
+        payload.message = renderPreview(selectedTpl, form.templateVars || {});
+      }
+      await api.post('/broadcasts', payload);
       toast.success('Campanha criada!');
       setCreateOpen(false);
       setForm({});
@@ -54,6 +84,40 @@ export default function Broadcasts() {
   async function openDetail(row) {
     const { data } = await api.get(`/broadcasts/${row.id}`);
     setDetail(data);
+    setTplForm({ templateName: data.templateName || null, templateVars: data.templateVars || {} });
+  }
+
+  function pickDetailTemplate(name) {
+    setTplForm({ templateName: name || null, templateVars: {} });
+  }
+
+  async function saveTemplate() {
+    setSavingTpl(true);
+    try {
+      await api.post(`/broadcasts/${detail.id}/template`, {
+        templateName: tplForm.templateName || null,
+        templateVars: tplForm.templateVars || {},
+      });
+      toast.success(tplForm.templateName ? 'Modelo vinculado à campanha!' : 'Modelo removido (voltou a texto livre).');
+      openDetail(detail);
+      load();
+    } catch (e) {
+      toast.error(apiError(e));
+    } finally {
+      setSavingTpl(false);
+    }
+  }
+
+  async function resetSend() {
+    if (!window.confirm('Reiniciar o envio? Todos os contatos voltam para "pendente" e a campanha poderá ser disparada de novo.')) return;
+    try {
+      const { data } = await api.post(`/broadcasts/${detail.id}/reset`);
+      toast.success(`Envio reiniciado — ${data.pending} contatos pendentes.`);
+      openDetail(detail);
+      load();
+    } catch (e) {
+      toast.error(apiError(e));
+    }
   }
   async function importContacts() {
     try {
@@ -107,8 +171,10 @@ export default function Broadcasts() {
     <Layout title="Disparador da equipe" subtitle="Campanhas com variáveis e relatório — pronto para API Oficial">
       <div className="warning-box" style={{ marginBottom: 16 }}>
         <span>
-          Envios <strong>simulados</strong> pela arquitetura segura. Para produção, conecte um provedor oficial
-          (WhatsApp Cloud API / SMS autorizado) — sem alterar este fluxo.
+          WhatsApp oficial <strong>conectado</strong> (Meta Cloud API) no número da campanha. Para disparar à
+          <strong> base inteira</strong>, escolha um <strong>modelo aprovado</strong> ao criar a campanha —
+          modelos entregam mesmo sem conversa aberta. O <strong>texto livre</strong> só chega a quem trocou
+          mensagem com o número nas últimas 24h (regra da Meta).
         </span>
       </div>
 
@@ -147,11 +213,44 @@ export default function Broadcasts() {
         >
           <Field field={{ name: 'name', label: 'Nome da campanha', required: true }} value={form.name} onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))} />
           <Field field={{ name: 'channel', label: 'Canal', type: 'select', options: options('Channel') }} value={form.channel} onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))} />
-          <Field
-            field={{ name: 'message', label: 'Mensagem', type: 'textarea', rows: 4, hint: 'Variáveis: {{nome}}, {{cidade}}, {{bairro}}, {{responsavel}}' }}
-            value={form.message}
-            onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))}
-          />
+
+          {/* Seletor de modelo oficial — resolve o "botão pra usar o template". */}
+          <div className="field">
+            <label>Tipo de mensagem</label>
+            <select className="select" value={form.templateName || ''} onChange={(e) => pickTemplate(e.target.value)}>
+              <option value="">Texto livre (só entrega dentro da janela de 24h)</option>
+              <optgroup label="Modelos aprovados (API Oficial — entregam à base fria)">
+                {templates.map((t) => (
+                  <option key={t.name} value={t.name}>{t.label} · {t.category === 'UTILITY' ? 'Utilidade' : 'Marketing'}</option>
+                ))}
+              </optgroup>
+            </select>
+            {selectedTpl && <div className="field-hint">{selectedTpl.description}</div>}
+          </div>
+
+          {selectedTpl ? (
+            <>
+              {selectedTpl.vars.filter((v) => !v.auto).map((v) => (
+                <Field
+                  key={v.key}
+                  field={{ name: v.key, label: v.label, required: true, placeholder: v.placeholder }}
+                  value={form.templateVars?.[v.key] || ''}
+                  onChange={(n, val) => setForm((s) => ({ ...s, templateVars: { ...(s.templateVars || {}), [n]: val } }))}
+                />
+              ))}
+              <div className="field">
+                <label>Prévia da mensagem</label>
+                <div className="tpl-preview">{renderPreview(selectedTpl, form.templateVars || {})}</div>
+                <div className="field-hint">O nome de cada contato entra automaticamente. Modelo aprovado pela Meta — entrega mesmo sem conversa aberta.</div>
+              </div>
+            </>
+          ) : (
+            <Field
+              field={{ name: 'message', label: 'Mensagem', type: 'textarea', rows: 4, hint: 'Variáveis: {{nome}}, {{cidade}}, {{bairro}}, {{responsavel}}' }}
+              value={form.message}
+              onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))}
+            />
+          )}
         </Modal>
       )}
 
@@ -167,6 +266,48 @@ export default function Broadcasts() {
           <div className="field">
             <label>Mensagem</label>
             <div className="media-caption">{detail.message}</div>
+          </div>
+
+          {/* Vincular modelo oficial — sem template, campanha não entrega à base fria. */}
+          <div className="field">
+            <label>Modelo oficial (API) — necessário para disparar à base</label>
+            <select className="select" value={tplForm.templateName || ''} onChange={(e) => pickDetailTemplate(e.target.value)}>
+              <option value="">Texto livre (só entrega na janela de 24h)</option>
+              <optgroup label="Modelos aprovados (entregam mesmo sem conversa aberta)">
+                {templates.map((t) => (
+                  <option key={t.name} value={t.name}>{t.label} · {t.category === 'UTILITY' ? 'Utilidade' : 'Marketing'}</option>
+                ))}
+              </optgroup>
+            </select>
+            {detailTpl ? (
+              <div className="field-hint">{detailTpl.description}</div>
+            ) : (
+              <div className="field-hint" style={{ color: '#B45309' }}>
+                Sem modelo, esta campanha só chega a quem falou com o número nas últimas 24h — é por isso que “não dispara”.
+              </div>
+            )}
+          </div>
+          {detailTpl && detailTpl.vars.filter((v) => !v.auto).map((v) => (
+            <Field
+              key={v.key}
+              field={{ name: v.key, label: v.label, required: true, placeholder: v.placeholder }}
+              value={tplForm.templateVars?.[v.key] || ''}
+              onChange={(n, val) => setTplForm((s) => ({ ...s, templateVars: { ...(s.templateVars || {}), [n]: val } }))}
+            />
+          ))}
+          {detailTpl && (
+            <div className="field">
+              <label>Prévia da mensagem</label>
+              <div className="tpl-preview">{renderPreview(detailTpl, tplForm.templateVars || {})}</div>
+            </div>
+          )}
+          <div className="flex gap-8" style={{ marginBottom: 16 }}>
+            <button className="btn btn-primary" onClick={saveTemplate} disabled={savingTpl}>
+              {savingTpl ? 'Salvando…' : 'Salvar modelo'}
+            </button>
+            {(detail.sentCount > 0 || detail.failedCount > 0) && (
+              <button className="btn" onClick={resetSend} disabled={!!sendingState}>Reiniciar envio</button>
+            )}
           </div>
 
           <div className="field">

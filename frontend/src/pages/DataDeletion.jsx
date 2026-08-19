@@ -51,7 +51,7 @@ export default function DataDeletion() {
           <h3 style={{ margin: 0 }}>Excluir meus dados</h3>
         </div>
         <p className="muted" style={{ marginTop: 4 }}>
-          Remova permanentemente seu cadastro da base da pré-campanha de Airton Artus,
+          Remova permanentemente seu cadastro da base da campanha de Airton Artus,
           conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>.
         </p>
 
@@ -118,7 +118,7 @@ export default function DataDeletion() {
             <h3 style={{ marginBottom: 6 }}>Dados excluídos</h3>
             <p className="muted">
               Seu cadastro, conversas e dados pessoais foram removidos permanentemente da
-              base da pré-campanha. Você não receberá mais nenhuma mensagem.
+              base da campanha. Você não receberá mais nenhuma mensagem.
             </p>
           </div>
         )}

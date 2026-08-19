@@ -25,6 +25,18 @@ export const verifyWebhook = (req, res) => {
 export const receiveWebhook = asyncHandler(async (req, res) => {
   try {
     const value = req.body?.entry?.[0]?.changes?.[0]?.value;
+
+    // Status de entrega (sent/delivered/read/failed). Loga as FALHAS com o código
+    // da Meta para diagnosticar quando "diz enviado mas não chega".
+    for (const st of value?.statuses || []) {
+      if (st.status === 'failed') {
+        const err = st.errors?.[0] || {};
+        console.warn(
+          `[whatsapp:status] FALHA -> ${st.recipient_id} | code ${err.code} | ${err.title || err.message || ''} | ${err.error_data?.details || ''}`,
+        );
+      }
+    }
+
     const message = value?.messages?.[0];
     if (message) {
       await handleInbound({
@@ -95,7 +107,7 @@ async function handleInbound({ phone, name, body }) {
       // confirmDeletionRequest apaga a convo, então só enviamos o WhatsApp.
       await sendWhatsApp({
         to: phone,
-        body: 'Confirmado. Seus dados foram excluídos permanentemente da base da pré-campanha. Obrigado por ter caminhado conosco. 👋',
+        body: 'Confirmado. Seus dados foram excluídos permanentemente da base da campanha. Obrigado por ter caminhado conosco. 👋',
       });
       return { deleted: true };
     }
@@ -112,7 +124,7 @@ async function handleInbound({ phone, name, body }) {
   if (/^\s*(sair|parar|cancelar|descadastrar|remover)\b/i.test(body || '')) {
     await optOutByPhone(phone);
     const bye =
-      'Pronto! Você não receberá mais mensagens da pré-campanha. ' +
+      'Pronto! Você não receberá mais mensagens da campanha. ' +
       'Se quiser também EXCLUIR seus dados da nossa base, responda EXCLUIR MEUS DADOS ou acesse a página de privacidade no nosso site.';
     const r = await sendWhatsApp({ to: phone, body: bye });
     await prisma.message.create({

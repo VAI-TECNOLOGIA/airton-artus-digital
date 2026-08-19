@@ -9,6 +9,7 @@ import Login from './pages/Login.jsx';
 // Recharts/Leaflet só são baixados por quem entra no painel.
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
+const CriarConta = lazy(() => import('./pages/CriarConta.jsx'));
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
 const Supporters = lazy(() => import('./pages/Supporters.jsx'));
 const Volunteers = lazy(() => import('./pages/Volunteers.jsx'));
@@ -53,6 +54,7 @@ export default function App() {
     <Suspense fallback={lazyFallback}>
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/criar-conta" element={<CriarConta />} />
       <Route path="/esqueci-senha" element={<ForgotPassword />} />
       <Route path="/redefinir-senha" element={<ResetPassword />} />
       <Route path="/lp" element={<Landing />} />

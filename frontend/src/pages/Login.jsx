@@ -20,7 +20,7 @@ export default function Login() {
     setSubmitting(true);
     try {
       await login(email, password);
-      toast.success('Bem-vindo à central da pré-campanha!');
+      toast.success('Bem-vindo à central da campanha!');
       nav('/');
     } catch (err) {
       toast.error(apiError(err, 'Não foi possível entrar. Verifique suas credenciais.'));
@@ -45,16 +45,16 @@ export default function Login() {
         <div className="auth-slash" />
         <div className="auth-content">
           <div className="auth-top">
-            <div className="auth-name">Airton Artus · Digital</div>
+            <img src="/logo-horizontal-branco.png" alt="Airton Artus — Deputado Estadual" style={{ height: 42, width: 'auto', display: 'block' }} />
           </div>
           <div>
             <h1 className="auth-headline">
               A central de <em>comando</em>
               <br />
-              da pré-campanha
+              da campanha
             </h1>
             <p className="auth-tagline">
-              Mobilização, dados, atendimento e território — a pré-campanha de Airton Artus
+              Mobilização, dados, atendimento e território — a campanha de Airton Artus
               numa só plataforma.
             </p>
           </div>
@@ -68,8 +68,8 @@ export default function Login() {
           <p className="muted">Entre com suas credenciais da equipe.</p>
 
           <div className="field">
-            <label htmlFor="login-email">E-mail</label>
-            <input id="login-email" className="input" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <label htmlFor="login-email">E-mail ou telefone</label>
+            <input id="login-email" className="input" type="text" autoComplete="username" value={email} onChange={(e) => setEmail(e.target.value)} required placeholder="seu e-mail ou telefone" />
           </div>
           <div className="field">
             <label htmlFor="login-password">Senha</label>
@@ -80,10 +80,15 @@ export default function Login() {
             {submitting ? 'Entrando...' : 'Entrar'}
           </button>
 
+          <p className="muted" style={{ textAlign: 'center', margin: '14px 0 8px' }}>Ainda não tem conta?</p>
+          <Link to="/criar-conta" className="btn btn-block btn-xl" style={{ display: 'flex', justifyContent: 'center' }}>
+            Criar conta
+          </Link>
+
           <div className="auth-links">
             <Link to="/esqueci-senha" className="auth-back">Esqueci minha senha</Link>
             <Link to="/lp" className="auth-back">
-              <ArrowLeft size={14} /> Conhecer a pré-campanha
+              <ArrowLeft size={14} /> Conhecer a campanha
             </Link>
           </div>
 

@@ -21,6 +21,7 @@ export const supporters = {
   lookups: [
     { key: 'regions', endpoint: '/regions' },
     { key: 'coordinators', endpoint: '/users', params: { role: 'MEMBRO' } },
+    { key: 'cities', endpoint: '/supporters/cities', valueKey: 'name', labelKey: 'name' },
   ],
   columns: [
     {
@@ -40,6 +41,7 @@ export const supporters = {
     { key: 'local', label: 'Local', render: (r) => [r.neighborhood, r.cityName].filter(Boolean).join(', ') || '—' },
     { key: 'region', label: 'Região', render: (r) => r.region?.name || '—' },
     { key: 'status', label: 'Status', render: (r) => <StatusBadge group="SupporterStatus" value={r.status} /> },
+    { key: 'createdAt', label: 'Cadastro', render: (r) => (r.createdAt ? new Date(r.createdAt).toLocaleDateString('pt-BR') : '—') },
   ],
   fields: [
     { name: 'name', label: 'Nome completo', required: true, full: true },
@@ -53,7 +55,7 @@ export const supporters = {
     { name: 'number', label: 'Número' },
     { name: 'complement', label: 'Complemento' },
     { name: 'neighborhood', label: 'Bairro' },
-    { name: 'cityName', label: 'Cidade' },
+    { name: 'cityName', label: 'Cidade', type: 'datalist', optionsFrom: 'cities', placeholder: 'Digite e selecione a cidade' },
     { name: 'regionId', label: 'Região', optionsFrom: 'regions' },
     { name: 'coordinatorId', label: 'Coordenador responsável', optionsFrom: 'coordinators' },
     { name: 'supportType', label: 'Tipo de apoio', enumGroup: 'SupportType', required: true },
@@ -272,7 +274,7 @@ export const users = {
   fields: [
     { name: 'name', label: 'Nome', required: true },
     { name: 'email', label: 'E-mail', type: 'email', required: true },
-    { name: 'password', label: 'Senha', type: 'password', hint: 'Mín. 6 caracteres. Em branco ao editar = mantém a atual.' },
+    { name: 'password', label: 'Senha', type: 'password', hint: 'Opcional: em branco, a pessoa cria a própria senha pelo link enviado no WhatsApp. Ao editar, em branco mantém a atual.' },
     { name: 'role', label: 'Perfil', enumGroup: 'UserRole', required: true },
     { name: 'phone', label: 'Telefone', type: 'tel' },
     { name: 'regionId', label: 'Região', optionsFrom: 'regions' },

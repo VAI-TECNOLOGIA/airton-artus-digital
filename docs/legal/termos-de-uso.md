@@ -4,19 +4,19 @@
 
 ## 1. Aceitação dos Termos
 
-Ao acessar ou utilizar o aplicativo **Airton Artus Digital** ("aplicativo" ou "plataforma"), desenvolvido e operado pela **Vai Tecnologia LTDA** (CNPJ **52.165.389/0001-29**, doravante "Organização") para a pré-campanha de Airton Artus, você ("Usuário") concorda integralmente com estes Termos de Uso e com a [Política de Privacidade](politica-de-privacidade.html).
+Ao acessar ou utilizar o aplicativo **Airton Artus Digital** ("aplicativo" ou "plataforma"), desenvolvido e operado pela **Vai Tecnologia LTDA** (CNPJ **52.165.389/0001-29**, doravante "Organização") para a campanha de Airton Artus, você ("Usuário") concorda integralmente com estes Termos de Uso e com a [Política de Privacidade](politica-de-privacidade.html).
 
 Se você não concorda com qualquer disposição, não utilize o aplicativo.
 
 ## 2. O que é o serviço
 
-O Airton Artus Digital é a plataforma de organização da **pré-campanha de Airton Artus** (pré-candidato a Deputado Estadual — RS). Ela permite à equipe credenciada gerenciar cadastros de apoiadores e voluntários, agenda, ações de rua, materiais, faixas, comunicação e demandas da população, e permite ao público manifestar apoio pelo formulário público.
+O Airton Artus Digital é a plataforma de organização da **campanha de Airton Artus** (candidato a Deputado Estadual — RS). Ela permite à equipe credenciada gerenciar cadastros de apoiadores e voluntários, agenda, ações de rua, materiais, faixas, comunicação e demandas da população, e permite ao público manifestar apoio pelo formulário público.
 
 A Organização pode modificar, suspender ou descontinuar funcionalidades a qualquer momento, mediante aviso prévio quando possível.
 
 ## 3. Contas e elegibilidade
 
-- As **contas de acesso** (login) são criadas pela coordenação da pré-campanha para membros da equipe, voluntários credenciados e parceiros. Não há auto-cadastro de contas.
+- As **contas de acesso** (login) são criadas pela coordenação da campanha para membros da equipe, voluntários credenciados e parceiros. Não há auto-cadastro de contas.
 - Apenas maiores de 18 anos podem ter conta de acesso. O cadastro público de apoiadores é permitido a maiores de 16 anos.
 - O Usuário deve fornecer dados verdadeiros, atualizados e completos, e é responsável pela confidencialidade da senha e por toda atividade realizada em sua conta.
 - A Organização pode recusar, suspender ou encerrar contas que violem estes Termos.
@@ -27,10 +27,10 @@ O Usuário compromete-se a **NÃO**:
 
 - Cadastrar apoiadores **sem o consentimento** da pessoa cadastrada
 - Cadastrar dados falsos, duplicados ou de terceiros sem autorização
-- Usar os dados da plataforma para **finalidade alheia à pré-campanha** (venda, cessão a terceiros, outras candidaturas, marketing próprio)
+- Usar os dados da plataforma para **finalidade alheia à campanha** (venda, cessão a terceiros, outras candidaturas, marketing próprio)
 - Exportar, copiar ou divulgar a base de apoiadores fora dos fluxos autorizados
 - Enviar mensagens em massa fora das ferramentas oficiais da plataforma, ou desrespeitar pedidos de descadastro ("SAIR")
-- Praticar qualquer ato vedado pela **legislação eleitoral** — incluindo pedido explícito de voto durante a pré-campanha, propaganda antecipada irregular ou disparos em massa vedados pela Justiça Eleitoral
+- Praticar qualquer ato vedado pela **legislação eleitoral** — incluindo pedido explícito de voto durante a campanha, propaganda antecipada irregular ou disparos em massa vedados pela Justiça Eleitoral
 - Compartilhar sua senha ou tentar acessar contas de outros Usuários
 - Realizar engenharia reversa, explorar vulnerabilidades ou usar bots/scripts não autorizados
 - Publicar conteúdo ilegal, difamatório ou que viole direitos de terceiros
@@ -41,7 +41,7 @@ Violações podem resultar em suspensão imediata, exclusão da conta, comunica�
 
 Os membros da equipe com acesso à base de apoiadores atuam sob as diretrizes da Organização e comprometem-se a:
 
-- Tratar os dados **exclusivamente** para as finalidades da pré-campanha
+- Tratar os dados **exclusivamente** para as finalidades da campanha
 - Respeitar o sigilo — opinião política é **dado pessoal sensível** (LGPD, art. 5º, II)
 - Registrar cadastros somente com consentimento do titular
 - Comunicar imediatamente à coordenação qualquer incidente ou uso indevido
@@ -51,8 +51,8 @@ O tratamento de dados é detalhado na [Política de Privacidade](politica-de-pri
 ## 6. Propriedade intelectual
 
 - O aplicativo, código, marca e identidade visual pertencem à Organização e/ou a seus licenciantes.
-- Materiais de divulgação disponibilizados no Mídia Kit destinam-se **exclusivamente** à divulgação da pré-campanha, na forma autorizada pela coordenação.
-- Conteúdo enviado por Usuários (fotos, textos) permanece de propriedade do Usuário, que concede à Organização licença de uso dentro da plataforma e nos materiais da pré-campanha.
+- Materiais de divulgação disponibilizados no Mídia Kit destinam-se **exclusivamente** à divulgação da campanha, na forma autorizada pela coordenação.
+- Conteúdo enviado por Usuários (fotos, textos) permanece de propriedade do Usuário, que concede à Organização licença de uso dentro da plataforma e nos materiais da campanha.
 
 ## 7. Responsabilidades
 

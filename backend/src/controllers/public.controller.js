@@ -4,7 +4,8 @@ import { asyncHandler } from '../utils/asyncHandler.js';
 import { sendWhatsApp } from '../services/whatsapp.service.js';
 import { SUPPORT_TYPES } from '../utils/enums.js';
 import { nullifyEmpty, onlyDigits } from '../utils/helpers.js';
-import { fallbackLatLng, linkCityByName } from '../utils/geo.js';
+import { fallbackLatLng } from '../utils/geo.js';
+import { resolveCity, cleanPlace } from '../utils/cityNormalize.js';
 import { createDeletionRequest, confirmDeletionRequest } from '../services/privacy.service.js';
 
 // ============================================================
@@ -58,11 +59,11 @@ export const join = asyncHandler(async (req, res) => {
     });
   }
 
-  // Conexão com o mapa/filtros: vincula cidade→região e garante lat/lng
-  // aproximado (centroide da cidade + jitter) quando não há coordenada.
-  const cityName = data.cityName || 'Porto Alegre';
-  const city = await linkCityByName(prisma, cityName);
-  const geo = fallbackLatLng({ cityName, neighborhood: data.neighborhood, seed: phone });
+  // Conexão com o mapa/filtros: nome canônico da cidade (padrão único) + vínculo
+  // região e lat/lng aproximado (centroide + jitter) quando não há coordenada.
+  const { cityName, cityId, regionId } = await resolveCity(prisma, data.cityName || 'Porto Alegre');
+  const neighborhood = cleanPlace(data.neighborhood) || null;
+  const geo = fallbackLatLng({ cityName, neighborhood, seed: phone });
 
   const supporter = await prisma.supporter.create({
     data: {
@@ -70,10 +71,10 @@ export const join = asyncHandler(async (req, res) => {
       phone,
       whatsapp: phone,
       email: data.email || null,
-      neighborhood: data.neighborhood || null,
+      neighborhood,
       cityName,
-      cityId: city?.id || null,
-      regionId: city?.regionId || null,
+      cityId,
+      regionId,
       lat: geo.lat,
       lng: geo.lng,
       supportType: data.supportType || 'NOTICIAS',
@@ -85,7 +86,7 @@ export const join = asyncHandler(async (req, res) => {
 
   if (supporter.supportType === 'VOLUNTARIO' && status !== 'BLACKLIST') {
     await prisma.volunteer.create({ data: { supporterId: supporter.id } });
-    const body = `Olá ${supporter.name}! Recebemos seu cadastro na pré-campanha do Airton Artus. Responda *SIM* para confirmar sua participação.`;
+    const body = `Olá ${supporter.name}! Recebemos seu cadastro na campanha do Airton Artus. Responda *SIM* para confirmar sua participação.`;
     const r = await sendWhatsApp({ to: phone, body });
     await prisma.conversation.create({
       data: {
@@ -107,7 +108,7 @@ export const join = asyncHandler(async (req, res) => {
 // ============================================================
 
 const deletionMessage =
-  'Se este número tiver cadastro na pré-campanha, você receberá um código de confirmação no WhatsApp em instantes.';
+  'Se este número tiver cadastro na campanha, você receberá um código de confirmação no WhatsApp em instantes.';
 
 export const requestDataDeletion = asyncHandler(async (req, res) => {
   const { phone: raw } = z.object({ phone: z.string().min(8, 'Informe um telefone válido') }).parse(req.body);
@@ -118,7 +119,7 @@ export const requestDataDeletion = asyncHandler(async (req, res) => {
     await sendWhatsApp({
       to: phone,
       body:
-        `Pré-campanha Airton Artus — recebemos um pedido de EXCLUSÃO dos dados deste número. ` +
+        `Campanha Airton Artus — recebemos um pedido de EXCLUSÃO dos dados deste número. ` +
         `Código de confirmação: *${code}* (válido por 15 minutos). ` +
         `Se não foi você, ignore esta mensagem e nada será excluído.`,
     });
@@ -141,7 +142,7 @@ export const confirmDataDeletion = asyncHandler(async (req, res) => {
 
   res.json({
     ok: true,
-    message: 'Seus dados foram excluídos permanentemente da base da pré-campanha.',
+    message: 'Seus dados foram excluídos permanentemente da base da campanha.',
     summary,
   });
 });

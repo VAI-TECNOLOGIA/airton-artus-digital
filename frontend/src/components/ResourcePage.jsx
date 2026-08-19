@@ -80,7 +80,7 @@ export default function ResourcePage({ config }) {
 
   function resolveField(f) {
     if (f.optionsFrom) {
-      const resolved = { ...f, type: 'select', options: lookups[f.optionsFrom] || [] };
+      const resolved = { ...f, type: f.type === 'datalist' ? 'datalist' : 'select', options: lookups[f.optionsFrom] || [] };
       // Ao escolher a região, mostra o coordenador responsável (vem no lookup).
       if (f.optionsFrom === 'regions' && form[f.name]) {
         const region = (lookupRaw.regions || []).find((r) => r.id === form[f.name]);

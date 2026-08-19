@@ -1,6 +1,6 @@
 /* ============================================================
    Airton Artus Digital — Design System
-   Identidade oficial da pré-campanha: navy profundo + ouro
+   Identidade oficial da campanha: navy profundo + ouro
    + faixa tricolor do RS (verde · vermelho · ouro)
    Tipografia display da marca (Kaisar, do KV oficial) + Archivo/Inter
    ============================================================ */
@@ -319,7 +319,10 @@ input, select, textarea { font-family: inherit; }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
 .cols-2-1 { grid-template-columns: 2fr 1fr; }
 @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 760px) { .stats-grid, .grid-2, .grid-3, .cols-2-1 { grid-template-columns: 1fr; } }
+/* Mobile: KPIs ficam 2 por linha (menos rolagem, cards mais compactos) — o resto empilha */
+@media (max-width: 760px) { .grid-2, .grid-3, .cols-2-1 { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; } }
+@media (max-width: 760px) { .stat-card { padding: 15px 16px; } .stat-card .stat-meta .stat-value { font-size: 28px; } }
+@media (max-width: 360px) { .stats-grid { grid-template-columns: 1fr; } }
 
 /* ---------------- Stat card ---------------- */
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; display: flex; align-items: flex-start; justify-content: space-between; box-shadow: var(--shadow-sm); }
@@ -396,6 +399,24 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .cell-strong { font-weight: 600; }
 .cell-muted { color: var(--muted); }
 .cell-person { display: flex; align-items: center; gap: 10px; }
+
+/* Mobile (≤640px): o DataTable vira CARDS empilhados — nenhuma coluna/ação some
+   fora da tela (antes STATUS/AÇÕES ficavam cortadas à direita no celular).
+   Escopado em .table--cards p/ não afetar tabelas customizadas (sem data-label). */
+@media (max-width: 640px) {
+  table.table--cards, .table--cards tbody, .table--cards tr, .table--cards td { display: block; width: 100%; }
+  .table--cards thead { position: absolute; left: -9999px; top: -9999px; }
+  .table--cards tr { border: 1px solid var(--border); border-radius: 14px; margin-bottom: 12px; background: var(--surface); overflow: hidden; }
+  .table--cards tbody tr:hover { background: var(--surface); }
+  .table--cards td { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 10px 15px; border-bottom: 1px solid var(--border); text-align: right; min-height: 44px; }
+  .table--cards td::before { content: attr(data-label); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); text-align: left; flex: 0 0 auto; white-space: nowrap; }
+  .table--cards td:last-child { border-bottom: none; }
+  .table--cards td.td-primary { justify-content: flex-start; text-align: left; background: var(--surface-2); }
+  .table--cards td.td-primary::before { display: none; }
+  .table--cards td.table-actions { justify-content: flex-end; }
+  .table--cards td.table-actions::before { align-self: center; }
+  .table--cards .cell-person { justify-content: flex-end; }
+}
 
 /* ---------------- Modal ---------------- */
 .backdrop { position: fixed; inset: 0; background: rgba(36, 28, 20, 0.55); backdrop-filter: blur(2px); z-index: 60; display: flex; align-items: flex-start; justify-content: center; padding: calc(40px + env(safe-area-inset-top, 0px)) 16px calc(40px + env(safe-area-inset-bottom, 0px)); overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -1209,12 +1230,11 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
     height: auto;
   }
   .map-side {
-    max-height: 200px;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    max-height: none;
+    overflow: visible;
   }
-  .map-shell .map-wrap { height: calc(100vh - 420px); height: calc(100dvh - 420px); min-height: 380px; }
-  .map-wrap { min-height: 340px; height: calc(100vh - 280px); height: calc(100dvh - 280px); }
+  .map-shell .map-wrap { height: 58vh; height: 58dvh; min-height: 360px; }
+  .map-wrap { min-height: 340px; }
 }
 
 

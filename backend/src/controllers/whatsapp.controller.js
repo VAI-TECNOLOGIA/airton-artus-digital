@@ -107,7 +107,7 @@ async function handleInbound({ phone, name, body }) {
       // confirmDeletionRequest apaga a convo, então só enviamos o WhatsApp.
       await sendWhatsApp({
         to: phone,
-        body: 'Confirmado. Seus dados foram excluídos permanentemente da base da pré-campanha. Obrigado por ter caminhado conosco. 👋',
+        body: 'Confirmado. Seus dados foram excluídos permanentemente da base da campanha. Obrigado por ter caminhado conosco. 👋',
       });
       return { deleted: true };
     }
@@ -124,7 +124,7 @@ async function handleInbound({ phone, name, body }) {
   if (/^\s*(sair|parar|cancelar|descadastrar|remover)\b/i.test(body || '')) {
     await optOutByPhone(phone);
     const bye =
-      'Pronto! Você não receberá mais mensagens da pré-campanha. ' +
+      'Pronto! Você não receberá mais mensagens da campanha. ' +
       'Se quiser também EXCLUIR seus dados da nossa base, responda EXCLUIR MEUS DADOS ou acesse a página de privacidade no nosso site.';
     const r = await sendWhatsApp({ to: phone, body: bye });
     await prisma.message.create({

@@ -13,7 +13,7 @@ export default defineConfig({
       manifest: {
         name: 'Airton Artus Digital',
         short_name: 'Artus Digital',
-        description: 'Central de comando da pré-campanha — mobilização, dados, atendimento e território.',
+        description: 'Central de comando da campanha — mobilização, dados, atendimento e território.',
         lang: 'pt-BR',
         start_url: '/',
         display: 'standalone',

@@ -8,7 +8,7 @@
 // ============================================================
 
 // Dicionário canônico (grafia oficial, com acento). Cobre o Vale do
-// Taquari (base da pré-campanha) + Vale do Rio Pardo + Região
+// Taquari (base da campanha) + Vale do Rio Pardo + Região
 // Metropolitana + maiores do RS. Chave de match = sem acento/caixa.
 const CANON = [
   // Vale do Taquari

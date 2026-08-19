@@ -86,7 +86,7 @@ export const join = asyncHandler(async (req, res) => {
 
   if (supporter.supportType === 'VOLUNTARIO' && status !== 'BLACKLIST') {
     await prisma.volunteer.create({ data: { supporterId: supporter.id } });
-    const body = `Olá ${supporter.name}! Recebemos seu cadastro na pré-campanha do Airton Artus. Responda *SIM* para confirmar sua participação.`;
+    const body = `Olá ${supporter.name}! Recebemos seu cadastro na campanha do Airton Artus. Responda *SIM* para confirmar sua participação.`;
     const r = await sendWhatsApp({ to: phone, body });
     await prisma.conversation.create({
       data: {
@@ -108,7 +108,7 @@ export const join = asyncHandler(async (req, res) => {
 // ============================================================
 
 const deletionMessage =
-  'Se este número tiver cadastro na pré-campanha, você receberá um código de confirmação no WhatsApp em instantes.';
+  'Se este número tiver cadastro na campanha, você receberá um código de confirmação no WhatsApp em instantes.';
 
 export const requestDataDeletion = asyncHandler(async (req, res) => {
   const { phone: raw } = z.object({ phone: z.string().min(8, 'Informe um telefone válido') }).parse(req.body);
@@ -119,7 +119,7 @@ export const requestDataDeletion = asyncHandler(async (req, res) => {
     await sendWhatsApp({
       to: phone,
       body:
-        `Pré-campanha Airton Artus — recebemos um pedido de EXCLUSÃO dos dados deste número. ` +
+        `Campanha Airton Artus — recebemos um pedido de EXCLUSÃO dos dados deste número. ` +
         `Código de confirmação: *${code}* (válido por 15 minutos). ` +
         `Se não foi você, ignore esta mensagem e nada será excluído.`,
     });
@@ -142,7 +142,7 @@ export const confirmDataDeletion = asyncHandler(async (req, res) => {
 
   res.json({
     ok: true,
-    message: 'Seus dados foram excluídos permanentemente da base da pré-campanha.',
+    message: 'Seus dados foram excluídos permanentemente da base da campanha.',
     summary,
   });
 });

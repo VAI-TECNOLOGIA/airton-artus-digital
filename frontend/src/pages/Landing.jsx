@@ -249,7 +249,7 @@ export default function Landing() {
               <Tl yr="1997" t="Vereador por dois mandatos" d="Primeira missão pública em Venâncio Aires (1997–2004), seguida do período como vice-prefeito (2005–2008)." />
               <Tl yr="2009" t="Prefeito de Venâncio Aires — 2 mandatos" d="Oito anos de gestão (2009–2016) com marca de trabalho sério e cuidado com as pessoas." />
               <Tl yr="2023" t="Deputado Estadual" d="Na Assembleia Legislativa do RS, destinou recursos para saúde e infraestrutura da região." />
-              <Tl yr="2026" t="Pré-candidato a Deputado Estadual" d="De volta ao Vale do Taquari para ampliar a representação da região na Assembleia." />
+              <Tl yr="2026" t="Candidato a Deputado Estadual" d="De volta ao Vale do Taquari para ampliar a representação da região na Assembleia." />
             </div>
           </div>
         </div>
@@ -370,7 +370,7 @@ export default function Landing() {
           <blockquote>Passei a vida do lado de quem precisa de cuidado. Na Assembleia, <span className="hl">meu lado é o da saúde</span> — e o do Rio Grande que trabalha.</blockquote>
           <div className="mlp-by">
             <img src="/candidato.jpg" alt="Retrato de Airton Artus" loading="lazy" />
-            <div style={{ textAlign: 'left' }}><b>Airton Artus</b><span>Médico · Pré-candidato a Deputado Estadual</span></div>
+            <div style={{ textAlign: 'left' }}><b>Airton Artus</b><span>Médico · Candidato a Deputado Estadual</span></div>
           </div>
         </div>
       </section>
@@ -525,8 +525,8 @@ export default function Landing() {
             </div>
           </div>
           <div className="mlp-foot-bottom">
-            © {new Date().getFullYear()} Airton Artus · Pré-candidato a Deputado Estadual · PDT · Rio Grande do Sul
-            <span className="mlp-foot-legal">Material de divulgação de pré-candidatura, sem pedido de voto, nos termos da legislação eleitoral.</span>
+            © {new Date().getFullYear()} Airton Artus · Candidato a Deputado Estadual · PDT · Rio Grande do Sul
+            <span className="mlp-foot-legal">Material de divulgação de candidatura, sem pedido de voto, nos termos da legislação eleitoral.</span>
           </div>
         </div>
       </footer>

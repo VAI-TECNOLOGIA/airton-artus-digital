@@ -61,7 +61,7 @@ export default function Rsvp() {
       <div className="rsvp-wrap">
         <div className="rsvp-brand">
           <img src="/logo-horizontal-branco.png" alt="Airton Artus" className="rsvp-logo" />
-          <small>Pré-candidato a Deputado Estadual · RS</small>
+          <small>Candidato a Deputado Estadual · RS</small>
         </div>
 
         {loading && <div className="rsvp-card"><p className="rsvp-muted">Carregando convite…</p></div>}

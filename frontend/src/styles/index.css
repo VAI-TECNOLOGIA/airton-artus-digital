@@ -529,6 +529,7 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .bubble.in { background: var(--surface); align-self: flex-start; border-bottom-left-radius: 4px; }
 .bubble.out { background: var(--bubble-out); align-self: flex-end; border-bottom-right-radius: 4px; }
 .bubble small { display: block; font-size: 10.5px; color: var(--muted); margin-top: 3px; }
+.bubble .msg-media { opacity: 0.72; font-style: italic; }
 .chat-input { display: flex; gap: 10px; padding: 14px 18px; border-top: 1px solid var(--border); }
 .crm-3 { grid-template-columns: 290px 1fr 300px; }
 

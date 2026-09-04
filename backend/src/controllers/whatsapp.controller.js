@@ -42,7 +42,8 @@ export const receiveWebhook = asyncHandler(async (req, res) => {
       await handleInbound({
         phone: onlyDigits(message.from),
         name: value?.contacts?.[0]?.profile?.name,
-        body: message.text?.body || '',
+        body: extractInboundBody(message),
+        externalId: message.id,
       });
     }
   } catch (e) {
@@ -51,6 +52,27 @@ export const receiveWebhook = asyncHandler(async (req, res) => {
   res.sendStatus(200);
 });
 
+/** Extrai um texto legível de qualquer tipo de mensagem do WhatsApp (texto, mídia,
+ *  botão, interativo, localização...). Evita mensagens com corpo VAZIO no chat. */
+function extractInboundBody(m) {
+  if (!m) return '';
+  switch (m.type) {
+    case 'text': return m.text?.body || '';
+    case 'button': return m.button?.text || '';
+    case 'interactive': return m.interactive?.button_reply?.title || m.interactive?.list_reply?.title || '';
+    case 'image': return m.image?.caption || '[imagem]';
+    case 'video': return m.video?.caption || '[vídeo]';
+    case 'audio': return '[áudio]';
+    case 'voice': return '[áudio]';
+    case 'document': return m.document?.filename ? `[documento: ${m.document.filename}]` : '[documento]';
+    case 'sticker': return '[figurinha]';
+    case 'location': return '[localização]';
+    case 'contacts': return '[contato]';
+    case 'reaction': return m.reaction?.emoji ? `[reação ${m.reaction.emoji}]` : '[reação]';
+    default: return m.text?.body || '[mensagem]';
+  }
+}
+
 /** Simula uma mensagem recebida — permite testar o fluxo sem a API real. */
 export const simulateInbound = asyncHandler(async (req, res) => {
   const { phone, name, body } = req.body;
@@ -58,7 +80,7 @@ export const simulateInbound = asyncHandler(async (req, res) => {
   res.json(result);
 });
 
-async function handleInbound({ phone, name, body }) {
+async function handleInbound({ phone, name, body, externalId }) {
   if (!phone) return { ignored: true };
 
   const supporter = await prisma.supporter.findFirst({ where: { phone } });
@@ -80,7 +102,7 @@ async function handleInbound({ phone, name, body }) {
   }
 
   await prisma.message.create({
-    data: { conversationId: convo.id, direction: 'INBOUND', body: body || '', channel: 'WHATSAPP' },
+    data: { conversationId: convo.id, direction: 'INBOUND', body: body || '[mensagem]', channel: 'WHATSAPP', externalId: externalId || null },
   });
   await prisma.conversation.update({ where: { id: convo.id }, data: { lastMessageAt: new Date() } });
 

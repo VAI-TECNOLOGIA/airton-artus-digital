@@ -158,7 +158,7 @@ function WhatsAppCRM() {
               <div className="chat-body">
                 {(active.messages || []).map((m) => (
                   <div key={m.id} className={`bubble ${m.direction === 'INBOUND' ? 'in' : 'out'} ${m._status === 'error' ? 'msg-error' : ''}`} data-testid="msg">
-                    {m.body}
+                    {(() => { const t = (m.body || '').trim(); return (!t || /^\[.*\]$/.test(t)) ? <em className="msg-media">{t || '[mensagem]'}</em> : m.body; })()}
                     <small>
                       {m._status === 'sending' ? <span data-testid="msg-sending">enviando…</span>
                         : m._status === 'error' ? <span style={{ color: '#fca5a5', cursor: 'pointer' }} onClick={() => sendText(m.body)}>falhou — reenviar</span>

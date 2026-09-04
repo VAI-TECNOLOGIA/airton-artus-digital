@@ -6,9 +6,13 @@ import { audit } from '../utils/audit.js';
 import { crudFactory } from '../utils/crudFactory.js';
 import { supporterScope } from '../utils/scope.js';
 import { sendWhatsApp } from '../services/whatsapp.service.js';
+import { notifyVolunteerConfirmed } from '../services/whatsappTemplates.service.js';
 import { SUPPORT_TYPES, SUPPORTER_STATUS } from '../utils/enums.js';
-import { nullifyEmpty, onlyDigits } from '../utils/helpers.js';
-import { fallbackLatLng, linkCityByName } from '../utils/geo.js';
+import { nullifyEmpty, onlyDigits, brDigits } from '../utils/helpers.js';
+import { hashPassword } from '../utils/password.js';
+import { signResetToken } from '../utils/jwt.js';
+import { fallbackLatLng } from '../utils/geo.js';
+import { resolveCity, cleanPlace, canonicalCityName } from '../utils/cityNormalize.js';
 
 const include = {
   region: { select: { id: true, name: true } },
@@ -78,15 +82,14 @@ export const create = asyncHandler(async (req, res) => {
     });
   }
 
-  // Conexão com o mapa: sem lat/lng manual, usa centroide da cidade + jitter.
-  // Sem cityId, tenta vincular pela cidade digitada (habilita filtro por região).
-  if (!data.cityId && data.cityName) {
-    const city = await linkCityByName(prisma, data.cityName);
-    if (city) {
-      data.cityId = city.id;
-      if (!data.regionId) data.regionId = city.regionId;
-    }
+  // Padrão de cidade: nome canônico (colapsa acento/caixa/espaço/typo) + vínculo
+  // cityId/regionId quando existe na tabela City. Único ponto de verdade.
+  if (data.cityName) {
+    const r = await resolveCity(prisma, data.cityName);
+    data.cityName = r.cityName;
+    if (!data.cityId && r.cityId) { data.cityId = r.cityId; if (!data.regionId) data.regionId = r.regionId; }
   }
+  if (data.neighborhood) data.neighborhood = cleanPlace(data.neighborhood);
   if (data.lat == null || data.lng == null) {
     const geo = fallbackLatLng({ cityName: data.cityName, neighborhood: data.neighborhood, seed: phone });
     data.lat = geo.lat;
@@ -132,9 +135,99 @@ export const update = asyncHandler(async (req, res) => {
   delete data.region;
   delete data.city;
   delete data.coordinator;
+  if (data.cityName) {
+    const r = await resolveCity(prisma, data.cityName);
+    data.cityName = r.cityName;
+    if (r.cityId) { data.cityId = r.cityId; data.regionId = r.regionId; }
+  }
+  if (data.neighborhood) data.neighborhood = cleanPlace(data.neighborhood);
   const supporter = await prisma.supporter.update({ where: { id: req.params.id }, data, include });
   await audit({ userId: req.user?.id, action: 'UPDATE', entity: 'Supporter', entityId: supporter.id, ip: req.ip });
   res.json(supporter);
+});
+
+/** Cidades já cadastradas (canônicas e distintas) — alimenta o autocomplete e evita duplicidade. */
+export const listCities = asyncHandler(async (req, res) => {
+  const rows = await prisma.supporter.findMany({
+    where: { cityName: { not: null } },
+    distinct: ['cityName'],
+    select: { cityName: true },
+  });
+  const set = new Set();
+  for (const r of rows) {
+    const name = canonicalCityName(r.cityName);
+    if (name) set.add(name);
+  }
+  res.json({ data: [...set].sort((a, b) => a.localeCompare(b, 'pt-BR')).map((name) => ({ name })) });
+});
+
+/**
+ * Provisiona o acesso do apoiador (telefone = login) e devolve o link de "definir senha".
+ * - mode 'link' (padrão): só gera/atualiza o token e retorna o LINK — a equipe envia pelo próprio
+ *   WhatsApp (Web/app). Funciona sempre, sem depender do número oficial nem de template aprovado.
+ * - mode 'api': além disso, dispara o template OFICIAL (airton_redefinir_senha) pela Meta.
+ */
+export const sendAccess = asyncHandler(async (req, res) => {
+  const mode = req.body?.mode === 'api' ? 'api' : 'link';
+  const s = await prisma.supporter.findUnique({ where: { id: req.params.id } });
+  if (!s) throw new AppError('Apoiador não encontrado', 404);
+  const phone = brDigits(s.whatsapp || s.phone);
+  if (!phone) throw new AppError('Apoiador sem telefone cadastrado.', 400);
+
+  // Cria (ou reaproveita) a conta de acesso; o telefone é o login.
+  let user = await prisma.user.findFirst({ where: { phone } });
+  if (!user) {
+    let email = s.email && s.email.includes('@') ? s.email.toLowerCase() : `${phone}@wa.airtonartus.app`;
+    if (await prisma.user.findUnique({ where: { email } })) email = `${phone}.${Date.now()}@wa.airtonartus.app`;
+    user = await prisma.user.create({
+      data: {
+        name: s.name || 'Apoiador',
+        email,
+        phone,
+        role: 'PARCEIRO',
+        password: await hashPassword(`${Math.random().toString(36).slice(2, 10)}Aa1!`),
+      },
+    });
+  }
+
+  // Token de "definir senha" (48h). O login é sempre o telefone.
+  const token = signResetToken({ sub: user.id });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { resetToken: token, resetTokenExpires: new Date(Date.now() + 48 * 3600_000) },
+  });
+  const base = req.headers.origin || process.env.PUBLIC_URL || 'https://app.airtonartus.com.br';
+  const link = `${base}/redefinir-senha?token=${encodeURIComponent(token)}`;
+
+  // Modo "link": a equipe envia pelo próprio WhatsApp — devolve login + link prontos.
+  if (mode === 'link') {
+    return res.json({ ok: true, login: phone, link, mode: 'link' });
+  }
+
+  // Modo "api": dispara o template oficial pela Meta.
+  const result = await sendWhatsApp({
+    to: phone,
+    template: {
+      name: 'airton_redefinir_senha',
+      language: { code: 'pt_BR' },
+      components: [
+        { type: 'body', parameters: [{ type: 'text', text: user.name || 'tudo bem' }] },
+        { type: 'button', sub_type: 'url', index: 0, parameters: [{ type: 'text', text: token }] },
+      ],
+    },
+  });
+  if (result?.raw?.error) {
+    const err = result.raw.error;
+    const code = String(err.code || err?.error_data?.code || '');
+    let msg = err.message || 'Falha no envio pela Meta.';
+    if (code === '131030' || /not in allowed list/i.test(msg)) {
+      msg = 'O WhatsApp oficial ainda está em número de TESTE — a Meta só entrega a contatos liberados no painel. Use "Abrir no WhatsApp" para enviar pelo seu número agora, ou conclua a conexão do número oficial da campanha.';
+    } else if (code === '131049' || code === '131047' || code === '131026') {
+      msg = 'A Meta não entregou a este contato agora (limite/janela de 24h ou contato indisponível). Use "Abrir no WhatsApp" para enviar manualmente.';
+    }
+    throw new AppError(msg, 400);
+  }
+  res.json({ ok: true, login: phone, link, provider: result?.provider, simulated: !!result?.simulated });
 });
 
 export const remove = asyncHandler(async (req, res) => {
@@ -203,11 +296,13 @@ export const importBatch = asyncHandler(async (req, res) => {
 
       let cityId = null;
       let regionId = null;
+      let cityName = null;
       if (raw.cityName) {
-        const city = await linkCityByName(prisma, raw.cityName);
-        if (city) { cityId = city.id; regionId = city.regionId; }
+        const r = await resolveCity(prisma, raw.cityName);
+        cityName = r.cityName; cityId = r.cityId; regionId = r.regionId;
       }
-      const geo = fallbackLatLng({ cityName: raw.cityName, neighborhood: raw.neighborhood, seed: phone });
+      const neighborhood = cleanPlace(raw.neighborhood) || null;
+      const geo = fallbackLatLng({ cityName, neighborhood, seed: phone });
 
       const created = await prisma.supporter.create({
         data: {
@@ -220,8 +315,8 @@ export const importBatch = asyncHandler(async (req, res) => {
           street: raw.street || null,
           number: raw.number || null,
           complement: raw.complement || null,
-          neighborhood: raw.neighborhood || null,
-          cityName: raw.cityName || null,
+          neighborhood,
+          cityName,
           cityId,
           regionId,
           lat: geo.lat,
@@ -289,6 +384,9 @@ export const confirmVolunteer = asyncHandler(async (req, res) => {
       changedById: req.user?.id,
     },
   });
+
+  // Jornada: avisa o voluntário pela API oficial (template aprovado, best-effort).
+  notifyVolunteerConfirmed({ name: supporter.name, phone: supporter.whatsapp || supporter.phone }).catch(() => {});
 
   res.json(updated);
 });

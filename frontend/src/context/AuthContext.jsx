@@ -33,6 +33,15 @@ export function AuthProvider({ children }) {
     return data.user;
   };
 
+  // Cadastro público: cria a conta (Apoiador) e já entra logado.
+  const signup = async (payload) => {
+    const { data } = await api.post('/auth/signup', payload);
+    localStorage.setItem('aad_token', data.token);
+    setUser(data.user);
+    initPushNotifications();
+    return data.user;
+  };
+
   const logout = () => {
     teardownPushNotifications();
     localStorage.removeItem('aad_token');
@@ -40,7 +49,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, setUser }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

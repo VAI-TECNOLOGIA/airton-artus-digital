@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import { Copy, Check, Send } from 'lucide-react';
 import Modal from './ui/Modal.jsx';
 import { useToast } from '../context/ToastContext.jsx';
-import { waLink, prettyPhone, phoneDigits, defaultMessage } from '../lib/whatsapp.js';
+import { waLink, prettyPhone, phoneDigits, defaultMessage, accessMessage } from '../lib/whatsapp.js';
+import api, { apiError } from '../api/client.js';
 
 /** Ícone do WhatsApp (mesmo traço usado na landing). */
 export function WaIcon({ size = 16 }) {
@@ -13,17 +14,52 @@ export function WaIcon({ size = 16 }) {
   );
 }
 
+const rowStyle = {
+  display: 'flex',
+  gap: 12,
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  flexWrap: 'wrap',
+  padding: '12px 0',
+  borderTop: '1px solid rgba(127,127,127,.22)',
+};
+const actionsStyle = { display: 'flex', gap: 8, flexWrap: 'wrap' };
+
 /**
- * Modal para enviar a mensagem de acesso/boas-vindas por WhatsApp manualmente.
- * A equipe pode editar o texto, copiar ou abrir o WhatsApp já preenchido.
+ * Modal para dar acesso ao apoiador/voluntário por WhatsApp.
+ * Duas formas claras: (1) pelo próprio WhatsApp da equipe (funciona hoje) ou
+ * (2) automático pela API oficial (template). A mensagem já inclui o LINK de acesso
+ * — a pessoa cria a senha e entra com o telefone.
  */
 export default function WhatsAppMessageModal({ supporter, candidate = 'Airton Artus', onClose }) {
   const toast = useToast();
-  const [msg, setMsg] = useState(() => defaultMessage(supporter, candidate));
-  const [copied, setCopied] = useState(false);
-
+  const id = supporter?.supporterId || supporter?.id;
   const phone = supporter?.whatsapp || supporter?.phone;
   const hasPhone = !!phoneDigits(phone);
+
+  const [msg, setMsg] = useState(() => defaultMessage(supporter, candidate));
+  const [copied, setCopied] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [linking, setLinking] = useState(hasPhone);
+
+  // Ao abrir: provisiona a conta (telefone = login) e traz o LINK de acesso já na mensagem.
+  useEffect(() => {
+    let alive = true;
+    if (!id || !hasPhone) { setLinking(false); return; }
+    (async () => {
+      try {
+        const { data } = await api.post(`/supporters/${id}/send-access`, { mode: 'link' });
+        if (alive && data?.link) setMsg(accessMessage(supporter, data.link, candidate));
+      } catch {
+        // Mantém a mensagem padrão; o link pode ser gerado no envio pela API.
+      } finally {
+        if (alive) setLinking(false);
+      }
+    })();
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
+
   const link = useMemo(() => waLink(phone, msg), [phone, msg]);
 
   async function copy() {
@@ -37,27 +73,26 @@ export default function WhatsAppMessageModal({ supporter, candidate = 'Airton Ar
     }
   }
 
+  async function sendViaApi() {
+    if (!id) { toast.error('Registro sem identificação.'); return; }
+    setSending(true);
+    try {
+      const { data } = await api.post(`/supporters/${id}/send-access`, { mode: 'api' });
+      if (data?.simulated) toast.success('Registrado em modo simulado — conecte o número oficial para entregar de fato.');
+      else toast.success('Acesso enviado pela API oficial do WhatsApp!');
+      onClose?.();
+    } catch (e) {
+      toast.error(apiError(e));
+    } finally {
+      setSending(false);
+    }
+  }
+
   return (
     <Modal
       title="Enviar acesso por WhatsApp"
       onClose={onClose}
-      footer={
-        <>
-          <button className="btn" onClick={onClose}>Fechar</button>
-          <button className="btn" onClick={copy}>
-            {copied ? <Check size={15} /> : <Copy size={15} />} Copiar mensagem
-          </button>
-          {hasPhone ? (
-            <a className="btn btn-green" href={link} target="_blank" rel="noopener noreferrer" onClick={onClose}>
-              <WaIcon /> Abrir no WhatsApp
-            </a>
-          ) : (
-            <button className="btn btn-green" disabled title="Apoiador sem telefone cadastrado">
-              <WaIcon /> Abrir no WhatsApp
-            </button>
-          )}
-        </>
-      }
+      footer={<button className="btn" onClick={onClose}>Fechar</button>}
     >
       <div className="wa-send">
         <div className="wa-send-to">
@@ -66,18 +101,73 @@ export default function WhatsAppMessageModal({ supporter, candidate = 'Airton Ar
           <em>{hasPhone ? prettyPhone(phone) : 'sem telefone cadastrado'}</em>
         </div>
 
-        <label className="field-label" htmlFor="wa-msg">Mensagem</label>
+        <p className="field-hint" style={{ marginTop: 10 }}>
+          A pessoa entra na plataforma com o <b>telefone</b> dela e uma <b>senha que ela mesma cria</b> pelo
+          link da mensagem. Escolha abaixo como enviar o acesso.
+        </p>
+
+        <label className="field-label" htmlFor="wa-msg" style={{ marginTop: 10 }}>Mensagem (já com o link de acesso)</label>
         <textarea
           id="wa-msg"
           className="textarea"
-          rows={6}
+          rows={8}
           value={msg}
           onChange={(e) => setMsg(e.target.value)}
         />
-        <p className="field-hint">
-          Edite se quiser e então <b>copie</b> a mensagem ou <b>abra no WhatsApp</b> já preenchido para enviar
-          manualmente. Assim que a API oficial for conectada, o envio passa a ser automático.
-        </p>
+        {linking && <p className="field-hint">Gerando o link de acesso…</p>}
+
+        {!hasPhone && (
+          <p className="field-hint" style={{ color: 'var(--red, #BD2E2F)' }}>
+            Este cadastro não tem telefone — adicione um WhatsApp para poder enviar o acesso.
+          </p>
+        )}
+
+        {/* Opção 1 — pelo próprio WhatsApp da equipe (funciona hoje) */}
+        <div style={rowStyle}>
+          <div style={{ minWidth: 220, flex: 1 }}>
+            <b>1. Pelo meu WhatsApp</b>{' '}
+            <span className="chip" style={{ fontSize: 11 }}>recomendado agora</span>
+            <div className="field-hint" style={{ marginTop: 2 }}>
+              Abre o WhatsApp com a mensagem e o link prontos. Você envia do seu número — funciona hoje mesmo.
+            </div>
+          </div>
+          <div style={actionsStyle}>
+            <button className="btn" onClick={copy} disabled={linking}>
+              {copied ? <Check size={15} /> : <Copy size={15} />} Copiar
+            </button>
+            {hasPhone ? (
+              <a
+                className="btn btn-green"
+                href={link}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-disabled={linking}
+                onClick={(e) => { if (linking) e.preventDefault(); }}
+                style={linking ? { opacity: 0.6, pointerEvents: 'none' } : undefined}
+              >
+                <WaIcon /> Abrir no WhatsApp
+              </a>
+            ) : (
+              <button className="btn btn-green" disabled><WaIcon /> Abrir no WhatsApp</button>
+            )}
+          </div>
+        </div>
+
+        {/* Opção 2 — automático pela API oficial (template) */}
+        <div style={rowStyle}>
+          <div style={{ minWidth: 220, flex: 1 }}>
+            <b>2. Pela API oficial (template)</b>
+            <div className="field-hint" style={{ marginTop: 2 }}>
+              Envio automático pela Meta. Precisa do <b>número oficial</b> da campanha conectado e do
+              <b> template aprovado</b> — enquanto estiver no número de teste, só entrega a contatos liberados.
+            </div>
+          </div>
+          <div style={actionsStyle}>
+            <button className="btn btn-primary" disabled={sending || !hasPhone} onClick={sendViaApi}>
+              <Send size={15} /> {sending ? 'Enviando…' : 'Enviar por template'}
+            </button>
+          </div>
+        </div>
       </div>
     </Modal>
   );

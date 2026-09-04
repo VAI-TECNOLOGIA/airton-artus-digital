@@ -1,4 +1,5 @@
 import env from '../config/env.js';
+import { brDigits } from '../utils/helpers.js';
 
 // ============================================================
 //  Serviço WhatsApp — arquitetura preparada para a API Oficial
@@ -9,11 +10,12 @@ import env from '../config/env.js';
 // ============================================================
 
 export async function sendWhatsApp({ to, body, template }) {
+  const to164 = to ? '55' + brDigits(to) : to; // E.164 BR (idempotente)
   if (env.whatsapp.provider === 'meta_cloud' && env.whatsapp.token) {
     const url = `https://graph.facebook.com/v20.0/${env.whatsapp.phoneNumberId}/messages`;
     const payload = template
-      ? { messaging_product: 'whatsapp', to, type: 'template', template }
-      : { messaging_product: 'whatsapp', to, type: 'text', text: { body } };
+      ? { messaging_product: 'whatsapp', to: to164, type: 'template', template }
+      : { messaging_product: 'whatsapp', to: to164, type: 'text', text: { body } };
     const resp = await fetch(url, {
       method: 'POST',
       headers: {

@@ -25,12 +25,25 @@ export const verifyWebhook = (req, res) => {
 export const receiveWebhook = asyncHandler(async (req, res) => {
   try {
     const value = req.body?.entry?.[0]?.changes?.[0]?.value;
+
+    // Status de entrega (sent/delivered/read/failed). Loga as FALHAS com o código
+    // da Meta para diagnosticar quando "diz enviado mas não chega".
+    for (const st of value?.statuses || []) {
+      if (st.status === 'failed') {
+        const err = st.errors?.[0] || {};
+        console.warn(
+          `[whatsapp:status] FALHA -> ${st.recipient_id} | code ${err.code} | ${err.title || err.message || ''} | ${err.error_data?.details || ''}`,
+        );
+      }
+    }
+
     const message = value?.messages?.[0];
     if (message) {
       await handleInbound({
         phone: onlyDigits(message.from),
         name: value?.contacts?.[0]?.profile?.name,
-        body: message.text?.body || '',
+        body: extractInboundBody(message),
+        externalId: message.id,
       });
     }
   } catch (e) {
@@ -39,6 +52,27 @@ export const receiveWebhook = asyncHandler(async (req, res) => {
   res.sendStatus(200);
 });
 
+/** Extrai um texto legível de qualquer tipo de mensagem do WhatsApp (texto, mídia,
+ *  botão, interativo, localização...). Evita mensagens com corpo VAZIO no chat. */
+function extractInboundBody(m) {
+  if (!m) return '';
+  switch (m.type) {
+    case 'text': return m.text?.body || '';
+    case 'button': return m.button?.text || '';
+    case 'interactive': return m.interactive?.button_reply?.title || m.interactive?.list_reply?.title || '';
+    case 'image': return m.image?.caption || '[imagem]';
+    case 'video': return m.video?.caption || '[vídeo]';
+    case 'audio': return '[áudio]';
+    case 'voice': return '[áudio]';
+    case 'document': return m.document?.filename ? `[documento: ${m.document.filename}]` : '[documento]';
+    case 'sticker': return '[figurinha]';
+    case 'location': return '[localização]';
+    case 'contacts': return '[contato]';
+    case 'reaction': return m.reaction?.emoji ? `[reação ${m.reaction.emoji}]` : '[reação]';
+    default: return m.text?.body || '[mensagem]';
+  }
+}
+
 /** Simula uma mensagem recebida — permite testar o fluxo sem a API real. */
 export const simulateInbound = asyncHandler(async (req, res) => {
   const { phone, name, body } = req.body;
@@ -46,7 +80,7 @@ export const simulateInbound = asyncHandler(async (req, res) => {
   res.json(result);
 });
 
-async function handleInbound({ phone, name, body }) {
+async function handleInbound({ phone, name, body, externalId }) {
   if (!phone) return { ignored: true };
 
   const supporter = await prisma.supporter.findFirst({ where: { phone } });
@@ -68,7 +102,7 @@ async function handleInbound({ phone, name, body }) {
   }
 
   await prisma.message.create({
-    data: { conversationId: convo.id, direction: 'INBOUND', body: body || '', channel: 'WHATSAPP' },
+    data: { conversationId: convo.id, direction: 'INBOUND', body: body || '[mensagem]', channel: 'WHATSAPP', externalId: externalId || null },
   });
   await prisma.conversation.update({ where: { id: convo.id }, data: { lastMessageAt: new Date() } });
 
@@ -95,7 +129,7 @@ async function handleInbound({ phone, name, body }) {
       // confirmDeletionRequest apaga a convo, então só enviamos o WhatsApp.
       await sendWhatsApp({
         to: phone,
-        body: 'Confirmado. Seus dados foram excluídos permanentemente da base da pré-campanha. Obrigado por ter caminhado conosco. 👋',
+        body: 'Confirmado. Seus dados foram excluídos permanentemente da base da campanha. Obrigado por ter caminhado conosco. 👋',
       });
       return { deleted: true };
     }
@@ -112,7 +146,7 @@ async function handleInbound({ phone, name, body }) {
   if (/^\s*(sair|parar|cancelar|descadastrar|remover)\b/i.test(body || '')) {
     await optOutByPhone(phone);
     const bye =
-      'Pronto! Você não receberá mais mensagens da pré-campanha. ' +
+      'Pronto! Você não receberá mais mensagens da campanha. ' +
       'Se quiser também EXCLUIR seus dados da nossa base, responda EXCLUIR MEUS DADOS ou acesse a página de privacidade no nosso site.';
     const r = await sendWhatsApp({ to: phone, body: bye });
     await prisma.message.create({

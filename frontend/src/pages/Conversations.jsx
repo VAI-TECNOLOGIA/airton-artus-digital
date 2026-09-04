@@ -37,7 +37,7 @@ const QUICK_REPLIES = [
   'Que ótimo ter você com a gente! 💪',
 ];
 const TEMPLATES = [
-  { name: 'Boas-vindas voluntário', body: 'Olá! Que bom ter você na pré-campanha do Airton Artus! Para confirmar sua participação como voluntário, responda *SIM*. Juntos pelo Rio Grande!' },
+  { name: 'Boas-vindas voluntário', body: 'Olá! Que bom ter você na campanha do Airton Artus! Para confirmar sua participação como voluntário, responda *SIM*. Juntos pelo Rio Grande!' },
   { name: 'Convite para evento', body: '📅 Você está convidado(a) para nossa próxima ação de rua! Confira a agenda e participe — sua presença faz a diferença!' },
   { name: 'Material digital', body: '📎 Aqui está nosso material digital para você compartilhar. Espalhe nas suas redes e ajude a campanha a crescer! 🚀' },
   { name: 'Faixa na sua casa', body: '🏠 Quer uma faixa na sua casa? Responda com seu endereço que organizamos a instalação. Obrigado pelo apoio!' },
@@ -158,7 +158,7 @@ function WhatsAppCRM() {
               <div className="chat-body">
                 {(active.messages || []).map((m) => (
                   <div key={m.id} className={`bubble ${m.direction === 'INBOUND' ? 'in' : 'out'} ${m._status === 'error' ? 'msg-error' : ''}`} data-testid="msg">
-                    {m.body}
+                    {(() => { const t = (m.body || '').trim(); return (!t || /^\[.*\]$/.test(t)) ? <em className="msg-media">{t || '[mensagem]'}</em> : m.body; })()}
                     <small>
                       {m._status === 'sending' ? <span data-testid="msg-sending">enviando…</span>
                         : m._status === 'error' ? <span style={{ color: '#fca5a5', cursor: 'pointer' }} onClick={() => sendText(m.body)}>falhou — reenviar</span>

@@ -49,12 +49,12 @@ export default function Sidebar({ open, onClose }) {
 
   return (
     <aside className={`sidebar ${open ? 'open' : ''}`}>
-      <div className="sidebar-brand">
-        <div className="brand-mark"><img src="/candidato.jpg" alt="Airton Artus" /></div>
-        <div className="brand-text">
-          <strong>Airton Artus</strong>
-          <span>Digital</span>
-        </div>
+      <div className="sidebar-brand" style={{ padding: '4px 2px' }}>
+        <img
+          src="/logo-horizontal-branco.png"
+          alt="Airton Artus — Deputado Estadual"
+          style={{ width: '100%', maxWidth: 216, height: 'auto', display: 'block', margin: '0 auto' }}
+        />
       </div>
 
       <nav className="nav">

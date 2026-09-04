@@ -4,9 +4,9 @@
 
 ## 1. Quem somos
 
-O **Airton Artus Digital** ("aplicativo" ou "plataforma") é a plataforma oficial de organização da pré-campanha de **Airton Artus**, pré-candidato a Deputado Estadual pelo Rio Grande do Sul. A plataforma é utilizada pela equipe da pré-campanha para organizar apoiadores, voluntários, agenda, materiais e atendimento à população.
+O **Airton Artus Digital** ("aplicativo" ou "plataforma") é a plataforma oficial de organização da campanha de **Airton Artus**, candidato a Deputado Estadual pelo Rio Grande do Sul. A plataforma é utilizada pela equipe da campanha para organizar apoiadores, voluntários, agenda, materiais e atendimento à população.
 
-**Responsável pelo aplicativo (desenvolvedora e operadora):** **Vai Tecnologia LTDA** — CNPJ **52.165.389/0001-29**, que desenvolve e opera o aplicativo **Airton Artus Digital** para a coordenação da pré-campanha de Airton Artus.
+**Responsável pelo aplicativo (desenvolvedora e operadora):** **Vai Tecnologia LTDA** — CNPJ **52.165.389/0001-29**, que desenvolve e opera o aplicativo **Airton Artus Digital** para a coordenação da campanha de Airton Artus.
 
 Esta Política descreve como coletamos, usamos, compartilhamos e protegemos dados pessoais, em conformidade com a **Lei Geral de Proteção de Dados (Lei nº 13.709/2018 — LGPD)** e com a legislação eleitoral brasileira.
 
@@ -18,7 +18,7 @@ Para qualquer questão sobre o tratamento dos seus dados pessoais ou para exerce
 
 ## 3. Um aviso importante: opinião política é dado sensível
 
-Constar em uma base de apoiadores de um pré-candidato revela **opinião política**, que a LGPD classifica como **dado pessoal sensível** (art. 5º, II). Por isso, o cadastro de apoiadores e voluntários é feito **somente com o seu consentimento específico e destacado** (art. 11, I da LGPD), colhido no momento do cadastro — seja pelo formulário público, seja pelo cadastro assistido feito por um membro da equipe, que deve ter a sua autorização.
+Constar em uma base de apoiadores de um candidato revela **opinião política**, que a LGPD classifica como **dado pessoal sensível** (art. 5º, II). Por isso, o cadastro de apoiadores e voluntários é feito **somente com o seu consentimento específico e destacado** (art. 11, I da LGPD), colhido no momento do cadastro — seja pelo formulário público, seja pelo cadastro assistido feito por um membro da equipe, que deve ter a sua autorização.
 
 Você pode **revogar esse consentimento a qualquer momento** (ver seção 8).
 
@@ -62,7 +62,7 @@ Não coletamos dados financeiros/bancários, não processamos pagamentos, não e
 | Finalidade | Base legal (LGPD) |
 |---|---|
 | Cadastrar apoiadores/voluntários e organizar a mobilização | Consentimento específico e destacado (art. 11, I — dado sensível) |
-| Enviar comunicados, convites e mensagens da pré-campanha | Consentimento (revogável a qualquer momento) |
+| Enviar comunicados, convites e mensagens da campanha | Consentimento (revogável a qualquer momento) |
 | Autenticar e gerenciar contas da equipe | Execução de contrato/procedimentos preliminares (art. 7º, V) |
 | Prevenir fraude em cadastros (duplicidade, lista de bloqueio) | Legítimo interesse + prevenção à fraude (art. 11, II, "g") |
 | Trilha de auditoria e logs de acesso | Cumprimento de obrigação legal (Marco Civil da Internet) |
@@ -84,7 +84,7 @@ Compartilhamos dados **somente com os fornecedores estritamente necessários** p
 
 | Categoria | Retenção |
 |---|---|
-| Cadastro de apoiadores/voluntários | Enquanto durar a pré-campanha/campanha ou até a revogação do consentimento — o que ocorrer primeiro — respeitados os prazos de guarda exigidos pela legislação eleitoral |
+| Cadastro de apoiadores/voluntários | Enquanto durar a campanha/campanha ou até a revogação do consentimento — o que ocorrer primeiro — respeitados os prazos de guarda exigidos pela legislação eleitoral |
 | Logs de acesso | 6 meses (art. 15 do Marco Civil da Internet) |
 | Trilha de auditoria antifraude | Até o fim da campanha + prazos de eventual prestação de contas, de forma anonimizada quando possível |
 | Dados agregados/anonimizados (estatísticas) | Indefinidamente — sem possibilidade de reidentificação |

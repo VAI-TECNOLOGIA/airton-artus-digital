@@ -49,10 +49,38 @@ export const login = asyncHandler(async (req, res) => {
   const user = identifier.includes('@')
     ? await prisma.user.findUnique({ where: { email: identifier.toLowerCase() }, include: { region: true } })
     : await prisma.user.findFirst({ where: { phone: brDigits(identifier) }, include: { region: true } });
-  if (!user || !(await comparePassword(password, user.password))) {
+  if (!user) throw new AppError('Credenciais inválidas', 401);
+  if (!user.active) throw new AppError('Usuário inativo', 403);
+
+  // 1º ACESSO: conta criada sem senha (cadastro). Não é erro — envia o WhatsApp
+  // oficial para a pessoa criar a própria senha (não dispara nada no cadastro).
+  if (!user.password) {
+    let sent = false;
+    if (user.phone) {
+      try {
+        const t = signResetToken({ sub: user.id });
+        await prisma.user.update({
+          where: { id: user.id },
+          data: { resetToken: t, resetTokenExpires: new Date(Date.now() + 48 * 3600_000) },
+        });
+        await notifyPasswordReset({ name: user.name, phone: user.phone, token: t });
+        sent = true;
+      } catch (e) {
+        console.error('[login:1o-acesso] falha ao enviar reset:', e.message);
+      }
+    }
+    return res.json({
+      firstAccess: true,
+      sent,
+      message: sent
+        ? 'Vi que é o seu primeiro acesso! Te enviei um WhatsApp para você criar a sua senha — é só tocar no botão "Redefinir senha" da mensagem.'
+        : 'Vi que é o seu primeiro acesso! Toque em "Esqueci minha senha" para receber o link e criar a sua senha.',
+    });
+  }
+
+  if (!(await comparePassword(password, user.password))) {
     throw new AppError('Credenciais inválidas', 401);
   }
-  if (!user.active) throw new AppError('Usuário inativo', 403);
 
   const token = signToken({ sub: user.id, role: user.role });
   await audit({ userId: user.id, action: 'LOGIN', entity: 'User', entityId: user.id, ip: req.ip });

@@ -27,6 +27,8 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
+    // 1º acesso: conta sem senha — não loga; devolve a mensagem p/ a tela mostrar.
+    if (data.firstAccess) return { firstAccess: true, message: data.message };
     localStorage.setItem('aad_token', data.token);
     setUser(data.user);
     initPushNotifications(); // no navegador é no-op

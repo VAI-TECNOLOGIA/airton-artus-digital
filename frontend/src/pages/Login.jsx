@@ -12,14 +12,17 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [firstAccess, setFirstAccess] = useState('');
 
   if (!loading && user) return <Navigate to="/" replace />;
 
   async function submit(e) {
     e.preventDefault();
     setSubmitting(true);
+    setFirstAccess('');
     try {
-      await login(email, password);
+      const r = await login(email, password);
+      if (r?.firstAccess) { setFirstAccess(r.message); return; }
       toast.success('Bem-vindo à central da campanha!');
       nav('/');
     } catch (err) {
@@ -75,6 +78,13 @@ export default function Login() {
             <label htmlFor="login-password">Senha</label>
             <input id="login-password" className="input" type="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </div>
+
+          {firstAccess && (
+            <div className="auth-firstaccess" role="status">
+              <strong>Primeiro acesso</strong>
+              <span>{firstAccess}</span>
+            </div>
+          )}
 
           <button className="btn btn-primary btn-block btn-xl" disabled={submitting} type="submit">
             {submitting ? 'Entrando...' : 'Entrar'}

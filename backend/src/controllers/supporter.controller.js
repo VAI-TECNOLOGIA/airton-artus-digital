@@ -9,7 +9,6 @@ import { sendWhatsApp } from '../services/whatsapp.service.js';
 import { notifyVolunteerConfirmed } from '../services/whatsappTemplates.service.js';
 import { SUPPORT_TYPES, SUPPORTER_STATUS } from '../utils/enums.js';
 import { nullifyEmpty, onlyDigits, brDigits } from '../utils/helpers.js';
-import { hashPassword } from '../utils/password.js';
 import { signResetToken } from '../utils/jwt.js';
 import { fallbackLatLng } from '../utils/geo.js';
 import { resolveCity, cleanPlace, canonicalCityName } from '../utils/cityNormalize.js';
@@ -185,7 +184,7 @@ export const sendAccess = asyncHandler(async (req, res) => {
         email,
         phone,
         role: 'PARCEIRO',
-        password: await hashPassword(`${Math.random().toString(36).slice(2, 10)}Aa1!`),
+        password: '', // sem senha até a pessoa criar (1º acesso ou "esqueci senha")
       },
     });
   }

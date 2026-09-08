@@ -5,8 +5,6 @@ import { AppError } from '../utils/AppError.js';
 import { hashPassword } from '../utils/password.js';
 import { USER_ROLES } from '../utils/enums.js';
 import { nullifyEmpty } from '../utils/helpers.js';
-import { notifyPasswordReset } from '../services/whatsappTemplates.service.js';
-import { signResetToken } from '../utils/jwt.js';
 
 const select = {
   id: true, name: true, email: true, role: true, phone: true, active: true,
@@ -41,23 +39,14 @@ export const create = asyncHandler(async (req, res) => {
   const data = createSchema.parse(nullifyEmpty(req.body));
   const exists = await prisma.user.findUnique({ where: { email: data.email.toLowerCase() } });
   if (exists) throw new AppError('E-mail já cadastrado', 409);
-  // Senha opcional: se o admin não definir, gera uma aleatória — a pessoa cria a própria pelo link.
-  const rawPassword = data.password || `${Math.random().toString(36).slice(2, 10)}Aa1!`;
+  // Cadastro manual: se o admin não definir senha, a conta nasce SEM senha (vazia).
+  // NÃO dispara WhatsApp. A pessoa cria a senha no 1º login (o sistema envia o link)
+  // ou pelo "Esqueci minha senha".
+  const password = data.password ? await hashPassword(data.password) : '';
   const user = await prisma.user.create({
-    data: { ...data, email: data.email.toLowerCase(), password: await hashPassword(rawPassword) },
+    data: { ...data, email: data.email.toLowerCase(), password },
     select,
   });
-  // Acesso liberado → gera link de "Definir senha" e envia por WhatsApp (best-effort).
-  try {
-    const token = signResetToken({ sub: user.id });
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { resetToken: token, resetTokenExpires: new Date(Date.now() + 48 * 3600_000) },
-    });
-    await notifyPasswordReset({ name: user.name, phone: user.phone, token });
-  } catch (e) {
-    console.error('[user:create] falha ao enviar link de acesso:', e.message);
-  }
   res.status(201).json(user);
 });
 

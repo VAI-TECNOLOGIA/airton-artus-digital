@@ -17,6 +17,7 @@ const include = {
   region: { select: { id: true, name: true } },
   city: { select: { id: true, name: true } },
   coordinator: { select: { id: true, name: true } },
+  createdBy: { select: { id: true, name: true } },
   volunteer: true,
 };
 
@@ -104,6 +105,7 @@ export const create = asyncHandler(async (req, res) => {
       status,
       flaggedReason,
       duplicateOfId,
+      createdById: req.user?.id || null, // quem cadastrou (membro logado)
     },
     include,
   });
@@ -326,6 +328,7 @@ export const importBatch = asyncHandler(async (req, res) => {
           supportType,
           status: 'NOVO',
           coordinatorId,
+          createdById: req.user?.id || null, // quem importou
         },
         select: { id: true },
       });

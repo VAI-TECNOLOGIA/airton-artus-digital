@@ -27,6 +27,7 @@ export default function Reports() {
     push('Ações por tipo', tr('StreetActionType', data.actionsByType));
     push('Engajamento por tipo', tr('TaskType', data.engagementByType));
     push('Demandas por categoria', tr('DemandCategory', data.demandsByCategory));
+    push('Cadastros por pessoa', data.supportersByCreator);
     const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -49,6 +50,35 @@ export default function Reports() {
         <button className="btn" onClick={exportCsv}>
           <Download size={16} /> Exportar CSV
         </button>
+      </div>
+
+      <div style={{ marginBottom: 18 }}>
+        <Card title="Cadastros por pessoa" icon={BarChart3} subtitle="Quantos apoiadores cada membro da equipe já cadastrou">
+          {(data.supportersByCreator || []).length === 0 ? (
+            <p className="muted">Sem cadastros registrados ainda.</p>
+          ) : (
+            <table className="rank-table">
+              <thead>
+                <tr>
+                  <th style={{ width: 40 }}>#</th>
+                  <th>Pessoa</th>
+                  <th style={{ textAlign: 'right', width: 120 }}>Cadastros</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data.supportersByCreator.map((c, i) => (
+                  <tr key={c.name}>
+                    <td className="cell-muted">{i + 1}</td>
+                    <td className="cell-strong">{c.name}</td>
+                    <td style={{ textAlign: 'right' }}>
+                      <strong style={{ fontFamily: 'var(--font-number)', fontSize: 16 }}>{c.value}</strong>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </Card>
       </div>
 
       <div className="grid grid-2">

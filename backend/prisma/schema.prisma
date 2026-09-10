@@ -200,6 +200,7 @@ enum BroadcastContactStatus {
   PENDENTE
   ENVIADO
   ENTREGUE
+  LIDA
   FALHA
 }
 
@@ -256,6 +257,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   coordinatedSupporters Supporter[]         @relation("SupporterCoordinator")
+  createdSupporters     Supporter[]         @relation("SupporterCreator")
   supervisedVolunteers  Volunteer[]         @relation("VolunteerSupervisor")
   assignedConversations Conversation[]      @relation("ConversationAgent")
   authoredNotices       Notice[]            @relation("NoticeAuthor")
@@ -352,6 +354,9 @@ model Supporter {
   duplicates    Supporter[]   @relation("SupporterDuplicates")
   coordinatorId String?
   coordinator   User?         @relation("SupporterCoordinator", fields: [coordinatorId], references: [id], onDelete: SetNull)
+  // Quem cadastrou este apoiador (membro logado). Backfill a partir do AuditLog.
+  createdById String?
+  createdBy   User?         @relation("SupporterCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -360,12 +365,14 @@ model Supporter {
   conversations   Conversation[]
   bannerLocations BannerLocation[]
   broadcastContacts BroadcastContact[]
+  materialRequests  MaterialRequest[] @relation("SupporterMaterialRequests")
 
   @@index([phone])
   @@index([status])
   @@index([regionId])
   @@index([cityId])
   @@index([coordinatorId])
+  @@index([createdById])
 }
 
 model Volunteer {
@@ -552,11 +559,16 @@ model MaterialRequest {
   materialId  String?
   material    Material? @relation(fields: [materialId], references: [id], onDelete: SetNull)
   materialName String
+  materials    String[] @default([])   // vários itens num pedido só
+  materialType String?                 // INDIVIDUAL | DOBRADINHA
   quantity    Int      @default(1)
   justification String?
   cityName    String?
   neighborhood String?
   deliveryAddress String?
+
+  supporterId String?
+  supporter   Supporter? @relation("SupporterMaterialRequests", fields: [supporterId], references: [id], onDelete: SetNull)
 
   requesterId String?
   requester   User?    @relation("RequestRequester", fields: [requesterId], references: [id], onDelete: SetNull)
@@ -574,6 +586,7 @@ model MaterialRequest {
 
   @@index([status])
   @@index([requesterId])
+  @@index([supporterId])
 }
 
 model BannerLocation {
@@ -753,12 +766,37 @@ model BroadcastCampaign {
   channel     Channel  @default(WHATSAPP)
   status      BroadcastStatus @default(RASCUNHO)
   templateName String?          // template oficial aprovado (null = texto livre)
-  templateVars Json?            // valores fixos das variáveis do template (evento/data/local...)
+  templateVars Json?            // (legado) valores fixos das variáveis — mantido por compat
+  templateLang   String? @default("pt_BR")
+  headerImageUrl String?
+  varsJson       Json?          // mapeamento das variáveis do corpo [{source,value}]
+  audienceJson   Json?          // filtros do público selecionado
   scheduledAt DateTime?
   totalContacts Int    @default(0)
   sentCount     Int    @default(0)
   failedCount   Int    @default(0)
   pendingCount  Int    @default(0)
+  deliveredCount Int   @default(0)
+  readCount      Int   @default(0)
+
+  // Autorização — fluxo: equipe solicita -> autorizador (User.podeAutorizar) libera/recusa.
+  autorizada             Boolean   @default(false)
+  autorizacaoSolicitada  Boolean   @default(false)
+  solicitadaPorId        String?
+  solicitadaEm           DateTime?
+  autorizadaPorId        String?
+  autorizadaEm           DateTime?
+  autorizacaoNota        String?
+
+  // Declaração de conformidade (aceite ativo antes do envio) — registro auditável.
+  declAcceptedAt  DateTime?
+  declUserId      String?
+  declUserName    String?
+  declIp          String?
+  declVersion     String?
+  declListCount   Int?
+  declListHash    String?
+  declContentHash String?
 
   ownerId String?
   owner   User?   @relation("BroadcastOwner", fields: [ownerId], references: [id], onDelete: SetNull)
@@ -784,6 +822,12 @@ model BroadcastContact {
   status      BroadcastContactStatus @default(PENDENTE)
   error       String?
   sentAt      DateTime?
+  // Rastreio da API Oficial: wamid + confirmações do webhook.
+  wamid       String?
+  deliveredAt DateTime?
+  readAt      DateTime?
+  senderPhoneId String?   // número que fez o envio (Airton usa 1 só)
+  source      String?     // BASE | COLADO | CSV
 
   supporterId String?
   supporter   Supporter? @relation(fields: [supporterId], references: [id], onDelete: SetNull)
@@ -792,6 +836,7 @@ model BroadcastContact {
 
   @@index([campaignId])
   @@index([status])
+  @@index([wamid])
 }
 
 model Automation {

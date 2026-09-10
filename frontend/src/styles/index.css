@@ -1295,3 +1295,12 @@ table.table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
 .guest-stat.go b { color: #146030; }
 .guest-stat.no b { color: #b91c1c; }
 @media (max-width: 560px) { .guest-link-row { flex-wrap: wrap; } .guest-link-row .input { flex-basis: 100%; } }
+
+/* Ranking simples (Relatórios — cadastros por pessoa) */
+.rank-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.rank-table thead th { text-align: left; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--muted); font-weight: 700; padding: 0 10px 8px; border-bottom: 1px solid var(--border); }
+.rank-table tbody td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.rank-table tbody tr:last-child td { border-bottom: none; }
+.rank-table tbody tr:hover { background: var(--surface-2); }
+.rank-table .cell-strong { color: var(--ink); font-weight: 600; }
+.rank-table .cell-muted { color: var(--muted-2); font-variant-numeric: tabular-nums; }

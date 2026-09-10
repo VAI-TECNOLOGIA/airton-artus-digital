@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Termo de Entrega, Aceite, Prestação de Serviços e Reconhecimento de Pagamento · Airton Artus Digital — TPS-AAD-2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#0B2A57;--azul2:#1B3A6B;
+  --terra:#A8693D;--terra2:#7B4F2E;--terra3:#C4894A;
+  --vai:#F47920;
+  --off:#F2F0EC;--paper:#FFFFFF;--pdim:#F8F6F2;
+  --line:#DDD8D0;--soft:#ECE9E3;
+  --txt:#1A2238;--txt2:#5C6470;--mute:#97A0AE;
+  --pend-bg:#FFE1C2;--pend-tx:#8A4B00;
+  --fs:'Inter',system-ui,sans-serif;
+  --fd:'Lora',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+body{font-family:var(--fs);color:var(--txt);background:#D8D4CC;-webkit-font-smoothing:antialiased;}
+
+.page{width:210mm;height:297mm;background:var(--paper);padding:11mm 15mm 9mm;margin:20px auto;
+  box-shadow:0 3px 10px rgba(13,31,60,.08),0 16px 48px rgba(13,31,60,.10);
+  page-break-after:always;display:flex;flex-direction:column;overflow:hidden;}
+.page:last-of-type{page-break-after:auto;margin-bottom:44px;}
+
+@page{size:A4;margin:9mm 13mm 12mm;
+  @bottom-left{content:"TPS-AAD-2026 · VAI Tecnologia Ltda · MINUTA";font-family:Inter,sans-serif;font-size:6pt;color:#97A0AE;vertical-align:top;padding-top:3mm;}
+  @bottom-center{content:"vaitecnologia.com.br · 52.165.389/0001-29";font-family:Inter,sans-serif;font-size:6pt;color:#97A0AE;vertical-align:top;padding-top:3mm;}
+  @bottom-right{content:"Pág. " counter(page) " / " counter(pages);font-family:Inter,sans-serif;font-size:6pt;color:#F47920;font-weight:600;vertical-align:top;padding-top:3mm;}
+}
+
+.hd{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding-bottom:6px;border-bottom:0.5px solid var(--line);margin-bottom:9px;flex-shrink:0;}
+.hd img{height:21px;width:auto;display:block;}
+.hd__mid{text-align:center;font-size:5.8pt;letter-spacing:.30em;color:var(--terra);font-weight:600;text-transform:uppercase;}
+.hd__right{text-align:right;font-size:6.6pt;color:var(--txt2);line-height:1.4;}
+.hd__right b{color:var(--azul);font-weight:700;display:block;font-size:7pt;}
+
+.ft{margin-top:auto;padding-top:5px;border-top:0.5px solid var(--line);display:grid;grid-template-columns:1fr auto 1fr;align-items:center;font-size:6pt;color:var(--mute);flex-shrink:0;}
+.ft__c{text-align:center;}.ft__r{text-align:right;}.ft b{color:var(--terra);font-weight:600;}
+
+/* HERO / BANNER */
+.hero{padding:15px 19px;background:var(--azul);position:relative;overflow:hidden;margin-bottom:9px;flex-shrink:0;}
+.hero::after{content:"";position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--vai);}
+.hero .etq{font-size:5.8pt;letter-spacing:.24em;text-transform:uppercase;color:rgba(255,255,255,.42);font-weight:500;margin-bottom:6px;}
+.hero h1{font-family:var(--fd);font-size:18.5pt;font-weight:500;color:#fff;line-height:1.08;letter-spacing:-.01em;}
+.hero p{font-size:7.6pt;color:rgba(255,255,255,.6);margin-top:6px;font-style:italic;line-height:1.5;}
+.hero p b{color:var(--vai);font-style:normal;}
+
+.banner{border:1.4px solid #C0392B;background:#FCEBE9;color:#8A1F16;padding:9px 13px;margin-bottom:9px;display:flex;gap:10px;align-items:center;flex-shrink:0;}
+.banner .bg{font-family:var(--fd);font-size:11pt;font-weight:700;line-height:1;flex-shrink:0;}
+.banner p{font-size:7.4pt;line-height:1.45;}
+.banner b{font-weight:700;}
+
+.pend{background:var(--pend-bg);color:var(--pend-tx);font-weight:700;padding:0 4px;border-radius:2px;font-size:6.8pt;letter-spacing:.02em;white-space:nowrap;}
+
+/* PARTIES */
+.parties{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;flex-shrink:0;}
+.party{border:0.5px solid var(--line);padding:9px 12px;}
+.pt-tag{font-size:5.6pt;letter-spacing:.16em;text-transform:uppercase;color:var(--terra);font-weight:700;margin-bottom:4px;}
+.pt-name{font-family:var(--fd);font-size:9pt;font-weight:600;color:var(--azul);margin-bottom:4px;line-height:1.2;}
+.party p{font-size:7.4pt;color:var(--txt2);line-height:1.55;}
+.party p strong{color:var(--txt);}
+
+/* SECTION HEAD */
+.sh{display:grid;grid-template-columns:24px 1fr;gap:8px;align-items:baseline;margin-bottom:4px;margin-top:2px;}
+.sh__n{font-family:var(--fd);font-weight:500;font-size:14pt;color:var(--terra);line-height:1;text-align:right;}
+.sh__t{font-family:var(--fd);font-weight:600;font-size:9.5pt;color:var(--azul);border-bottom:0.5px solid var(--line);padding-bottom:2px;}
+.hint{font-size:7.2pt;color:var(--txt2);line-height:1.5;margin-bottom:5px;}
+
+/* CLAUSULAS */
+.cl{list-style:none;margin-top:3px;}
+.cl>li{display:grid;grid-template-columns:20px 1fr;gap:7px;padding:3.6px 0;border-bottom:0.5px dashed var(--soft);}
+.cl>li:last-child{border-bottom:none;}
+.cl__n{font-family:var(--fd);font-size:9pt;color:var(--terra);font-weight:600;text-align:right;line-height:1;padding-top:2px;}
+.cl h4{font-family:var(--fd);font-size:7.8pt;color:var(--azul);font-weight:600;margin-bottom:2px;}
+.cl p{font-size:7pt;color:var(--txt);line-height:1.5;}
+.cl p+p{margin-top:2px;}
+.cl p b{color:var(--terra2);font-weight:600;}
+.cl ul{margin:2px 0 0 0;padding-left:12px;}
+.cl ul li{font-size:7pt;color:var(--txt);line-height:1.45;list-style:none;position:relative;padding-left:8px;}
+.cl ul li::before{content:"–";position:absolute;left:-2px;color:var(--terra);}
+
+/* AVISO / TITBOX */
+.aviso{border-left:3px solid var(--terra);background:var(--pdim);padding:7px 11px;margin-top:7px;font-size:7.2pt;color:var(--txt2);line-height:1.5;}
+.aviso strong{color:var(--azul);font-weight:600;}
+.titbox{background:var(--azul);color:var(--off);padding:10px 14px;margin-top:8px;position:relative;}
+.titbox::before{content:"";position:absolute;top:0;bottom:0;left:0;width:3px;background:var(--vai);}
+.titbox h4{font-family:var(--fd);font-size:9pt;color:#fff;font-weight:600;margin-bottom:4px;}
+.titbox p{font-size:7.4pt;line-height:1.55;color:rgba(242,240,236,.9);}
+.titbox b{color:#FCA95A;font-weight:600;}
+
+/* MODULE / GENERIC TABLE */
+.mt{width:100%;border-collapse:collapse;font-size:6.8pt;}
+.mt thead th{background:var(--azul);color:var(--off);padding:4.5px 7px;text-align:left;font-size:5.6pt;letter-spacing:.1em;text-transform:uppercase;font-weight:500;}
+.mt thead th.c{text-align:center;}
+.mt .pr td{background:var(--pdim);font-size:5.4pt;letter-spacing:.16em;text-transform:uppercase;color:var(--terra);font-weight:700;padding:3.5px 7px;border-bottom:0.5px solid var(--line);}
+.mt tbody tr:not(.pr):nth-child(even){background:var(--pdim);}
+.mt tbody td{padding:3.6px 7px;border-bottom:0.5px solid var(--soft);color:var(--txt);vertical-align:top;line-height:1.4;}
+.mt tbody td strong{color:var(--azul);}
+.mt td.c{text-align:center;white-space:nowrap;}
+.mt td.c b{color:#2E7D46;font-weight:700;font-size:6.4pt;}
+
+/* CHECKLIST (Anexo I) */
+.ck{width:100%;border-collapse:collapse;font-size:6.9pt;}
+.ck thead th{background:var(--azul);color:var(--off);padding:4.5px 7px;text-align:left;font-size:5.4pt;letter-spacing:.1em;text-transform:uppercase;font-weight:500;}
+.ck thead th.c{text-align:center;width:14%;}
+.ck tbody td{padding:3.8px 7px;border-bottom:0.5px solid var(--soft);vertical-align:top;line-height:1.4;}
+.ck tbody tr:nth-child(even){background:var(--pdim);}
+.ck td.c{text-align:center;}
+.ck .box{display:inline-block;width:8px;height:8px;border:1px solid var(--terra2);border-radius:1px;}
+.ck td strong{color:var(--azul);}
+.ck .pr td{background:#EEF1F6;font-size:5.4pt;letter-spacing:.14em;text-transform:uppercase;color:var(--azul2);font-weight:700;padding:3.2px 7px;}
+
+/* SIGN */
+.signoff{margin-top:8px;padding-top:5px;border-top:0.5px solid var(--line);font-size:8pt;color:var(--txt);}
+.signoff .pl{font-size:6.8pt;color:var(--txt2);margin-top:2px;}
+.sign{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:26px;}
+.sign>div{border-top:0.5px solid var(--azul);padding-top:5px;text-align:center;}
+.sign strong{display:block;font-family:var(--fd);font-size:8.6pt;font-weight:600;color:var(--azul);margin-bottom:2px;}
+.sign span{display:block;font-size:6.9pt;color:var(--txt2);line-height:1.4;}
+.sign .ln{font-size:6.8pt;color:var(--mute);margin-top:22px;}
+.test{margin-top:10px;padding-top:6px;border-top:0.5px dashed var(--line);display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+.test .lb{font-size:5.6pt;letter-spacing:.14em;text-transform:uppercase;color:var(--terra);font-weight:700;margin-bottom:9px;}
+.test .sl{border-top:0.5px solid var(--line);padding-top:4px;font-size:6.9pt;color:var(--txt2);line-height:1.5;}
+
+@media print{
+  body{background:#fff;}
+  .page{margin:0;box-shadow:none;padding:9mm 13mm;height:auto;min-height:297mm;break-before:page;}
+  .page:first-of-type{break-before:avoid;}
+  .ft{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ PÁG 1 — CAPA ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Termo de Entrega, Aceite, Prestação de Serviços e Reconhecimento de Pagamento</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>Itapema, 24 ago. 2026</div>
+  </div>
+
+  <div class="banner">
+    <span class="bg">!</span>
+    <p><b>MINUTA — PENDENTE DE PREENCHIMENTO — NÃO ASSINAR.</b> Este documento contém campos obrigatórios ainda não confirmados (marcados <span class="pend">PENDENTE</span>), em especial <b>valor e forma de pagamento</b> e a <b>qualificação completa dos representantes</b>. Somente poderá ser assinado após todos os campos estarem integralmente preenchidos e após revisão por advogado eleitoral e por especialista em LGPD.</p>
+  </div>
+
+  <div class="hero">
+    <div class="etq">Desenvolvimento · Plataforma Web/PWA · Aplicativos móveis · WhatsApp Cloud API</div>
+    <h1>Airton Artus Digital<br>Plataforma de Campanha</h1>
+    <p>Central digital da campanha — base de apoiadores e voluntários, mapa político, atendimento, mobilização e disparos. <b>Desenvolvida e disponibilizada em produção pela VAI Tecnologia.</b></p>
+  </div>
+
+  <div class="parties">
+    <div class="party">
+      <div class="pt-tag">Contratada · Desenvolvedora · Operadora (LGPD)</div>
+      <div class="pt-name">VAI Tecnologia Ltda</div>
+      <p>CNPJ: <strong>52.165.389/0001-29</strong><br>Sede: Itapema — SC <span class="pend">(endereço completo PENDENTE)</span><br>Representante: <strong>Douglas Bedinot da Rocha</strong> · RG 2.086.556.814 · CPF 009.508.610-22 · nasc. 17/12/1986<br>Residente: Rua 266, nº 210, ap. 801, Meia Praia, Itapema — SC, CEP 88220-000 · <strong>sócio-administrador</strong><br>elison@vaitecnologia.com.br · Tel. <span class="pend">PENDENTE</span></p>
+    </div>
+    <div class="party">
+      <div class="pt-tag">Contratante · Controladora (LGPD)</div>
+      <div class="pt-name">Eleição 2026 Airton Luiz Artus Deputado Estadual</div>
+      <p>CNPJ eleitoral: <strong>68.437.908/0001-09</strong> (natureza 409-0 — candidato a cargo político eletivo)<br>Endereço: <strong>Av. Ruperti Filho, 1060, ap. 1101, Cond. Singulo, Centro, Venâncio Aires — RS, CEP 95.800-000</strong><br>Candidatura: <strong>Airton Luiz Artus</strong> · Deputado Estadual · <strong>PDT</strong> · nº <strong>12012</strong><br>Representante: <strong>Airton Luiz Artus</strong> (ou administrador financeiro designado) · CPF <span class="pend">PENDENTE</span><br>airtonlartus@gmail.com · Tel./WhatsApp (51) 9998-3099</p>
+    </div>
+  </div>
+
+  <div class="sh"><span class="sh__n">·</span><span class="sh__t">Natureza e finalidade do documento</span></div>
+  <p class="hint">Este é um <b>Termo de Entrega, Aceite, Prestação de Serviços e Reconhecimento de Pagamento</b>. Ele registra que a plataforma <b>Airton Artus Digital foi desenvolvida pela VAI (Contratada) e disponibilizada em produção</b>; que a <b>homologação depende do aceite formal da Contratante</b>, o qual se dá pela assinatura deste Termo em conjunto com o <b>checklist técnico do Anexo I</b>; e que a declaração de aceite <b>não elimina a garantia</b> para defeitos objetivos (Cláusula 6). A VAI atua como <b>desenvolvedora</b> e, quando acessa dados em nome da Contratante, como <b>operadora</b> (LGPD); a Contratante é a <b>controladora</b> e responsável pelo uso.</p>
+
+  <div class="titbox">
+    <h4>Campos pendentes que impedem a assinatura</h4>
+    <p>Valor e forma de pagamento (parcelas, datas, nota fiscal) · Endereço completo da sede e telefone da VAI · CPF do representante da Contratante. <b>Preencher todos antes de assinar.</b></p>
+  </div>
+
+  <div class="ft">
+    <span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span>
+    <span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span>
+    <span class="ft__r">Pág. 1 / 11</span>
+  </div>
+</div>
+
+
+<!-- ═══ PÁG 2 — OBJETO E ESCOPO ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Objeto e Escopo Entregue</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>24 ago. 2026</div>
+  </div>
+
+  <div class="sh"><span class="sh__n">1</span><span class="sh__t">Objeto</span></div>
+  <p class="hint">Prestação de serviços de <b>desenvolvimento, implantação e disponibilização em produção</b> da plataforma digital <b>Airton Artus Digital</b>, com o escopo descrito no Item 2 e evidenciado no <b>Anexo I</b>, pela VAI Tecnologia (Contratada e desenvolvedora), para a Contratante acima qualificada. Este Termo formaliza a entrega e, mediante aceite, a homologação do escopo.</p>
+
+  <div class="sh" style="margin-top:8px"><span class="sh__n">2</span><span class="sh__t">Escopo efetivamente desenvolvido</span></div>
+  <p class="hint">Plataforma publicada e acessível em <strong>app.airtonartus.com.br</strong>. Os módulos abaixo compõem o escopo contratado; sua homologação é verificada pelo checklist do Anexo I.</p>
+  <table class="mt">
+    <thead><tr><th style="width:27%">Bloco</th><th style="width:58%">Escopo</th><th class="c" style="width:15%">Situação</th></tr></thead>
+    <tbody>
+      <tr class="pr"><td colspan="3">Fundação técnica e acesso</td></tr>
+      <tr><td><strong>Arquitetura &amp; infraestrutura</strong></td><td>Aplicação web/PWA (React), API própria (Node), banco PostgreSQL, servidor dedicado com Nginx, SSL, deploy e rotina de backup — domínio app.airtonartus.com.br</td><td class="c"><b>Entregue</b></td></tr>
+      <tr><td><strong>Acesso &amp; cadastro</strong></td><td>Login por e-mail ou telefone, cadastro público (auto-cadastro como Apoiador), perfis e permissões (Apoiador / Membro / Líder), recuperação de senha e exclusão de conta</td><td class="c"><b>Entregue</b></td></tr>
+      <tr class="pr"><td colspan="3">Base — CRM de campanha</td></tr>
+      <tr><td><strong>Apoiadores &amp; voluntários</strong></td><td>Base com antifraude (blacklist, duplicidade, suspeitos), padronização de cidade, importação CSV, envio de acesso por WhatsApp, engajamento e pontuação</td><td class="c"><b>Entregue</b></td></tr>
+      <tr><td><strong>Mapa político</strong></td><td>Apoiadores, faixas e ações georreferenciados em tempo real, camadas e filtros, atalho de contato por WhatsApp</td><td class="c"><b>Entregue</b></td></tr>
+      <tr class="pr"><td colspan="3">Mobilização, materiais e eventos</td></tr>
+      <tr><td><strong>Mobilização &amp; materiais</strong></td><td>Mural de avisos, mídia kit, ações de rua, agenda; pedidos de material e faixas (autorização e instalação)</td><td class="c"><b>Entregue</b></td></tr>
+      <tr><td><strong>Convite / presença (RSVP)</strong></td><td>Página de convite para eventos com confirmação de presença e acompanhantes</td><td class="c"><b>Entregue</b></td></tr>
+      <tr class="pr"><td colspan="3">Comunicação</td></tr>
+      <tr><td><strong>WhatsApp Cloud API (Meta)</strong></td><td>Número oficial conectado, perfil comercial, modelos (templates) aprovados, webhook e automações (boas-vindas, confirmação de voluntário, convite e lembrete de evento, agradecimento, aniversário, redefinição de senha, demanda resolvida)</td><td class="c"><b>Entregue</b></td></tr>
+      <tr><td><strong>Atendimento &amp; disparador</strong></td><td>Inbox de conversas e registro de demandas; disparador de campanhas com variáveis, vínculo de modelo oficial, reenvio e relatório de entrega</td><td class="c"><b>Entregue</b></td></tr>
+      <tr class="pr"><td colspan="3">Público, conformidade e aplicativos</td></tr>
+      <tr><td><strong>Site público &amp; LGPD</strong></td><td>Landing de captação; autoatendimento de exclusão de dados (2 etapas) e páginas legais (privacidade, termos, exclusão)</td><td class="c"><b>Entregue</b></td></tr>
+      <tr><td><strong>Aplicativos móveis &amp; painéis</strong></td><td>PWA instalável e aplicativos iOS/Android (ver Item 3); dashboard, relatórios e painel de TV</td><td class="c"><b>Entregue</b></td></tr>
+      <tr><td><strong>Identidade &amp; treinamento</strong></td><td>Identidade visual oficial aplicada; manual do sistema e apresentação de treinamento</td><td class="c"><b>Entregue</b></td></tr>
+    </tbody>
+  </table>
+  <p class="hint" style="margin-top:5px">Funcionalidades não listadas neste Item <b>não</b> integram o escopo. A ativação plena dos recursos que dependem de terceiros observa o Item 10.</p>
+
+  <div class="ft"><span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span><span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span><span class="ft__r">Pág. 2 / 11</span></div>
+</div>
+
+
+<!-- ═══ PÁG 3 — APLICATIVOS / ENTREGA / ACEITE ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Aplicativos · Entrega · Aceite</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>24 ago. 2026</div>
+  </div>
+
+  <div class="sh"><span class="sh__n">3</span><span class="sh__t">Aplicativos iOS e Android</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">3.1</span><div><h4>Natureza técnica</h4><p>Os aplicativos móveis são <b>encapsulamentos (wrapper) da PWA</b> — projeto Capacitor que carrega, em produção, o mesmo endereço web (app.airtonartus.com.br). <b>Não</b> são aplicativos nativos de código independente. O produto principal é a <b>PWA instalável</b>; os apps móveis são a sua distribuição para as lojas.</p></div></li>
+    <li><span class="cl__n">3.2</span><div><h4>O que é entregue</h4><p>Código-fonte dos projetos iOS e Android (Capacitor), identificadores de aplicativo (iOS/Android <span class="pend">PENDENTE confirmar</span>), ícones e telas de abertura na identidade oficial e configuração pronta para geração dos pacotes.</p></div></li>
+    <li><span class="cl__n">3.3</span><div><h4>O que depende da Contratante</h4><p>São de titularidade e responsabilidade da Contratante: <b>contas de desenvolvedor</b> Apple e Google, <b>chave de assinatura (keystore) Android e certificados Apple</b>, e os respectivos custos. Sem esses ativos, a VAI não gera os pacotes assinados exigidos pelas lojas.</p></div></li>
+    <li><span class="cl__n">3.4</span><div><h4>Submissão, correções e limites</h4><p>A publicação depende de <b>análise e aprovação da Apple e da Google</b>, sobre as quais a VAI não tem controle. A VAI corrige <b>rejeições atribuíveis a falha do código entregue</b>, incluídas <span class="pend">nº de submissões/correções — PENDENTE definir</span>. Não são responsabilidade da VAI decisões, regras, prazos ou reprovações das lojas por motivo externo ao código.</p></div></li>
+    <li><span class="cl__n">3.5</span><div><h4>Aceite independente da loja</h4><p>Estando o código e a PWA entregues e funcionais, o <b>aceite não fica condicionado à aprovação nas lojas</b> quando a pendência de publicação decorrer de fator externo à VAI.</p></div></li>
+  </ul>
+
+  <div class="sh" style="margin-top:8px"><span class="sh__n">4</span><span class="sh__t">Entrega, aceite e homologação</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">4.1</span><div><h4>Estado atual</h4><p>A plataforma foi <b>desenvolvida e disponibilizada em produção</b> em app.airtonartus.com.br, com os módulos do Item 2. A simples disponibilidade da URL <b>não</b> equivale, por si só, à homologação de todos os módulos.</p></div></li>
+    <li><span class="cl__n">4.2</span><div><h4>Como se dá o aceite</h4><p>A <b>homologação</b> ocorre com o <b>aceite formal da Contratante</b>, manifestado pela <b>assinatura deste Termo em conjunto com o preenchimento e assinatura do checklist do Anexo I</b>. O aceite formaliza a conformidade do escopo entregue, ressalvada a garantia (Item 6).</p></div></li>
+    <li><span class="cl__n">4.3</span><div><h4>Efeito</h4><p>A partir do aceite, a <b>operação e o uso</b> da plataforma passam à Contratante, nos termos dos Itens 11 a 14.</p></div></li>
+  </ul>
+
+  <div class="sh" style="margin-top:8px"><span class="sh__n">5</span><span class="sh__t">Prazo de aceite</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">5.1</span><div><h4>Prazo</h4><p>A Contratante terá <b>10 (dez) dias corridos</b>, contados da assinatura deste Termo (ou da disponibilização final, se posterior), para testar o escopo e apontar defeitos objetivos.</p></div></li>
+    <li><span class="cl__n">5.2</span><div><h4>Como apontar</h4><p>Os defeitos devem ser comunicados <b>por escrito</b> ao canal <span class="pend">PENDENTE (e-mail oficial da VAI)</span>, com <b>descrição objetiva, módulo afetado, comportamento esperado e evidência</b> (imagem ou passo a passo).</p></div></li>
+    <li><span class="cl__n">5.3</span><div><h4>Aceite expresso e tácito</h4><p>O aceite é <b>expresso</b> pela assinatura do checklist (Anexo I). Na ausência de manifestação escrita no prazo do Item 5.1, e estando o sistema acessível e sem falhas críticas notificadas, considera-se ocorrido o <b>aceite tácito</b>. Preferências visuais, melhorias e novas funcionalidades <b>não</b> suspendem o aceite (ver Item 6.5).</p></div></li>
+  </ul>
+
+  <div class="ft"><span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span><span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span><span class="ft__r">Pág. 3 / 11</span></div>
+</div>
+
+
+<!-- ═══ PÁG 4 — GARANTIA E PAGAMENTO ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Garantia · Valor e Pagamento</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>24 ago. 2026</div>
+  </div>
+
+  <div class="sh"><span class="sh__n">6</span><span class="sh__t">Garantia e correção de defeitos</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">6.1</span><div><h4>Prazo</h4><p>Garantia de <b>60 (sessenta) dias</b>, contados da <b>data do aceite</b> (ou da última entrega efetiva, se posterior).</p></div></li>
+    <li><span class="cl__n">6.2</span><div><h4>Definição de defeito</h4><p>Falha <b>reproduzível</b> que impeça ou comprometa funcionalidade <b>expressamente prevista no Item 2</b>. Não são defeitos: preferências visuais, mudanças de regra de negócio, novas telas/relatórios/integrações ou ajustes de conteúdo.</p></div></li>
+    <li><span class="cl__n">6.3</span><div><h4>Níveis e prazos</h4>
+      <ul>
+        <li><b>Crítico</b> — sistema ou função essencial totalmente indisponível: início em até <b>1 dia útil</b>.</li>
+        <li><b>Alto</b> — funcionalidade importante comprometida, com alternativa: início em até <b>3 dias úteis</b>.</li>
+        <li><b>Normal</b> — falha sem paralisação: início em até <b>7 dias úteis</b>.</li>
+      </ul>
+      <p>Correção em prazo razoável conforme a complexidade, comunicada à Contratante.</p></div></li>
+    <li><span class="cl__n">6.4</span><div><h4>Fatores que suspendem os prazos</h4><p>Falhas de infraestrutura da Contratante, indisponibilidade de terceiros, bloqueios de Meta/Apple/Google e falta de acessos ou informações da Contratante <b>suspendem</b> os prazos enquanto perdurarem.</p></div></li>
+    <li><span class="cl__n">6.5</span><div><h4>Fora da garantia</h4><p>Suporte recorrente, pequenos ajustes, <b>evolução de escopo</b>, novas funcionalidades e mudança de regra de negócio <b>não</b> integram a garantia e são orçados à parte.</p></div></li>
+  </ul>
+
+  <div class="sh" style="margin-top:8px"><span class="sh__n">7</span><span class="sh__t">Valor, pagamento e reconhecimento de dívida</span></div>
+  <table class="mt" style="font-size:7pt">
+    <thead><tr><th style="width:70%">Descrição</th><th class="c" style="width:30%">Valor</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Desenvolvimento e implantação — Airton Artus Digital</strong> (escopo do Item 2)</td><td class="c"><span class="pend">PENDENTE</span></td></tr>
+      <tr><td>Parcelas, datas de vencimento e forma de pagamento</td><td class="c"><span class="pend">PENDENTE</span></td></tr>
+      <tr><td>Condições de emissão de nota fiscal</td><td class="c"><span class="pend">PENDENTE</span></td></tr>
+    </tbody>
+  </table>
+  <ul class="cl" style="margin-top:5px">
+    <li><span class="cl__n">7.1</span><div><h4>Dados para pagamento</h4><p>Titular: <b>VAI Tecnologia Ltda</b> · CNPJ 52.165.389/0001-29. Banco <b>461 — Asaas I.P. S.A.</b> · Agência 0001 · Conta de pagamento 3.072.306-8. <b>PIX (CNPJ):</b> 52.165.389/0001-29.</p></div></li>
+    <li><span class="cl__n">7.2</span><div><h4>Encargos por atraso</h4><p><b>Multa de 2%</b>, <b>juros de 1% ao mês</b> pro rata die e <b>correção monetária</b> por índice oficial (IPCA/IBGE ou outro que o venha a substituir), até o efetivo pagamento.</p></div></li>
+    <li><span class="cl__n">7.3</span><div><h4>Suspensão por inadimplência</h4><p>O atraso autoriza a VAI a <b>suspender</b> suporte, ajustes, deploys e novos serviços até a regularização, <b>sem</b> reter, apropriar ou apagar os <b>dados da Contratante</b>, que permanecem à sua disposição.</p></div></li>
+    <li><span class="cl__n">7.4</span><div><h4>Reconhecimento e exigibilidade</h4><p>As partes reconhecem que as obrigações de pagamento aqui previstas são <b>certas, líquidas e exigíveis</b>. Este Termo, assinado pelas partes e por 2 testemunhas, constitui <b>título executivo extrajudicial</b> (art. 784, III, do CPC).</p></div></li>
+    <li><span class="cl__n">7.5</span><div><h4>Independência do resultado eleitoral</h4><p>O pagamento <b>independe do resultado eleitoral</b> e de qualquer decisão de campanha; refere-se exclusivamente aos serviços prestados.</p></div></li>
+  </ul>
+
+  <div class="ft"><span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span><span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span><span class="ft__r">Pág. 4 / 11</span></div>
+</div>
+
+
+<!-- ═══ PÁG 5 — CÓDIGO / BACKUP / TERCEIROS ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Código-fonte · Infraestrutura · Terceiros</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>24 ago. 2026</div>
+  </div>
+
+  <div class="sh"><span class="sh__n">8</span><span class="sh__t">Código-fonte e propriedade intelectual</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">8.1</span><div><h4>Titularidade e licença</h4><p>Até a <b>quitação integral</b>, o código e os ativos exclusivos do projeto pertencem à VAI, ficando concedida à Contratante <b>licença de uso</b> da plataforma durante o período de pagamento.</p></div></li>
+    <li><span class="cl__n">8.2</span><div><h4>Após a quitação</h4><p>Quitado o valor, a Contratante recebe, quanto aos <b>ativos exclusivos do projeto</b>: repositório do código (commit/versão correspondente ao sistema entregue), documentação técnica e instruções de implantação, e credenciais/acessos necessários à operação — assegurada sua <b>autonomia operacional</b>.</p></div></li>
+    <li><span class="cl__n">8.3</span><div><h4>Titularidade de contas e domínios</h4><p>Domínio, servidor, contas Meta/WhatsApp, Apple e Google e aplicativos são de <b>titularidade da Contratante</b>.</p></div></li>
+    <li><span class="cl__n">8.4</span><div><h4>O que permanece com a VAI</h4><p>Não se transferem <b>componentes reutilizáveis, bibliotecas, frameworks, código de terceiros/open source, templates, métodos e know-how</b> da VAI, que segue sua titular. A transferência limita-se ao que é exclusivo deste projeto.</p></div></li>
+  </ul>
+
+  <div class="sh" style="margin-top:8px"><span class="sh__n">9</span><span class="sh__t">Backups e infraestrutura</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">9.1</span><div><h4>O que foi entregue</h4><p>Foi <b>configurada rotina automática de backup</b> do banco de dados. Periodicidade, local de armazenamento, retenção, criptografia, existência de cópia externa ao servidor principal e data/resultado do teste de restauração constam do <b>Anexo I</b> <span class="pend">(a preencher no aceite)</span>.</p></div></li>
+    <li><span class="cl__n">9.2</span><div><h4>Limite</h4><p>Uma rotina configurada <b>não</b> significa monitoramento contínuo, restauração assistida ou correções futuras. <b>Monitoramento, sustentação e recuperação após o aceite dependem de contrato específico</b> e não estão incluídos.</p></div></li>
+    <li><span class="cl__n">9.3</span><div><h4>Assunção pela Contratante</h4><p>A partir do aceite (ou da transferência de acessos, se posterior), a <b>responsabilidade pela operação da infraestrutura</b> é da Contratante.</p></div></li>
+  </ul>
+
+  <div class="sh" style="margin-top:8px"><span class="sh__n">10</span><span class="sh__t">Serviços de terceiros</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">10.1</span><div><h4>Sujeição às regras dos provedores</h4><p>Meta/WhatsApp, Apple, Google, servidor, domínio, SMS e e-mail seguem regras, aprovações e limites dos provedores. <b>Mudanças de regra, limites de envio, aprovação de templates, rejeição de aplicativos, bloqueios, cobranças e indisponibilidades desses terceiros não são responsabilidade da VAI</b> e não configuram falha na entrega.</p></div></li>
+    <li><span class="cl__n">10.2</span><div><h4>Responsabilidade que permanece com a VAI</h4><p>A VAI <b>permanece responsável por falhas de implementação técnica sob seu controle</b> — isto é, erros no código ou na configuração por ela entregues, distinguindo-se das limitações impostas por terceiros.</p></div></li>
+    <li><span class="cl__n">10.3</span><div><h4>Titularidade e custos</h4><p>A contratação, o pagamento e a titularidade desses serviços são da <b>Contratante</b>.</p></div></li>
+  </ul>
+
+  <div class="ft"><span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span><span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span><span class="ft__r">Pág. 5 / 11</span></div>
+</div>
+
+
+<!-- ═══ PÁG 6 — LGPD / COMUNICAÇÕES / INCIDENTES ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Proteção de Dados · Comunicações · Incidentes</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>24 ago. 2026</div>
+  </div>
+
+  <div class="sh"><span class="sh__n">11</span><span class="sh__t">LGPD — papéis e responsabilidades</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">11.1</span><div><h4>Papéis</h4><p>Nos termos da Lei nº 13.709/2018 (LGPD), a <b>Contratante é a Controladora</b> (decide finalidades e meios) e a <b>VAI é a Operadora</b> sempre que acessar ou tratar dados pessoais em nome da Contratante. Detalhamento no <b>Anexo II</b>.</p></div></li>
+    <li><span class="cl__n">11.2</span><div><h4>Tratamento conforme instruções</h4><p>A VAI trata os dados <b>somente conforme instruções documentadas</b> da Contratante e para as finalidades do projeto, adotando medidas técnicas e administrativas de segurança compatíveis (controle de acesso, logs e confidencialidade).</p></div></li>
+    <li><span class="cl__n">11.3</span><div><h4>Titulares, suboperadores e término</h4><p>A VAI <b>coopera</b> no atendimento aos direitos dos titulares; suboperadores/serviços externos observam o Anexo II; ao término, os dados são <b>devolvidos, eliminados ou anonimizados</b> conforme instrução da Contratante e a lei.</p></div></li>
+  </ul>
+
+  <div class="sh" style="margin-top:8px"><span class="sh__n">12</span><span class="sh__t">Consentimento e comunicações (eleitoral)</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">12.1</span><div><h4>Responsabilidade da Contratante</h4><p>A Contratante responde por: origem e licitude das listas, fundamento legal, consentimentos, conteúdo enviado, seleção de destinatários, horários/períodos permitidos, identificação completa do remetente e atendimento aos direitos dos titulares.</p></div></li>
+    <li><span class="cl__n">12.2</span><div><h4>Registros mantidos pelo sistema</h4><p>A plataforma mantém registro de <b>origem do contato, descadastramento e solicitações de exclusão</b>, além do histórico de comunicações, para apoiar a conformidade — cuja gestão é da Contratante.</p></div></li>
+    <li><span class="cl__n">12.3</span><div><h4>Prazos e distinções</h4><p>Pedidos de descadastramento e eliminação são atendidos no prazo aplicável, observado o <b>prazo eleitoral de descadastramento</b> (referência de até 48 horas — <span class="pend">confirmar norma TSE 2026 com advogado eleitoral</span>). Distinguem-se: <b>blacklist técnica</b>, <b>descadastramento</b>, <b>bloqueio</b> e <b>exclusão/eliminação de dados</b>.</p></div></li>
+  </ul>
+
+  <div class="sh" style="margin-top:8px"><span class="sh__n">13</span><span class="sh__t">Incidentes de segurança</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">13.1</span><div><h4>Comunicação e cooperação</h4><p>Ciente de incidente de segurança com dados pessoais, a VAI <b>comunica a Contratante em prazo curto e definido</b> (referência: até 48 horas úteis da ciência), com as informações mínimas disponíveis, <b>preserva evidências e logs</b>, adota medidas de contenção e coopera com a Contratante.</p></div></li>
+    <li><span class="cl__n">13.2</span><div><h4>Comunicações legais</h4><p>As comunicações à <b>ANPD e aos titulares</b>, quando exigidas por lei, são de responsabilidade da <b>Contratante</b> (Controladora). A VAI responde por incidentes causados por <b>descumprimento das suas próprias obrigações de segurança</b>.</p></div></li>
+  </ul>
+
+  <div class="ft"><span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span><span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span><span class="ft__r">Pág. 6 / 11</span></div>
+</div>
+
+
+<!-- ═══ PÁG 7 — RESPONSABILIDADE / CONFID. / VIGÊNCIA / FORO ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Responsabilidade · Vigência · Foro</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>24 ago. 2026</div>
+  </div>
+
+  <div class="sh"><span class="sh__n">14</span><span class="sh__t">Responsabilidade</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">14.1</span><div><h4>Limite</h4><p>Ressalvado o Item 14.3, a responsabilidade da VAI limita-se ao <b>valor efetivamente pago</b> por este Termo, excluídos lucros cessantes e danos indiretos.</p></div></li>
+    <li><span class="cl__n">14.2</span><div><h4>Exclusões</h4><p>A VAI <b>não responde</b> por: conteúdo da campanha, dados e listas fornecidos pela Contratante, públicos selecionados, disparos realizados pela Contratante, uso indevido, resultado eleitoral, bloqueios de terceiros, falhas de infraestrutura da Contratante, mudanças de regra de terceiros e operação pelos usuários da Contratante.</p></div></li>
+    <li><span class="cl__n">14.3</span><div><h4>Exceções ao limite</h4><p>O limite do Item 14.1 <b>não se aplica</b> a dolo, fraude, violação intencional de confidencialidade e a incidente causado por <b>descumprimento comprovado das obrigações de segurança da própria VAI</b>. Nenhuma cláusula afasta responsabilidades legais de ordem cogente.</p></div></li>
+  </ul>
+
+  <div class="sh" style="margin-top:8px"><span class="sh__n">15</span><span class="sh__t">Confidencialidade</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">15.1</span><div><h4>Sigilo</h4><p>As partes mantêm sigilo de informações técnicas, comerciais, credenciais, dados e acessos por <b>2 (dois) anos</b> após o encerramento.</p></div></li>
+    <li><span class="cl__n">15.2</span><div><h4>Prazo estendido</h4><p><b>Dados pessoais, credenciais, segredos comerciais, código protegido e chaves/informações de segurança</b> permanecem confidenciais <b>enquanto a informação estiver protegida ou a lei exigir</b>, independentemente do prazo geral.</p></div></li>
+  </ul>
+
+  <div class="sh" style="margin-top:8px"><span class="sh__n">16</span><span class="sh__t">Vigência, rescisão e encerramento</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">16.1</span><div><h4>Prazos</h4><p>Vigência a partir da assinatura, com o objeto <b>entregue</b>. Correm de forma autônoma: prazo de aceite (Item 5), garantia (Item 6), pagamento (Item 7) e eventual suporte contratado à parte.</p></div></li>
+    <li><span class="cl__n">16.2</span><div><h4>Sobrevivência</h4><p>Sobrevivem ao encerramento: responsabilidade de uso, LGPD (11–13), PI (8), limitação (14) e confidencialidade (15), pelos prazos neles definidos.</p></div></li>
+    <li><span class="cl__n">16.3</span><div><h4>Rescisão por inadimplemento</h4><p>Qualquer parte pode rescindir por descumprimento não sanado em <b>15 dias</b> da notificação escrita. Rescindido o Termo: <b>exportação dos dados</b> à Contratante, <b>revogação dos acessos da VAI</b> e <b>entrega ou eliminação de cópias</b>, definindo-se o destino dos dados após a campanha.</p></div></li>
+    <li><span class="cl__n">16.4</span><div><h4>Notificações e força maior</h4><p>Notificações válidas pelos e-mails das partes. Nenhuma responde por descumprimento decorrente de <b>força maior</b> ou de <b>dependências de terceiros</b> enquanto perdurarem.</p></div></li>
+    <li><span class="cl__n">16.5</span><div><h4>Foro</h4><p>Fica eleito o <b>foro da Comarca de Itapema — SC</b>, ressalvadas as hipóteses legais obrigatórias de competência.</p></div></li>
+  </ul>
+
+  <div class="ft"><span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span><span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span><span class="ft__r">Pág. 7 / 11</span></div>
+</div>
+
+
+<!-- ═══ PÁG 8 — ASSINATURAS ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Assinaturas</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>24 ago. 2026</div>
+  </div>
+
+  <div class="sh"><span class="sh__n">17</span><span class="sh__t">Assinaturas</span></div>
+  <p class="hint">As partes declaram ter lido e aceito integralmente os termos deste instrumento e do escopo entregue (Item 2 e Anexo I). Admite-se <b>assinatura eletrônica</b>, reconhecendo-se a validade dos registros eletrônicos de integridade (data, hora, IP e trilha de auditoria). <b>Assinatura vedada enquanto houver campo <span class="pend">PENDENTE</span>.</b></p>
+
+  <div class="signoff" style="margin-top:10px;">
+    <p style="font-size:9pt;">Venâncio Aires / Itapema, ______ de ____________________ de 2026.</p>
+    <p class="pl">Data preenchida no ato da assinatura, após a resolução de todos os campos pendentes.</p>
+  </div>
+
+  <div class="sign" style="margin-top:22px;gap:40px;">
+    <div style="padding-top:8px;">
+      <strong>Douglas Bedinot da Rocha</strong>
+      <span>VAI Tecnologia Ltda · Contratada · CPF 009.508.610-22</span>
+      <p class="ln">Ass.: ________________________________</p>
+    </div>
+    <div style="padding-top:8px;">
+      <strong>Airton Luiz Artus</strong>
+      <span>Eleição 2026 Airton Luiz Artus Dep. Estadual · Contratante · CPF <span class="pend">PENDENTE</span></span>
+      <p class="ln">Ass.: ________________________________</p>
+    </div>
+  </div>
+
+  <div class="test" style="margin-top:34px;">
+    <div>
+      <p class="lb">Testemunha 1</p>
+      <div class="sl" style="line-height:2.4;">Nome: ___________________________________<br>CPF: ______________________<br>Data: ______/______/2026</div>
+    </div>
+    <div>
+      <p class="lb">Testemunha 2</p>
+      <div class="sl" style="line-height:2.4;">Nome: ___________________________________<br>CPF: ______________________<br>Data: ______/______/2026</div>
+    </div>
+  </div>
+
+  <div style="flex:1"></div>
+  <div class="aviso">
+    <strong>Antes de assinar:</strong> confirmar valor, parcelas e datas; CPF e poderes dos representantes; partido e número da candidatura; dados do Anexo I (backup, restauração, repositório, contas); e obter parecer de <strong>advogado eleitoral</strong> e de <strong>especialista em LGPD</strong>.
+  </div>
+
+  <div class="ft"><span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span><span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span><span class="ft__r">Pág. 8 / 11</span></div>
+</div>
+
+
+<!-- ═══ PÁG 9 — ANEXO I ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Anexo I — Checklist e Evidências de Entrega</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>24 ago. 2026</div>
+  </div>
+
+  <div class="sh"><span class="sh__n">I</span><span class="sh__t">Checklist e Evidências de Entrega</span></div>
+  <p class="hint">Preenchido e assinado por ambas as partes no ato do aceite. A marcação de cada item, com a respectiva evidência, é o que <b>homologa</b> o escopo — a URL, isoladamente, não basta.</p>
+  <table class="ck">
+    <thead><tr><th style="width:34%">Item</th><th style="width:52%">Evidência / referência</th><th class="c">Conferido</th></tr></thead>
+    <tbody>
+      <tr class="pr"><td colspan="3">Ambiente e código</td></tr>
+      <tr><td><strong>URL de produção</strong></td><td>app.airtonartus.com.br</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Ambientes entregues</td><td>Produção <span class="pend">(demais: PENDENTE)</span></td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Data de implantação</td><td>_____ / _____ / 2026</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Versão / tag / commit</td><td>____________________________</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Repositório do código</td><td>____________________________</td><td class="c"><span class="box"></span></td></tr>
+      <tr class="pr"><td colspan="3">Módulos e testes</td></tr>
+      <tr><td>Módulos do Item 2</td><td>Conferidos um a um (lista do Item 2)</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Resultado dos testes</td><td>____________________________</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Pendências conhecidas</td><td>____________________________</td><td class="c"><span class="box"></span></td></tr>
+      <tr class="pr"><td colspan="3">Conteúdo, contas e comunicação</td></tr>
+      <tr><td>Manual do sistema</td><td>Entregue</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Treinamento (registro)</td><td>Apresentação / data ____________</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Política de privacidade e termos</td><td>Publicados</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Conta Meta / WhatsApp + templates</td><td>Número oficial · templates aprovados</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Domínio e servidor</td><td>Titularidade e acessos transferidos ____</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Contas e acessos transferidos</td><td>____________________________</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Aplicativos e arquivos de publicação</td><td>Projeto iOS/Android · AAB/IPA <span class="pend">PENDENTE</span></td><td class="c"><span class="box"></span></td></tr>
+      <tr class="pr"><td colspan="3">Backup e restauração</td></tr>
+      <tr><td>Rotina de backup</td><td>Periodicidade / local / retenção ______</td><td class="c"><span class="box"></span></td></tr>
+      <tr><td>Teste de restauração</td><td>Data / resultado ____________</td><td class="c"><span class="box"></span></td></tr>
+    </tbody>
+  </table>
+
+  <div class="sign" style="margin-top:14px;gap:40px;">
+    <div style="padding-top:6px;"><strong>Pela VAI (aceite técnico)</strong><span>Nome / assinatura</span><p class="ln">________________________________</p></div>
+    <div style="padding-top:6px;"><strong>Pela Contratante (aceite)</strong><span>Nome / assinatura</span><p class="ln">________________________________</p></div>
+  </div>
+
+  <div class="ft"><span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span><span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span><span class="ft__r">Pág. 9 / 11</span></div>
+</div>
+
+
+<!-- ═══ PÁG 10 — ANEXO II (LGPD) parte 1 ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Anexo II — Tratamento e Proteção de Dados</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>24 ago. 2026</div>
+  </div>
+
+  <div class="sh"><span class="sh__n">II</span><span class="sh__t">Tratamento e Proteção de Dados (LGPD)</span></div>
+  <p class="hint">Anexo que integra o Termo e detalha o tratamento de dados pessoais entre <b>Controladora</b> (Contratante) e <b>Operadora</b> (VAI), nos termos da Lei nº 13.709/2018.</p>
+  <table class="mt" style="font-size:7pt">
+    <thead><tr><th style="width:32%">Elemento</th><th style="width:68%">Definição</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Papéis</strong></td><td>Contratante = Controladora (decide finalidades e meios). VAI = Operadora, quando trata dados em nome da Contratante.</td></tr>
+      <tr><td><strong>Categorias de titulares</strong></td><td>Apoiadores, voluntários, contatos da base e cidadãos que interagem com os canais.</td></tr>
+      <tr><td><strong>Categorias de dados</strong></td><td>Identificação e contato (nome, telefone/WhatsApp, e-mail), localização aproximada (cidade/bairro), interações e mensagens. <span class="pend">Confirmar se há dados sensíveis — PENDENTE.</span></td></tr>
+      <tr><td><strong>Finalidades</strong></td><td>Mobilização, relacionamento e comunicação da campanha, conforme definidas pela Controladora.</td></tr>
+      <tr><td><strong>Fundamentos legais</strong></td><td>Indicados pela Controladora (ex.: consentimento e demais bases legais aplicáveis). <span class="pend">Validar com especialista LGPD/eleitoral.</span></td></tr>
+      <tr><td><strong>Duração</strong></td><td>Enquanto durar o contrato e a campanha, observados os prazos legais e as instruções da Controladora.</td></tr>
+      <tr><td><strong>Instruções</strong></td><td>A Operadora trata os dados apenas conforme instruções documentadas da Controladora.</td></tr>
+      <tr><td><strong>Segurança</strong></td><td>Controle de acesso, autenticação, logs/registro das operações, confidencialidade e medidas técnicas e administrativas compatíveis com o risco.</td></tr>
+      <tr><td><strong>Suboperadores / terceiros</strong></td><td>Serviços externos necessários à operação (ex.: provedor de nuvem, Meta/WhatsApp), com deveres equivalentes de proteção. <span class="pend">Listar suboperadores — PENDENTE.</span></td></tr>
+      <tr><td><strong>Direitos dos titulares</strong></td><td>A Operadora coopera para viabilizar acesso, correção, eliminação, descadastramento e portabilidade, executados sob orientação da Controladora.</td></tr>
+      <tr><td><strong>Término</strong></td><td>Ao fim, os dados são devolvidos, eliminados ou anonimizados conforme instrução da Controladora e a lei.</td></tr>
+      <tr><td><strong>Incidentes</strong></td><td>Comunicação da Operadora à Controladora em prazo curto; comunicações à ANPD/titulares a cargo da Controladora (Itens 13.1–13.2).</td></tr>
+      <tr><td><strong>Responsabilidade</strong></td><td>Cada parte responde pelos atos sob seu controle; a Operadora responde por falha das suas próprias obrigações de segurança.</td></tr>
+    </tbody>
+  </table>
+  <div class="aviso"><strong>Validação necessária:</strong> a divisão de papéis, as bases legais e os prazos (inclusive o de descadastramento eleitoral) devem ser confirmados por <strong>especialista em LGPD e advogado eleitoral</strong> antes da assinatura.</div>
+
+  <div class="ft"><span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span><span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span><span class="ft__r">Pág. 10 / 11</span></div>
+</div>
+
+
+<!-- ═══ PÁG 11 — PENDÊNCIAS E VALIDAÇÃO ═══ -->
+<div class="page">
+  <div class="hd">
+    <img src="vai-logo.png" alt="VAI Tecnologia">
+    <div class="hd__mid">Pendências e Validação</div>
+    <div class="hd__right"><b>TPS-AAD-2026</b>24 ago. 2026</div>
+  </div>
+
+  <div class="sh"><span class="sh__n">·</span><span class="sh__t">Campos pendentes de preenchimento</span></div>
+  <table class="mt" style="font-size:7pt">
+    <thead><tr><th style="width:40%">Campo</th><th style="width:60%">Origem / observação</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Valor, parcelas, datas, forma de pagamento e NF</strong></td><td>Não consta em nenhum documento fornecido — obter da proposta comercial acordada.</td></tr>
+      <tr><td><strong>VAI: endereço completo da sede e telefone</strong></td><td>Contrato social / documentos da VAI. (Representante Douglas Bedinot da Rocha — sócio-administrador.)</td></tr>
+      <tr><td><strong>Contratante: CPF do representante e telefone</strong></td><td>Documentos do candidato / administrador financeiro.</td></tr>
+      <tr><td>Partido e número da candidatura</td><td>Preenchidos: <strong>PDT · nº 12012</strong> (fonte pública/imprensa + arte oficial). Conferir contra o registro no DivulgaCand/TSE.</td></tr>
+      <tr><td><strong>Anexo I</strong>: data de implantação, commit/tag, repositório, testes, backup (periodicidade/retenção/local), teste de restauração, contas transferidas, AAB/IPA</td><td>Preencher no ato do aceite técnico.</td></tr>
+      <tr><td><strong>Identificadores dos apps, nº de submissões incluídas, canal oficial p/ defeitos</strong></td><td>Definir entre as partes.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sh" style="margin-top:10px"><span class="sh__n">·</span><span class="sh__t">Pontos que exigem validação jurídica</span></div>
+  <ul class="cl">
+    <li><span class="cl__n">a</span><div><h4>Advogado eleitoral</h4><p>Qualificação e poderes de representação do CNPJ eleitoral; regras de propaganda e prazos das Eleições 2026; <b>prazo de descadastramento</b> e obrigações de comunicação; forma de contratação por candidatura (natureza 409-0). <b>Confirmar as normas do TSE aplicáveis a 2026.</b></p></div></li>
+    <li><span class="cl__n">b</span><div><h4>Especialista em LGPD</h4><p>Divisão Controladora/Operadora, bases legais do tratamento eleitoral, dados eventualmente sensíveis, prazos de eliminação e conteúdo do Anexo II.</p></div></li>
+    <li><span class="cl__n">c</span><div><h4>Consistência comercial</h4><p>Confirmar valor/parcelas/soma e vincular a este Termo a proposta comercial correspondente, se houver.</p></div></li>
+  </ul>
+
+  <div class="titbox" style="margin-top:10px">
+    <h4>Situação: MINUTA — NÃO ASSINAR</h4>
+    <p>Este documento <b>não está pronto para assinatura</b> enquanto houver campo <b>PENDENTE</b>. Resolvidas as pendências e obtidos os pareceres jurídicos, será gerada a <b>versão final limpa</b> (sem marcações), apta à assinatura pelas partes e por duas testemunhas.</p>
+  </div>
+
+  <div class="ft"><span>VAI Tecnologia · CNPJ 52.165.389/0001-29</span><span class="ft__c">Termo <b>TPS-AAD-2026</b> · MINUTA</span><span class="ft__r">Pág. 11 / 11</span></div>
+</div>
+
+</body>
+</html>

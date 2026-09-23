@@ -5,6 +5,7 @@ import { authorize } from '../middlewares/rbac.js';
 const r = Router();
 
 r.get('/templates', authorize('LIDER', 'MEMBRO'), bc.templates);
+r.post('/templates/sync', authorize('LIDER'), bc.syncTemplates);
 r.get('/', authorize('LIDER', 'MEMBRO'), bc.list);
 r.get('/:id', authorize('LIDER', 'MEMBRO'), bc.get);
 r.post('/', authorize('LIDER', 'MEMBRO'), bc.create);

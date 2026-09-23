@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Plus, Send, Upload, Megaphone, X } from 'lucide-react';
+import { Plus, Send, Upload, Megaphone, X, RefreshCw } from 'lucide-react';
 import Layout from '../components/layout/Layout.jsx';
 import { Card } from '../components/ui/Card.jsx';
 import Modal from '../components/ui/Modal.jsx';
@@ -17,6 +17,7 @@ export default function Broadcasts() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [templates, setTemplates] = useState([]);
+  const [syncing, setSyncing] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [form, setForm] = useState({});
   const [tplForm, setTplForm] = useState({});
@@ -39,11 +40,28 @@ export default function Broadcasts() {
       setLoading(false);
     }
   }
+  function loadTemplates() {
+    return api.get('/broadcasts/templates').then(({ data }) => setTemplates(data.data || [])).catch(() => {});
+  }
   useEffect(() => {
     load();
-    api.get('/broadcasts/templates').then(({ data }) => setTemplates(data.data || [])).catch(() => {});
+    loadTemplates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Puxa os templates aprovados direto da Meta (API Oficial) para o sistema.
+  async function syncTemplates() {
+    setSyncing(true);
+    try {
+      const { data } = await api.post('/broadcasts/templates/sync');
+      await loadTemplates();
+      toast.success(`Templates sincronizados: ${data.approved} aprovado(s) de ${data.total} na conta.`);
+    } catch (e) {
+      toast.error(apiError(e, 'Não foi possível sincronizar os templates.'));
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   // Prévia do template com as variáveis fixas preenchidas (o que a pessoa vai receber).
   function renderPreview(tpl, vars = {}) {
@@ -180,6 +198,9 @@ export default function Broadcasts() {
 
       <div className="toolbar">
         <div className="spacer" />
+        <button className="btn" onClick={syncTemplates} disabled={syncing} title="Buscar na Meta os modelos aprovados e trazer para o sistema">
+          <RefreshCw size={16} className={syncing ? 'spin' : undefined} /> {syncing ? 'Sincronizando…' : 'Sincronizar templates'}
+        </button>
         <button className="btn btn-primary" onClick={() => { setForm({ channel: 'WHATSAPP' }); setCreateOpen(true); }}>
           <Plus size={16} /> Nova campanha
         </button>

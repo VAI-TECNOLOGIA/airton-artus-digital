@@ -839,6 +839,29 @@ model BroadcastContact {
   @@index([wamid])
 }
 
+// Templates oficiais sincronizados da Meta (WhatsApp Cloud API).
+// Populado pelo botão "Sincronizar templates" -> GET /{WABA}/message_templates.
+// Fonte da verdade para o seletor de modelos do Disparador.
+model WaTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  language    String   @default("pt_BR")
+  status      String   // APPROVED | PENDING | REJECTED | PAUSED | ...
+  category    String?  // MARKETING | UTILITY | AUTHENTICATION
+  label       String?  // rótulo amigável exibido no seletor
+  description String?
+  bodyText    String?  // texto do corpo com {{1}}, {{2}}...
+  previewText String?  // prévia com {nome}, {evento}... (convenção do front)
+  varsJson    Json?    // [{ key, auto?, label?, placeholder? }]
+  buttonJson  Json?    // null | { type:'url', source:'contactPhone' }
+  rawJson     Json?    // components crus da Meta (auditoria)
+  syncedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+}
+
 model Automation {
   id          String   @id @default(uuid())
   name        String

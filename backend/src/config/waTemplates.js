@@ -113,5 +113,6 @@ export function buildTemplatePayload(tpl, contact, vars = {}) {
     const token = tpl.button.source === 'contactPhone' ? brDigits(contact.phone) : 'base';
     components.push({ type: 'button', sub_type: 'url', index: 0, parameters: [{ type: 'text', text: token }] });
   }
-  return { name: tpl.name, language: { code: LANG }, components };
+  // Usa o idioma do próprio template (templates sincronizados podem variar); default pt_BR.
+  return { name: tpl.name, language: { code: tpl.language || LANG }, components };
 }

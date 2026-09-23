@@ -64,6 +64,10 @@ const env = {
     provider: process.env.WHATSAPP_PROVIDER || 'simulado',
     token: process.env.WHATSAPP_TOKEN || '',
     phoneNumberId: process.env.WHATSAPP_PHONE_NUMBER_ID || '',
+    // WABA (conta do WhatsApp Business) — necessário p/ listar/sincronizar templates.
+    // Se vazio, o serviço tenta descobrir via me/assigned_whatsapp_business_accounts.
+    wabaId: process.env.WHATSAPP_WABA_ID || '',
+    graphVersion: process.env.WHATSAPP_GRAPH_VERSION || 'v20.0',
     verifyToken: process.env.WHATSAPP_VERIFY_TOKEN || 'aad-verify',
   },
   sms: {

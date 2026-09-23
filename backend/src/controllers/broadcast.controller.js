@@ -5,17 +5,33 @@ import { AppError } from '../utils/AppError.js';
 import { sendViaChannel, renderTemplate } from '../services/messaging.service.js';
 import { optedOutPhones } from '../services/privacy.service.js';
 import { CHANNELS } from '../utils/enums.js';
-import { CAMPAIGN_TEMPLATES, findTemplate, buildTemplatePayload } from '../config/waTemplates.js';
+import { CAMPAIGN_TEMPLATES, buildTemplatePayload } from '../config/waTemplates.js';
+import { syncWaTemplates, getTemplateShape, shapeFromRow } from '../services/waTemplateSync.service.js';
+import { audit } from '../utils/audit.js';
 
-// Catálogo de templates oficiais aprovados disponíveis para campanha.
+// Catálogo de templates oficiais disponíveis para campanha.
+// Fonte: banco (sincronizado da Meta) — cai no catálogo do código
+// enquanto ninguém sincronizou (compatibilidade).
 export const templates = asyncHandler(async (_req, res) => {
-  res.json({ data: CAMPAIGN_TEMPLATES });
+  const rows = await prisma.waTemplate.findMany({
+    where: { status: 'APPROVED' },
+    orderBy: { label: 'asc' },
+  });
+  if (!rows.length) return res.json({ data: CAMPAIGN_TEMPLATES });
+  res.json({ data: rows.map(shapeFromRow) });
+});
+
+// Sincroniza os templates aprovados na Meta para o banco (botão "Sincronizar").
+export const syncTemplates = asyncHandler(async (req, res) => {
+  const result = await syncWaTemplates();
+  await audit({ userId: req.user?.id, action: 'SYNC', entity: 'WaTemplate', changes: { total: result.total, approved: result.approved }, ip: req.ip });
+  res.json({ ok: true, ...result });
 });
 
 /** Valida a escolha de template + variáveis fixas. Retorna {templateName, templateVars} ou lança. */
-function resolveTemplateSelection(templateName, templateVars) {
+async function resolveTemplateSelection(templateName, templateVars) {
   if (!templateName) return { templateName: null, templateVars: null };
-  const tpl = findTemplate(templateName);
+  const tpl = await getTemplateShape(templateName);
   if (!tpl) throw new AppError('Template não encontrado ou indisponível para campanha.', 400);
   const fixed = tpl.vars.filter((v) => !v.auto);
   const vars = templateVars || {};
@@ -58,7 +74,7 @@ const schema = z.object({
 
 export const create = asyncHandler(async (req, res) => {
   const data = schema.parse(req.body);
-  const { templateName, templateVars } = resolveTemplateSelection(data.templateName, data.templateVars);
+  const { templateName, templateVars } = await resolveTemplateSelection(data.templateName, data.templateVars);
 
   const c = await prisma.broadcastCampaign.create({
     data: {
@@ -123,7 +139,7 @@ export const send = asyncHandler(async (req, res) => {
   const optedOut = await optedOutPhones(batch.map((c) => c.phone));
 
   // Campanha via template oficial (entrega fora da janela de 24h) vs texto livre.
-  const tpl = campaign.templateName ? findTemplate(campaign.templateName) : null;
+  const tpl = campaign.templateName ? await getTemplateShape(campaign.templateName) : null;
 
   let sent = 0;
   let failed = 0;
@@ -182,7 +198,7 @@ export const pause = asyncHandler(async (req, res) => {
 
 /** Vincula (ou remove) um template oficial numa campanha já criada. */
 export const setTemplate = asyncHandler(async (req, res) => {
-  const { templateName, templateVars } = resolveTemplateSelection(req.body.templateName, req.body.templateVars);
+  const { templateName, templateVars } = await resolveTemplateSelection(req.body.templateName, req.body.templateVars);
   const c = await prisma.broadcastCampaign.update({
     where: { id: req.params.id },
     data: { templateName, templateVars },

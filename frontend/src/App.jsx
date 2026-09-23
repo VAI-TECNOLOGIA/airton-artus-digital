@@ -27,6 +27,7 @@ const Conversations = lazy(() => import('./pages/Conversations.jsx'));
 const Demands = lazy(() => import('./pages/Demands.jsx'));
 const Broadcasts = lazy(() => import('./pages/Broadcasts.jsx'));
 const Automations = lazy(() => import('./pages/Automations.jsx'));
+const SendNotification = lazy(() => import('./pages/SendNotification.jsx'));
 const Users = lazy(() => import('./pages/Users.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const Landing = lazy(() => import('./pages/Landing.jsx'));
@@ -85,6 +86,7 @@ export default function App() {
       <Route path="/demandas" element={P(['LIDER', 'MEMBRO'], <Demands />)} />
       <Route path="/disparos" element={P(['LIDER', 'MEMBRO'], <Broadcasts />)} />
       <Route path="/automacoes" element={P(['LIDER'], <Automations />)} />
+      <Route path="/notificacoes" element={P(['LIDER'], <SendNotification />)} />
 
       <Route path="/usuarios" element={P(['LIDER'], <Users />)} />
       <Route path="/configuracoes" element={P(['LIDER'], <Settings />)} />

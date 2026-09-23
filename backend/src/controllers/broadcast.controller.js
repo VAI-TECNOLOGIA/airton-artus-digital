@@ -90,6 +90,81 @@ export const create = asyncHandler(async (req, res) => {
   res.status(201).json(c);
 });
 
+// ---------------------------------------------------------------
+//  Público a partir das LISTAS DO SISTEMA (base de apoiadores).
+//  Antes só dava pra importar CSV; agora dá pra puxar direto a
+//  base filtrada (tipo de apoio, status, região, cidade, coordenador,
+//  só voluntários), sem sair do sistema.
+// ---------------------------------------------------------------
+function buildAudienceWhere(q = {}) {
+  const where = {
+    // Nunca inclui quem pediu pra sair (LGPD) nem blacklist.
+    optOutAt: null,
+    status: { not: 'BLACKLIST' },
+    phone: { not: '' },
+  };
+  if (q.supportType) where.supportType = q.supportType;
+  if (q.status) where.status = q.status; // sobrescreve o "not BLACKLIST" só se pedirem status específico
+  if (q.regionId) where.regionId = q.regionId;
+  if (q.cityName) where.cityName = q.cityName;
+  if (q.coordinatorId) where.coordinatorId = q.coordinatorId;
+  if (q.onlyVolunteers === 'true' || q.onlyVolunteers === true) where.volunteer = { isNot: null };
+  return where;
+}
+
+/** Contagem prévia — quantos apoiadores batem com os filtros (pro botão "Adicionar (N)"). */
+export const audienceCount = asyncHandler(async (req, res) => {
+  const count = await prisma.supporter.count({ where: buildAudienceWhere(req.query) });
+  res.json({ count });
+});
+
+/** Adiciona à campanha os apoiadores da base que batem com os filtros (dedupe por telefone). */
+export const addAudience = asyncHandler(async (req, res) => {
+  const campaignId = req.params.id;
+  const campaign = await prisma.broadcastCampaign.findUnique({ where: { id: campaignId } });
+  if (!campaign) throw new AppError('Campanha não encontrada', 404);
+
+  const where = buildAudienceWhere(req.body || {});
+  const supporters = await prisma.supporter.findMany({
+    where,
+    select: { id: true, name: true, phone: true, cityName: true, neighborhood: true, coordinator: { select: { name: true } } },
+  });
+  if (!supporters.length) return res.json({ added: 0, skippedExisting: 0, matched: 0 });
+
+  // Dedupe: telefones já presentes nesta campanha não entram de novo.
+  const existing = await prisma.broadcastContact.findMany({ where: { campaignId }, select: { phone: true } });
+  const seen = new Set(existing.map((c) => onlyDigitsPhone(c.phone)));
+
+  const toAdd = [];
+  for (const s of supporters) {
+    const key = onlyDigitsPhone(s.phone);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    toAdd.push({
+      campaignId,
+      name: s.name || '',
+      phone: s.phone,
+      cityName: s.cityName || null,
+      neighborhood: s.neighborhood || null,
+      responsible: s.coordinator?.name || null,
+      supporterId: s.id,
+      source: 'BASE',
+    });
+  }
+
+  if (toAdd.length) await prisma.broadcastContact.createMany({ data: toAdd });
+  const total = await prisma.broadcastContact.count({ where: { campaignId } });
+  await prisma.broadcastCampaign.update({
+    where: { id: campaignId },
+    data: { totalContacts: total, pendingCount: await prisma.broadcastContact.count({ where: { campaignId, status: 'PENDENTE' } }) },
+  });
+  res.status(201).json({ added: toAdd.length, skippedExisting: supporters.length - toAdd.length, matched: supporters.length, total });
+});
+
+function onlyDigitsPhone(p) {
+  return String(p || '').replace(/\D/g, '');
+}
+
 export const importContacts = asyncHandler(async (req, res) => {
   const { contacts, csv } = req.body;
   let rows = [];

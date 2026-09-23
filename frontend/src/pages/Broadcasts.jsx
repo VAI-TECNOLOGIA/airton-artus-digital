@@ -26,6 +26,12 @@ export default function Broadcasts() {
   const detailTpl = templates.find((t) => t.name === tplForm.templateName) || null;
   const [detail, setDetail] = useState(null);
   const [csv, setCsv] = useState('nome,telefone,cidade,bairro\nMaria,5551999990000,Porto Alegre,Centro');
+  // Público a partir das listas do sistema
+  const [aud, setAud] = useState({});
+  const [audCount, setAudCount] = useState(null);
+  const [addingAud, setAddingAud] = useState(false);
+  const [regions, setRegions] = useState([]);
+  const [cities, setCities] = useState([]);
   const [sendingState, setSendingState] = useState(null); // { sent, failed, total, pct } | null
   const cancelRef = useRef(false);
 
@@ -46,8 +52,34 @@ export default function Broadcasts() {
   useEffect(() => {
     load();
     loadTemplates();
+    api.get('/regions').then(({ data }) => setRegions(data.data || data || [])).catch(() => {});
+    api.get('/supporters/cities').then(({ data }) => setCities(data.data || data || [])).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Contagem prévia do público selecionado (listas do sistema).
+  useEffect(() => {
+    if (!detail) return;
+    const params = new URLSearchParams();
+    Object.entries(aud).forEach(([k, v]) => { if (v) params.set(k, v); });
+    api.get(`/broadcasts/audience/count?${params.toString()}`)
+      .then(({ data }) => setAudCount(data.count))
+      .catch(() => setAudCount(null));
+  }, [aud, detail]);
+
+  async function addAudience() {
+    setAddingAud(true);
+    try {
+      const { data } = await api.post(`/broadcasts/${detail.id}/audience`, aud);
+      toast.success(`${data.added} contato(s) adicionado(s) da base${data.skippedExisting ? ` · ${data.skippedExisting} já estavam` : ''}.`);
+      openDetail(detail);
+      load();
+    } catch (e) {
+      toast.error(apiError(e));
+    } finally {
+      setAddingAud(false);
+    }
+  }
 
   // Puxa os templates aprovados direto da Meta (API Oficial) para o sistema.
   async function syncTemplates() {
@@ -103,6 +135,8 @@ export default function Broadcasts() {
     const { data } = await api.get(`/broadcasts/${row.id}`);
     setDetail(data);
     setTplForm({ templateName: data.templateName || null, templateVars: data.templateVars || {} });
+    setAud({});
+    setAudCount(null);
   }
 
   function pickDetailTemplate(name) {
@@ -331,8 +365,44 @@ export default function Broadcasts() {
             )}
           </div>
 
+          {/* Público a partir das LISTAS DO SISTEMA — sem precisar importar arquivo. */}
+          <div className="field aud-box">
+            <label>Usar listas do sistema (base de apoiadores)</label>
+            <div className="field-hint" style={{ marginBottom: 8 }}>
+              Filtre a base e adicione à campanha — sem precisar importar arquivo. Quem pediu para sair (LGPD) e a blacklist ficam de fora.
+            </div>
+            <div className="aud-grid">
+              <select className="select" value={aud.supportType || ''} onChange={(e) => setAud((s) => ({ ...s, supportType: e.target.value || undefined }))}>
+                <option value="">Todos os tipos de apoio</option>
+                {options('SupportType').map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <select className="select" value={aud.status || ''} onChange={(e) => setAud((s) => ({ ...s, status: e.target.value || undefined }))}>
+                <option value="">Todos os status</option>
+                {options('SupporterStatus').map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <select className="select" value={aud.regionId || ''} onChange={(e) => setAud((s) => ({ ...s, regionId: e.target.value || undefined }))}>
+                <option value="">Todas as regiões</option>
+                {regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+              </select>
+              <select className="select" value={aud.cityName || ''} onChange={(e) => setAud((s) => ({ ...s, cityName: e.target.value || undefined }))}>
+                <option value="">Todas as cidades</option>
+                {cities.map((c) => <option key={c.name || c} value={c.name || c}>{c.name || c}</option>)}
+              </select>
+            </div>
+            <label className="aud-check">
+              <input type="checkbox" checked={!!aud.onlyVolunteers} onChange={(e) => setAud((s) => ({ ...s, onlyVolunteers: e.target.checked || undefined }))} />
+              Só voluntários
+            </label>
+            <div className="flex gap-8" style={{ marginTop: 8, alignItems: 'center' }}>
+              <button className="btn btn-primary" onClick={addAudience} disabled={addingAud || !audCount || !!sendingState}>
+                {addingAud ? 'Adicionando…' : `Adicionar ${audCount ?? 0} à campanha`}
+              </button>
+              <span className="field-hint">{audCount === null ? 'Calculando…' : `${audCount} apoiador(es) batem com o filtro`}</span>
+            </div>
+          </div>
+
           <div className="field">
-            <label>Importar contatos (CSV)</label>
+            <label>Ou importar contatos (CSV)</label>
             <textarea className="textarea" rows={4} value={csv} onChange={(e) => setCsv(e.target.value)} />
             <div className="flex gap-8" style={{ marginTop: 8 }}>
               <button className="btn" onClick={importContacts} disabled={!!sendingState}><Upload size={15} /> Importar</button>

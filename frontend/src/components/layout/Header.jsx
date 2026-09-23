@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Menu, LogOut, Sun, Moon, UserX } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext.jsx';
 import DeleteAccountModal from '../DeleteAccountModal.jsx';
+import NotificationBell from '../NotificationBell.jsx';
 
 function getTheme() {
   return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
@@ -32,6 +33,7 @@ export default function Header({ title, subtitle, onMenu }) {
         <span className="text-sm muted">
           Olá, <strong>{user?.name?.split(' ')[0]}</strong>
         </span>
+        <NotificationBell />
         <button
           className="icon-btn"
           onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}

@@ -6,10 +6,12 @@ const r = Router();
 
 r.get('/templates', authorize('LIDER', 'MEMBRO'), bc.templates);
 r.post('/templates/sync', authorize('LIDER'), bc.syncTemplates);
+r.get('/audience/count', authorize('LIDER', 'MEMBRO'), bc.audienceCount);
 r.get('/', authorize('LIDER', 'MEMBRO'), bc.list);
 r.get('/:id', authorize('LIDER', 'MEMBRO'), bc.get);
 r.post('/', authorize('LIDER', 'MEMBRO'), bc.create);
 r.post('/:id/contacts', authorize('LIDER', 'MEMBRO'), bc.importContacts);
+r.post('/:id/audience', authorize('LIDER', 'MEMBRO'), bc.addAudience);
 r.post('/:id/template', authorize('LIDER', 'MEMBRO'), bc.setTemplate);
 r.post('/:id/reset', authorize('LIDER'), bc.resetContacts);
 r.post('/:id/send', authorize('LIDER'), bc.send);

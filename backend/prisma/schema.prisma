@@ -276,6 +276,7 @@ model User {
   internalMemberships   InternalMember[]    @relation("IntMember")
   internalMessages      InternalMessage[]   @relation("IntMsgSender")
   deviceTokens          DeviceToken[]
+  notifications         AppNotification[]   @relation("UserNotifications")
 
   @@index([role])
   @@index([regionId])
@@ -935,6 +936,24 @@ model DeviceToken {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+}
+
+// Notificação in-app (o "sino") de um usuário. Criada junto do push
+// pela tela "Enviar notificação" e por eventos do sistema.
+model AppNotification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  kind      String?   // categoria/origem (ex.: manual, mural, demanda)
+  link      String?   // rota interna aberta ao tocar
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
 }
 
 // LGPD: pedido público de exclusão de dados do apoiador, verificado por

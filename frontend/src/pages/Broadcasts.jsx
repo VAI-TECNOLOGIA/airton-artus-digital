@@ -222,8 +222,11 @@ export default function Broadcasts() {
   async function send() {
     if (sendingState) return;
     const id = detail.id;
+    const isInternal = detail.channel === 'CHAT_INTERNO';
     const total = detail.totalContacts || 0;
-    if (!total) { toast.error('Importe contatos antes de disparar.'); return; }
+    // WhatsApp exige contatos; comunicado interno notifica todos (sem lista).
+    if (!isInternal && !total) { toast.error('Importe contatos antes de disparar.'); return; }
+    if (isInternal && !window.confirm('Disparar este comunicado para TODOS os usuários (push no app e sino)?')) return;
     cancelRef.current = false;
     setSendingState({ sent: detail.sentCount || 0, failed: detail.failedCount || 0, total, pct: 0 });
     try {
@@ -306,52 +309,70 @@ export default function Broadcasts() {
           <Field field={{ name: 'name', label: 'Nome da campanha', required: true }} value={form.name} onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))} />
           <div className="field">
             <label>Canal</label>
-            <div className="channel-fixed"><MessageCircle size={16} /> WhatsApp (único canal que entrega de verdade)</div>
-          </div>
-
-          {/* Seletor de modelo oficial — resolve o "botão pra usar o template". */}
-          <div className="field">
-            <label>Tipo de mensagem</label>
-            <select className="select" value={form.templateName || ''} onChange={(e) => pickTemplate(e.target.value)}>
-              <option value="">Texto livre (só entrega dentro da janela de 24h)</option>
-              <optgroup label="Modelos aprovados (API Oficial — entregam à base fria)">
-                {templates.map((t) => (
-                  <option key={t.name} value={t.name}>{t.label} · {t.category === 'UTILITY' ? 'Utilidade' : 'Marketing'}</option>
-                ))}
-              </optgroup>
+            <select className="select" value={form.channel || 'WHATSAPP'} onChange={(e) => setForm((s) => ({ ...s, channel: e.target.value, templateName: null, templateVars: {}, headerImageUrl: '' }))}>
+              <option value="WHATSAPP">WhatsApp (base externa — via modelo aprovado)</option>
+              <option value="CHAT_INTERNO">Comunicado interno (notifica todos no app e navegador)</option>
             </select>
-            {selectedTpl && <div className="field-hint">{selectedTpl.description}</div>}
           </div>
 
-          {selectedTpl ? (
+          {form.channel === 'CHAT_INTERNO' ? (
             <>
-              {selectedTpl.header?.format === 'IMAGE' && (
-                <HeaderImageField
-                  value={form.headerImageUrl}
-                  sample={selectedTpl.header.sample}
-                  onChange={(url) => setForm((s) => ({ ...s, headerImageUrl: url }))}
-                />
-              )}
-              {selectedTpl.vars.filter((v) => !v.auto).map((v) => (
-                <Field
-                  key={v.key}
-                  field={{ name: v.key, label: v.label, required: true, placeholder: v.placeholder }}
-                  value={form.templateVars?.[v.key] || ''}
-                  onChange={(n, val) => setForm((s) => ({ ...s, templateVars: { ...(s.templateVars || {}), [n]: val } }))}
-                />
-              ))}
-              <div className="field">
-                <label>Prévia da mensagem</label>
-                <div className="tpl-preview">{renderPreview(selectedTpl, form.templateVars || {})}</div>
-                <div className="field-hint">O nome de cada contato entra automaticamente. Modelo aprovado pela Meta — entrega mesmo sem conversa aberta.</div>
+              <div className="warning-box" style={{ margin: '4px 0 12px' }}>
+                <span><MessageCircle size={15} /> Vira uma notificação para <strong>todos os usuários</strong> do sistema — chega como push no app e no sino (app e navegador). Não usa lista de contatos.</span>
               </div>
+              <Field
+                field={{ name: 'message', label: 'Mensagem do comunicado', type: 'textarea', rows: 4, required: true }}
+                value={form.message}
+                onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))}
+              />
             </>
           ) : (
-            <Field
-              field={{ name: 'message', label: 'Mensagem', type: 'textarea', rows: 4, hint: 'Variáveis: {{nome}}, {{cidade}}, {{bairro}}, {{responsavel}}' }}
-              value={form.message}
-              onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))}
-            />
+            <>
+              {/* Seletor de modelo oficial — resolve o "botão pra usar o template". */}
+              <div className="field">
+                <label>Tipo de mensagem</label>
+                <select className="select" value={form.templateName || ''} onChange={(e) => pickTemplate(e.target.value)}>
+                  <option value="">Texto livre (só entrega dentro da janela de 24h)</option>
+                  <optgroup label="Modelos aprovados (API Oficial — entregam à base fria)">
+                    {templates.map((t) => (
+                      <option key={t.name} value={t.name}>{t.label} · {t.category === 'UTILITY' ? 'Utilidade' : 'Marketing'}</option>
+                    ))}
+                  </optgroup>
+                </select>
+                {selectedTpl && <div className="field-hint">{selectedTpl.description}</div>}
+              </div>
+
+              {selectedTpl ? (
+                <>
+                  {selectedTpl.header?.format === 'IMAGE' && (
+                    <HeaderImageField
+                      value={form.headerImageUrl}
+                      sample={selectedTpl.header.sample}
+                      onChange={(url) => setForm((s) => ({ ...s, headerImageUrl: url }))}
+                    />
+                  )}
+                  {selectedTpl.vars.filter((v) => !v.auto).map((v) => (
+                    <Field
+                      key={v.key}
+                      field={{ name: v.key, label: v.label, required: true, placeholder: v.placeholder }}
+                      value={form.templateVars?.[v.key] || ''}
+                      onChange={(n, val) => setForm((s) => ({ ...s, templateVars: { ...(s.templateVars || {}), [n]: val } }))}
+                    />
+                  ))}
+                  <div className="field">
+                    <label>Prévia da mensagem</label>
+                    <div className="tpl-preview">{renderPreview(selectedTpl, form.templateVars || {})}</div>
+                    <div className="field-hint">O nome de cada contato entra automaticamente. Modelo aprovado pela Meta — entrega mesmo sem conversa aberta.</div>
+                  </div>
+                </>
+              ) : (
+                <Field
+                  field={{ name: 'message', label: 'Mensagem', type: 'textarea', rows: 4, hint: 'Variáveis: {{nome}}, {{cidade}}, {{bairro}}, {{responsavel}}' }}
+                  value={form.message}
+                  onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))}
+                />
+              )}
+            </>
           )}
         </Modal>
       )}
@@ -370,6 +391,25 @@ export default function Broadcasts() {
             <div className="media-caption">{detail.message}</div>
           </div>
 
+          {detail.channel === 'CHAT_INTERNO' ? (
+            <div className="field">
+              <div className="warning-box" style={{ marginBottom: 12 }}>
+                <span><MessageCircle size={15} /> Comunicado interno — ao disparar, <strong>todos os usuários</strong> recebem push (app) e a notificação no sino (app e navegador).</span>
+              </div>
+              <div className="flex gap-8" style={{ alignItems: 'center' }}>
+                <button className="btn btn-primary btn-xl" onClick={send} disabled={!!sendingState}>
+                  <Send size={16} /> {sendingState ? 'Disparando…' : 'Disparar para todos os usuários'}
+                </button>
+                {(detail.sentCount > 0 || detail.failedCount > 0) && (
+                  <button className="btn" onClick={resetSend} disabled={!!sendingState}>Reiniciar</button>
+                )}
+              </div>
+              {detail.sentCount > 0 && !sendingState && (
+                <div className="field-hint" style={{ marginTop: 8 }}>Último disparo: {detail.sentCount} usuário(s) notificado(s).</div>
+              )}
+            </div>
+          ) : (
+          <>
           {/* Vincular modelo oficial — sem template, campanha não entrega à base fria. */}
           <div className="field">
             <label>Modelo oficial (API) — necessário para disparar à base</label>
@@ -492,6 +532,8 @@ export default function Broadcasts() {
                 </tbody>
               </table>
             </div>
+          )}
+          </>
           )}
         </Modal>
       )}

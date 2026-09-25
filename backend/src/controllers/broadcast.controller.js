@@ -7,6 +7,7 @@ import { optedOutPhones } from '../services/privacy.service.js';
 import { CHANNELS } from '../utils/enums.js';
 import { CAMPAIGN_TEMPLATES, buildTemplatePayload } from '../config/waTemplates.js';
 import { syncWaTemplates, getTemplateShape, shapeFromRow } from '../services/waTemplateSync.service.js';
+import { notifyUsers } from '../services/push.service.js';
 import { audit } from '../utils/audit.js';
 
 // Catálogo de templates oficiais disponíveis para campanha.
@@ -90,7 +91,9 @@ export const create = asyncHandler(async (req, res) => {
     data: {
       name: data.name,
       message: data.message,
-      channel: 'WHATSAPP', // único canal que entrega de verdade
+      // Canais que entregam de verdade: WhatsApp (base externa) ou
+      // Comunicado interno (push + sino p/ todos os usuários).
+      channel: data.channel === 'CHAT_INTERNO' ? 'CHAT_INTERNO' : 'WHATSAPP',
       templateName,
       templateVars,
       headerImageUrl,
@@ -209,6 +212,37 @@ export const send = asyncHandler(async (req, res) => {
   const campaignId = req.params.id;
   const campaign = await prisma.broadcastCampaign.findUnique({ where: { id: campaignId } });
   if (!campaign) throw new AppError('Campanha não encontrada', 404);
+
+  // COMUNICADO INTERNO: notifica TODOS os usuários — push (app) + sino (app e
+  // navegador). Envio único (não usa lista de contatos nem WhatsApp/Meta).
+  if (campaign.channel === 'CHAT_INTERNO') {
+    const result = await notifyUsers(
+      { mode: 'all' },
+      { title: campaign.name, body: campaign.message, kind: 'campanha', link: '/mural' },
+    );
+    const updated = await prisma.broadcastCampaign.update({
+      where: { id: campaignId },
+      data: {
+        status: 'CONCLUIDA',
+        totalContacts: result.recipients,
+        sentCount: result.recipients,
+        pendingCount: 0,
+        failedCount: 0,
+      },
+    });
+    await audit({ userId: req.user?.id, action: 'SEND', entity: 'BroadcastCampaign', entityId: campaignId, changes: { channel: 'CHAT_INTERNO', recipients: result.recipients, push: result.push }, ip: req.ip });
+    return res.status(202).json({
+      sent: result.recipients,
+      failed: 0,
+      remaining: 0,
+      done: true,
+      sentCount: updated.sentCount,
+      failedCount: 0,
+      totalContacts: updated.totalContacts,
+      internal: true,
+      push: result.push,
+    });
+  }
 
   const batch = await prisma.broadcastContact.findMany({
     where: { campaignId, status: 'PENDENTE' },

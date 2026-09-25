@@ -11,7 +11,7 @@ const phone = () => '5551' + String(Math.floor(90000000 + Math.random() * 999999
 const NOW = Date.now();
 const DAY = 86400000;
 
-// Timestamp recente com peso para "agora" — dá sensação de pré-campanha em tempo real.
+// Timestamp recente com peso para "agora" — dá sensação de campanha em tempo real.
 function recentTs() {
   const r = Math.random();
   let daysAgo;
@@ -175,7 +175,7 @@ async function main() {
   ];
   for (const m of materialSpec) await prisma.material.create({ data: m });
 
-  console.log('🙋 Apoiadores e voluntários (pré-campanha ativa)...');
+  console.log('🙋 Apoiadores e voluntários (campanha ativa)...');
   const regionValues = Object.values(regions);
   const volunteers = [];
   const TOTAL = 240;
@@ -244,7 +244,7 @@ async function main() {
   console.log('📢 Mural de avisos...');
   await prisma.notice.createMany({
     data: [
-      { title: 'Caminhada neste sábado em Venâncio Aires', description: 'Concentração às 9h na Praça da Bandeira. Levem a camiseta da pré-campanha!', type: 'CONVOCACAO', priority: 'ALTA', authorId: coordVale.id },
+      { title: 'Caminhada neste sábado em Venâncio Aires', description: 'Concentração às 9h na Praça da Bandeira. Levem a camiseta da campanha!', type: 'CONVOCACAO', priority: 'ALTA', authorId: coordVale.id },
       { title: 'Agenda da semana', description: 'Reuniões de equipe, visitas ao interior e agenda de saúde. Confira o calendário.', type: 'AGENDA', priority: 'MEDIA', authorId: admin.id },
       { title: 'Novo card para WhatsApp', description: 'Já está disponível no Mídia Kit. Compartilhem!', type: 'AVISO', priority: 'MEDIA', authorId: admin.id, regionId: regions['Região Metropolitana'].id },
     ],
@@ -253,9 +253,9 @@ async function main() {
   console.log('🎬 Mídia Kit...');
   await prisma.mediaKit.createMany({
     data: [
-      { title: 'Card — Saúde perto de você', description: 'Arte para feed.', type: 'ARTE', network: 'INSTAGRAM', priority: 'ALTA', captionText: 'Meu lado é o da saúde. Airton Artus, pré-candidato a deputado estadual. #AirtonArtus #ValeDoTaquari #RS', hashtags: '#AirtonArtus #ValeDoTaquari #Saúde #RS', guidance: 'Postar entre 18h e 20h.', authorId: admin.id },
+      { title: 'Card — Saúde perto de você', description: 'Arte para feed.', type: 'ARTE', network: 'INSTAGRAM', priority: 'ALTA', captionText: 'Meu lado é o da saúde. Airton Artus, candidato a deputado estadual. #AirtonArtus #ValeDoTaquari #RS', hashtags: '#AirtonArtus #ValeDoTaquari #Saúde #RS', guidance: 'Postar entre 18h e 20h.', authorId: admin.id },
       { title: 'Reels — Estradas do Vale', description: 'Vídeo curto de 30s sobre a pavimentação Grão-Pará → Linha Travessa.', type: 'REELS', network: 'INSTAGRAM', priority: 'MEDIA', captionText: 'R$ 10,7 milhões de investimento: 6 km de pavimentação entre Grão-Pará e Linha Travessa.', hashtags: '#ValeDoTaquari #RS', authorId: admin.id },
-      { title: 'Áudio oficial da pré-campanha', description: 'Áudio para grupos de WhatsApp.', type: 'JINGLE', network: 'WHATSAPP', priority: 'ALTA', captionText: 'Airton Artus — saúde, trabalho e desenvolvimento para o RS.', authorId: admin.id },
+      { title: 'Áudio oficial da campanha', description: 'Áudio para grupos de WhatsApp.', type: 'JINGLE', network: 'WHATSAPP', priority: 'ALTA', captionText: 'Airton Artus — saúde, trabalho e desenvolvimento para o RS.', authorId: admin.id },
     ],
   });
 
@@ -331,7 +331,7 @@ async function main() {
 
   console.log('💬 Conversas (atendimento ao vivo)...');
   const convoSpec = [
-    { status: 'EM_ATENDIMENTO', name: 'Maria Aparecida', tags: ['voluntária', 'Venâncio Aires'], msgs: [['INBOUND', 'Olá! Quero ajudar na pré-campanha do doutor Airton'], ['OUTBOUND', 'Que ótimo, Maria! Como você prefere ajudar?'], ['INBOUND', 'Posso colocar faixa em casa e divulgar nos grupos']] },
+    { status: 'EM_ATENDIMENTO', name: 'Maria Aparecida', tags: ['voluntária', 'Venâncio Aires'], msgs: [['INBOUND', 'Olá! Quero ajudar na campanha do doutor Airton'], ['OUTBOUND', 'Que ótimo, Maria! Como você prefere ajudar?'], ['INBOUND', 'Posso colocar faixa em casa e divulgar nos grupos']] },
     { status: 'EM_ATENDIMENTO', name: 'Roberto Schmidt', tags: ['apoiador', 'Lajeado'], msgs: [['INBOUND', 'Vocês têm adesivo pra carro?'], ['OUTBOUND', 'Temos sim! Passa seu endereço que enviamos.']] },
     { status: 'AGUARDANDO', name: 'Fernanda Kunzler', tags: ['dúvida'], msgs: [['INBOUND', 'Quando o Airton visita Teutônia?']] },
     { status: 'ABERTA', name: 'Anderson Bortolini', tags: ['evento', 'Estrela'], msgs: [['INBOUND', 'Vai ter encontro aqui em Estrela?']] },

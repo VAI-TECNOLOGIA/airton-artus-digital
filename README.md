@@ -1,8 +1,8 @@
 # Airton Artus Digital
 
-Plataforma web completa para **gestão da pré-campanha** de Airton Artus — apoiadores, voluntários, mobilização de rua, faixas, mídia kit, mapa político, CRM de atendimento, disparos, demandas da população, relatórios e painel de TV.
+Plataforma web completa para **gestão da campanha** de Airton Artus — apoiadores, voluntários, mobilização de rua, faixas, mídia kit, mapa político, CRM de atendimento, disparos, demandas da população, relatórios e painel de TV.
 
-> Candidato: **Airton Artus** · Pré-candidato a Deputado Estadual · RS · PDT
+> Candidato: **Airton Artus** · Candidato a Deputado Estadual · RS · PDT
 > Base: **Venâncio Aires / Vale do Taquari** · médico, ex-prefeito (2009–2016) e deputado estadual (2023–2026)
 > Identidade visual: **navy `#1B1D39` + ouro `#E8AF3C` + faixa tricolor do RS** (verde `#398254` · vermelho `#BD2E2F` · ouro), tipografia display Anton.
 
@@ -114,7 +114,7 @@ Autenticação · Dashboard · Apoiadores & Voluntários (antifraude) · Confirm
 ## Integrações futuras
 WhatsApp Cloud API (oficial), Instagram Direct, Messenger e SMS passam pelo roteador `services/messaging.service.js` (provider pattern). Tudo **simulado** por padrão — basta preencher credenciais no `.env` e trocar `WHATSAPP_PROVIDER=meta_cloud`. Detalhes em **[ARQUITETURA.md](ARQUITETURA.md)**.
 
-> ⚖️ Conectar apenas APIs **oficiais/autorizadas**, em conformidade com a legislação eleitoral e a LGPD. Enquanto durar a **pré-campanha**, o material público não deve conter pedido explícito de voto.
+> ⚖️ Conectar apenas APIs **oficiais/autorizadas**, em conformidade com a legislação eleitoral e a LGPD. Enquanto durar a **campanha**, o material público não deve conter pedido explícito de voto.
 
 ---
 

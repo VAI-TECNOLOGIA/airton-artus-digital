@@ -9,7 +9,7 @@ export default function DataTable({ columns, rows, actions, empty }) {
 
   return (
     <div className="table-wrap">
-      <table className="table">
+      <table className="table table--cards">
         <thead>
           <tr>
             {columns.map((c) => (
@@ -23,10 +23,12 @@ export default function DataTable({ columns, rows, actions, empty }) {
         <tbody>
           {rows.map((row) => (
             <tr key={row.id}>
-              {columns.map((c) => (
-                <td key={c.key}>{c.render ? c.render(row) : getPath(row, c.key) ?? '—'}</td>
+              {columns.map((c, i) => (
+                <td key={c.key} data-label={c.label} className={i === 0 ? 'td-primary' : undefined}>
+                  {c.render ? c.render(row) : getPath(row, c.key) ?? '—'}
+                </td>
               ))}
-              {actions && <td className="table-actions">{actions(row)}</td>}
+              {actions && <td className="table-actions" data-label="Ações">{actions(row)}</td>}
             </tr>
           ))}
         </tbody>

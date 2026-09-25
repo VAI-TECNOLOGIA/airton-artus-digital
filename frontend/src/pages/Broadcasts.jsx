@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Plus, Send, Upload, Megaphone, X } from 'lucide-react';
+import { Plus, Send, Upload, Megaphone, X, RefreshCw, AlertTriangle, MessageCircle } from 'lucide-react';
 import Layout from '../components/layout/Layout.jsx';
 import { Card } from '../components/ui/Card.jsx';
 import Modal from '../components/ui/Modal.jsx';
@@ -12,14 +12,50 @@ import api, { apiError } from '../api/client.js';
 import { useToast } from '../context/ToastContext.jsx';
 import { label, options } from '../config/enums.js';
 
+// Alerta + upload da imagem do cabeçalho (templates com header de IMAGEM).
+// Já vem pré-carregado com a imagem que está no sistema (arte aprovada).
+function HeaderImageField({ value, sample, onChange }) {
+  return (
+    <div className="tpl-imgalert">
+      <div className="tpl-imgalert-head">
+        <AlertTriangle size={17} />
+        <div>
+          <strong>Este modelo tem uma imagem no topo</strong>
+          <span>Já carregamos a imagem que está no sistema — ela é obrigatória para o disparo. Você pode trocar se quiser.</span>
+        </div>
+      </div>
+      <Field
+        field={{ name: 'headerImageUrl', label: 'Imagem do cabeçalho', type: 'upload', accept: 'image/*' }}
+        value={value || sample || ''}
+        onChange={(_n, url) => onChange(url)}
+      />
+      {!(value || sample) && (
+        <div className="field-hint" style={{ color: '#B45309' }}>Sem imagem, a Meta recusa o disparo.</div>
+      )}
+    </div>
+  );
+}
+
 export default function Broadcasts() {
   const toast = useToast();
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [templates, setTemplates] = useState([]);
+  const [syncing, setSyncing] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [form, setForm] = useState({});
+  const [tplForm, setTplForm] = useState({});
+  const [savingTpl, setSavingTpl] = useState(false);
+  const selectedTpl = templates.find((t) => t.name === form.templateName) || null;
+  const detailTpl = templates.find((t) => t.name === tplForm.templateName) || null;
   const [detail, setDetail] = useState(null);
   const [csv, setCsv] = useState('nome,telefone,cidade,bairro\nMaria,5551999990000,Porto Alegre,Centro');
+  // Público a partir das listas do sistema
+  const [aud, setAud] = useState({});
+  const [audCount, setAudCount] = useState(null);
+  const [addingAud, setAddingAud] = useState(false);
+  const [regions, setRegions] = useState([]);
+  const [cities, setCities] = useState([]);
   const [sendingState, setSendingState] = useState(null); // { sent, failed, total, pct } | null
   const cancelRef = useRef(false);
 
@@ -34,14 +70,84 @@ export default function Broadcasts() {
       setLoading(false);
     }
   }
+  function loadTemplates() {
+    return api.get('/broadcasts/templates').then(({ data }) => setTemplates(data.data || [])).catch(() => {});
+  }
   useEffect(() => {
     load();
+    loadTemplates();
+    api.get('/regions').then(({ data }) => setRegions(data.data || data || [])).catch(() => {});
+    api.get('/supporters/cities').then(({ data }) => setCities(data.data || data || [])).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Contagem prévia do público selecionado (listas do sistema).
+  useEffect(() => {
+    if (!detail) return;
+    const params = new URLSearchParams();
+    Object.entries(aud).forEach(([k, v]) => { if (v) params.set(k, v); });
+    api.get(`/broadcasts/audience/count?${params.toString()}`)
+      .then(({ data }) => setAudCount(data.count))
+      .catch(() => setAudCount(null));
+  }, [aud, detail]);
+
+  async function addAudience() {
+    setAddingAud(true);
+    try {
+      const { data } = await api.post(`/broadcasts/${detail.id}/audience`, aud);
+      toast.success(`${data.added} contato(s) adicionado(s) da base${data.skippedExisting ? ` · ${data.skippedExisting} já estavam` : ''}.`);
+      openDetail(detail);
+      load();
+    } catch (e) {
+      toast.error(apiError(e));
+    } finally {
+      setAddingAud(false);
+    }
+  }
+
+  // Puxa os templates aprovados direto da Meta (API Oficial) para o sistema.
+  async function syncTemplates() {
+    setSyncing(true);
+    try {
+      const { data } = await api.post('/broadcasts/templates/sync');
+      await loadTemplates();
+      toast.success(`Templates sincronizados: ${data.approved} aprovado(s) de ${data.total} na conta.`);
+    } catch (e) {
+      toast.error(apiError(e, 'Não foi possível sincronizar os templates.'));
+    } finally {
+      setSyncing(false);
+    }
+  }
+
+  // Prévia do template com as variáveis fixas preenchidas (o que a pessoa vai receber).
+  function renderPreview(tpl, vars = {}) {
+    return (tpl?.preview || '').replace(/\{(\w+)\}/g, (_, k) => {
+      const v = tpl.vars.find((x) => x.key === k);
+      if (v?.auto) return '(nome do contato)';
+      return (vars[k] || '').trim() || `{${k}}`;
+    });
+  }
+
+  function pickTemplate(name) {
+    const tpl = templates.find((t) => t.name === name) || null;
+    setForm((s) => ({
+      ...s,
+      templateName: name || null,
+      templateVars: {},
+      // Cabeçalho de imagem: já carrega a imagem que está no sistema (arte aprovada).
+      headerImageUrl: tpl?.header?.format === 'IMAGE' ? (tpl.header.sample || '') : '',
+      // guarda a prévia como "mensagem" pra passar a validação e aparecer no relatório
+      message: tpl ? renderPreview(tpl, {}) : (s.message || ''),
+    }));
+  }
+
   async function create() {
     try {
-      await api.post('/broadcasts', form);
+      const payload = { ...form };
+      if (form.templateName && selectedTpl) {
+        payload.message = renderPreview(selectedTpl, form.templateVars || {});
+      }
+      await api.post('/broadcasts', payload);
       toast.success('Campanha criada!');
       setCreateOpen(false);
       setForm({});
@@ -54,6 +160,53 @@ export default function Broadcasts() {
   async function openDetail(row) {
     const { data } = await api.get(`/broadcasts/${row.id}`);
     setDetail(data);
+    const tpl = templates.find((t) => t.name === data.templateName) || null;
+    setTplForm({
+      templateName: data.templateName || null,
+      templateVars: data.templateVars || {},
+      headerImageUrl: data.headerImageUrl || (tpl?.header?.format === 'IMAGE' ? (tpl.header.sample || '') : ''),
+    });
+    setAud({});
+    setAudCount(null);
+  }
+
+  function pickDetailTemplate(name) {
+    const tpl = templates.find((t) => t.name === name) || null;
+    setTplForm({
+      templateName: name || null,
+      templateVars: {},
+      headerImageUrl: tpl?.header?.format === 'IMAGE' ? (tpl.header.sample || '') : '',
+    });
+  }
+
+  async function saveTemplate() {
+    setSavingTpl(true);
+    try {
+      await api.post(`/broadcasts/${detail.id}/template`, {
+        templateName: tplForm.templateName || null,
+        templateVars: tplForm.templateVars || {},
+        headerImageUrl: tplForm.headerImageUrl || null,
+      });
+      toast.success(tplForm.templateName ? 'Modelo vinculado à campanha!' : 'Modelo removido (voltou a texto livre).');
+      openDetail(detail);
+      load();
+    } catch (e) {
+      toast.error(apiError(e));
+    } finally {
+      setSavingTpl(false);
+    }
+  }
+
+  async function resetSend() {
+    if (!window.confirm('Reiniciar o envio? Todos os contatos voltam para "pendente" e a campanha poderá ser disparada de novo.')) return;
+    try {
+      const { data } = await api.post(`/broadcasts/${detail.id}/reset`);
+      toast.success(`Envio reiniciado — ${data.pending} contatos pendentes.`);
+      openDetail(detail);
+      load();
+    } catch (e) {
+      toast.error(apiError(e));
+    }
   }
   async function importContacts() {
     try {
@@ -69,8 +222,11 @@ export default function Broadcasts() {
   async function send() {
     if (sendingState) return;
     const id = detail.id;
+    const isInternal = detail.channel === 'CHAT_INTERNO';
     const total = detail.totalContacts || 0;
-    if (!total) { toast.error('Importe contatos antes de disparar.'); return; }
+    // WhatsApp exige contatos; comunicado interno notifica todos (sem lista).
+    if (!isInternal && !total) { toast.error('Importe contatos antes de disparar.'); return; }
+    if (isInternal && !window.confirm('Disparar este comunicado para TODOS os usuários (push no app e sino)?')) return;
     cancelRef.current = false;
     setSendingState({ sent: detail.sentCount || 0, failed: detail.failedCount || 0, total, pct: 0 });
     try {
@@ -107,13 +263,18 @@ export default function Broadcasts() {
     <Layout title="Disparador da equipe" subtitle="Campanhas com variáveis e relatório — pronto para API Oficial">
       <div className="warning-box" style={{ marginBottom: 16 }}>
         <span>
-          Envios <strong>simulados</strong> pela arquitetura segura. Para produção, conecte um provedor oficial
-          (WhatsApp Cloud API / SMS autorizado) — sem alterar este fluxo.
+          WhatsApp oficial <strong>conectado</strong> (Meta Cloud API) no número da campanha. Para disparar à
+          <strong> base inteira</strong>, escolha um <strong>modelo aprovado</strong> ao criar a campanha —
+          modelos entregam mesmo sem conversa aberta. O <strong>texto livre</strong> só chega a quem trocou
+          mensagem com o número nas últimas 24h (regra da Meta).
         </span>
       </div>
 
       <div className="toolbar">
         <div className="spacer" />
+        <button className="btn" onClick={syncTemplates} disabled={syncing} title="Buscar na Meta os modelos aprovados e trazer para o sistema">
+          <RefreshCw size={16} className={syncing ? 'spin' : undefined} /> {syncing ? 'Sincronizando…' : 'Sincronizar templates'}
+        </button>
         <button className="btn btn-primary" onClick={() => { setForm({ channel: 'WHATSAPP' }); setCreateOpen(true); }}>
           <Plus size={16} /> Nova campanha
         </button>
@@ -146,12 +307,73 @@ export default function Broadcasts() {
           }
         >
           <Field field={{ name: 'name', label: 'Nome da campanha', required: true }} value={form.name} onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))} />
-          <Field field={{ name: 'channel', label: 'Canal', type: 'select', options: options('Channel') }} value={form.channel} onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))} />
-          <Field
-            field={{ name: 'message', label: 'Mensagem', type: 'textarea', rows: 4, hint: 'Variáveis: {{nome}}, {{cidade}}, {{bairro}}, {{responsavel}}' }}
-            value={form.message}
-            onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))}
-          />
+          <div className="field">
+            <label>Canal</label>
+            <select className="select" value={form.channel || 'WHATSAPP'} onChange={(e) => setForm((s) => ({ ...s, channel: e.target.value, templateName: null, templateVars: {}, headerImageUrl: '' }))}>
+              <option value="WHATSAPP">WhatsApp (base externa — via modelo aprovado)</option>
+              <option value="CHAT_INTERNO">Comunicado interno (notifica todos no app e navegador)</option>
+            </select>
+          </div>
+
+          {form.channel === 'CHAT_INTERNO' ? (
+            <>
+              <div className="warning-box" style={{ margin: '4px 0 12px' }}>
+                <span><MessageCircle size={15} /> Vira uma notificação para <strong>todos os usuários</strong> do sistema — chega como push no app e no sino (app e navegador). Não usa lista de contatos.</span>
+              </div>
+              <Field
+                field={{ name: 'message', label: 'Mensagem do comunicado', type: 'textarea', rows: 4, required: true }}
+                value={form.message}
+                onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))}
+              />
+            </>
+          ) : (
+            <>
+              {/* Seletor de modelo oficial — resolve o "botão pra usar o template". */}
+              <div className="field">
+                <label>Tipo de mensagem</label>
+                <select className="select" value={form.templateName || ''} onChange={(e) => pickTemplate(e.target.value)}>
+                  <option value="">Texto livre (só entrega dentro da janela de 24h)</option>
+                  <optgroup label="Modelos aprovados (API Oficial — entregam à base fria)">
+                    {templates.map((t) => (
+                      <option key={t.name} value={t.name}>{t.label} · {t.category === 'UTILITY' ? 'Utilidade' : 'Marketing'}</option>
+                    ))}
+                  </optgroup>
+                </select>
+                {selectedTpl && <div className="field-hint">{selectedTpl.description}</div>}
+              </div>
+
+              {selectedTpl ? (
+                <>
+                  {selectedTpl.header?.format === 'IMAGE' && (
+                    <HeaderImageField
+                      value={form.headerImageUrl}
+                      sample={selectedTpl.header.sample}
+                      onChange={(url) => setForm((s) => ({ ...s, headerImageUrl: url }))}
+                    />
+                  )}
+                  {selectedTpl.vars.filter((v) => !v.auto).map((v) => (
+                    <Field
+                      key={v.key}
+                      field={{ name: v.key, label: v.label, required: true, placeholder: v.placeholder }}
+                      value={form.templateVars?.[v.key] || ''}
+                      onChange={(n, val) => setForm((s) => ({ ...s, templateVars: { ...(s.templateVars || {}), [n]: val } }))}
+                    />
+                  ))}
+                  <div className="field">
+                    <label>Prévia da mensagem</label>
+                    <div className="tpl-preview">{renderPreview(selectedTpl, form.templateVars || {})}</div>
+                    <div className="field-hint">O nome de cada contato entra automaticamente. Modelo aprovado pela Meta — entrega mesmo sem conversa aberta.</div>
+                  </div>
+                </>
+              ) : (
+                <Field
+                  field={{ name: 'message', label: 'Mensagem', type: 'textarea', rows: 4, hint: 'Variáveis: {{nome}}, {{cidade}}, {{bairro}}, {{responsavel}}' }}
+                  value={form.message}
+                  onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))}
+                />
+              )}
+            </>
+          )}
         </Modal>
       )}
 
@@ -169,8 +391,112 @@ export default function Broadcasts() {
             <div className="media-caption">{detail.message}</div>
           </div>
 
+          {detail.channel === 'CHAT_INTERNO' ? (
+            <div className="field">
+              <div className="warning-box" style={{ marginBottom: 12 }}>
+                <span><MessageCircle size={15} /> Comunicado interno — ao disparar, <strong>todos os usuários</strong> recebem push (app) e a notificação no sino (app e navegador).</span>
+              </div>
+              <div className="flex gap-8" style={{ alignItems: 'center' }}>
+                <button className="btn btn-primary btn-xl" onClick={send} disabled={!!sendingState}>
+                  <Send size={16} /> {sendingState ? 'Disparando…' : 'Disparar para todos os usuários'}
+                </button>
+                {(detail.sentCount > 0 || detail.failedCount > 0) && (
+                  <button className="btn" onClick={resetSend} disabled={!!sendingState}>Reiniciar</button>
+                )}
+              </div>
+              {detail.sentCount > 0 && !sendingState && (
+                <div className="field-hint" style={{ marginTop: 8 }}>Último disparo: {detail.sentCount} usuário(s) notificado(s).</div>
+              )}
+            </div>
+          ) : (
+          <>
+          {/* Vincular modelo oficial — sem template, campanha não entrega à base fria. */}
           <div className="field">
-            <label>Importar contatos (CSV)</label>
+            <label>Modelo oficial (API) — necessário para disparar à base</label>
+            <select className="select" value={tplForm.templateName || ''} onChange={(e) => pickDetailTemplate(e.target.value)}>
+              <option value="">Texto livre (só entrega na janela de 24h)</option>
+              <optgroup label="Modelos aprovados (entregam mesmo sem conversa aberta)">
+                {templates.map((t) => (
+                  <option key={t.name} value={t.name}>{t.label} · {t.category === 'UTILITY' ? 'Utilidade' : 'Marketing'}</option>
+                ))}
+              </optgroup>
+            </select>
+            {detailTpl ? (
+              <div className="field-hint">{detailTpl.description}</div>
+            ) : (
+              <div className="field-hint" style={{ color: '#B45309' }}>
+                Sem modelo, esta campanha só chega a quem falou com o número nas últimas 24h — é por isso que “não dispara”.
+              </div>
+            )}
+          </div>
+          {detailTpl?.header?.format === 'IMAGE' && (
+            <HeaderImageField
+              value={tplForm.headerImageUrl}
+              sample={detailTpl.header.sample}
+              onChange={(url) => setTplForm((s) => ({ ...s, headerImageUrl: url }))}
+            />
+          )}
+          {detailTpl && detailTpl.vars.filter((v) => !v.auto).map((v) => (
+            <Field
+              key={v.key}
+              field={{ name: v.key, label: v.label, required: true, placeholder: v.placeholder }}
+              value={tplForm.templateVars?.[v.key] || ''}
+              onChange={(n, val) => setTplForm((s) => ({ ...s, templateVars: { ...(s.templateVars || {}), [n]: val } }))}
+            />
+          ))}
+          {detailTpl && (
+            <div className="field">
+              <label>Prévia da mensagem</label>
+              <div className="tpl-preview">{renderPreview(detailTpl, tplForm.templateVars || {})}</div>
+            </div>
+          )}
+          <div className="flex gap-8" style={{ marginBottom: 16 }}>
+            <button className="btn btn-primary" onClick={saveTemplate} disabled={savingTpl}>
+              {savingTpl ? 'Salvando…' : 'Salvar modelo'}
+            </button>
+            {(detail.sentCount > 0 || detail.failedCount > 0) && (
+              <button className="btn" onClick={resetSend} disabled={!!sendingState}>Reiniciar envio</button>
+            )}
+          </div>
+
+          {/* Público a partir das LISTAS DO SISTEMA — sem precisar importar arquivo. */}
+          <div className="field aud-box">
+            <label>Usar listas do sistema (base de apoiadores)</label>
+            <div className="field-hint" style={{ marginBottom: 8 }}>
+              Filtre a base e adicione à campanha — sem precisar importar arquivo. Quem pediu para sair (LGPD) e a blacklist ficam de fora.
+            </div>
+            <div className="aud-grid">
+              <select className="select" value={aud.supportType || ''} onChange={(e) => setAud((s) => ({ ...s, supportType: e.target.value || undefined }))}>
+                <option value="">Todos os tipos de apoio</option>
+                {options('SupportType').map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <select className="select" value={aud.status || ''} onChange={(e) => setAud((s) => ({ ...s, status: e.target.value || undefined }))}>
+                <option value="">Todos os status</option>
+                {options('SupporterStatus').map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+              </select>
+              <select className="select" value={aud.regionId || ''} onChange={(e) => setAud((s) => ({ ...s, regionId: e.target.value || undefined }))}>
+                <option value="">Todas as regiões</option>
+                {regions.map((r) => <option key={r.id} value={r.id}>{r.name}</option>)}
+              </select>
+              <select className="select" value={aud.cityName || ''} onChange={(e) => setAud((s) => ({ ...s, cityName: e.target.value || undefined }))}>
+                <option value="">Todas as cidades</option>
+                {cities.map((c) => <option key={c.name || c} value={c.name || c}>{c.name || c}</option>)}
+              </select>
+            </div>
+            <label className="aud-check">
+              <input type="checkbox" checked={!!aud.onlyVolunteers} onChange={(e) => setAud((s) => ({ ...s, onlyVolunteers: e.target.checked || undefined }))} />
+              Só voluntários
+            </label>
+            <div className="flex gap-8" style={{ marginTop: 8, alignItems: 'center' }}>
+              <button className="btn btn-primary" onClick={addAudience} disabled={addingAud || !audCount || !!sendingState}>
+                {addingAud ? 'Adicionando…' : `Adicionar ${audCount ?? 0} à campanha`}
+              </button>
+              <span className="field-hint">{audCount === null ? 'Calculando…' : `${audCount} apoiador(es) batem com o filtro`}</span>
+            </div>
+          </div>
+
+          <div className="field">
+            <label>Ou importar contatos (CSV)</label>
             <textarea className="textarea" rows={4} value={csv} onChange={(e) => setCsv(e.target.value)} />
             <div className="flex gap-8" style={{ marginTop: 8 }}>
               <button className="btn" onClick={importContacts} disabled={!!sendingState}><Upload size={15} /> Importar</button>
@@ -206,6 +532,8 @@ export default function Broadcasts() {
                 </tbody>
               </table>
             </div>
+          )}
+          </>
           )}
         </Modal>
       )}

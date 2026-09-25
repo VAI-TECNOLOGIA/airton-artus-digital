@@ -1,5 +1,19 @@
 import prisma from '../config/prisma.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
+import { canonicalCityName } from '../utils/cityNormalize.js';
+
+/** Colapsa variações de cidade (acento/caixa/espaço/typo) no gráfico e devolve top 12. */
+function mergeByCity(rows) {
+  const map = new Map();
+  for (const c of rows) {
+    const name = canonicalCityName(c.cityName) || 'Não informado';
+    map.set(name, (map.get(name) || 0) + c._count._all);
+  }
+  return [...map.entries()]
+    .map(([name, value]) => ({ name, value }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 12);
+}
 
 /** Indicadores principais do painel. */
 export const getStats = asyncHandler(async (req, res) => {
@@ -58,8 +72,6 @@ export const getCharts = asyncHandler(async (req, res) => {
     prisma.supporter.groupBy({
       by: ['cityName'],
       _count: { _all: true },
-      orderBy: { _count: { cityName: 'desc' } },
-      take: 12,
     }),
     prisma.supporter.groupBy({ by: ['status'], _count: { _all: true } }),
     prisma.supporter.groupBy({ by: ['supportType'], _count: { _all: true } }),
@@ -73,7 +85,7 @@ export const getCharts = asyncHandler(async (req, res) => {
     byRegion: regions,
     strongRegions: regions.slice(0, 3),
     weakRegions: regions.filter((r) => r.value <= 1),
-    byCity: byCityRaw.map((c) => ({ name: c.cityName || 'Não informado', value: c._count._all })),
+    byCity: mergeByCity(byCityRaw),
     byStatus: byStatusRaw.map((s) => ({ name: s.status, value: s._count._all })),
     bySupportType: bySupportRaw.map((s) => ({ name: s.supportType, value: s._count._all })),
   });

@@ -7,7 +7,7 @@
 // basta sobrescrever lat/lng.
 
 const CITY_CENTROIDS = {
-  // Vale do Taquari — base da pré-campanha
+  // Vale do Taquari — base da campanha
   'venâncio aires': [-29.6143, -52.1932],
   'venancio aires': [-29.6143, -52.1932],
   'lajeado': [-29.4669, -51.9614],

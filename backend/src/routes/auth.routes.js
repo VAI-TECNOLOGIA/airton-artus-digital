@@ -6,6 +6,7 @@ import { authorize } from '../middlewares/rbac.js';
 const r = Router();
 
 r.post('/login', auth.login);
+r.post('/signup', auth.signup); // cadastro público — cria Apoiador (PARCEIRO) e já loga
 r.post('/forgot-password', auth.forgotPassword);
 r.post('/reset-password', auth.resetPassword);
 

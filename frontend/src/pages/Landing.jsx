@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ArrowRight, Check, HeartPulse, Stethoscope, Wheat, GraduationCap,
+  ArrowRight, Check, HeartPulse, Stethoscope, HeartHandshake, GraduationCap,
   Landmark, Briefcase, Route, MapPin, Award, CalendarDays,
 } from 'lucide-react';
 import api, { apiError } from '../api/client.js';
@@ -34,9 +34,9 @@ const CIDADES = [
   'Caxias do Sul','Bento Gonçalves','Farroupilha','Passo Fundo','Santa Maria','Erechim','Ijuí','Santo Ângelo',
   'Pelotas','Rio Grande','Bagé','Uruguaiana','Alegrete','Gramado','Canela','Torres','Osório','Tramandaí',
 ];
-const VERBOS = ['apoia a pré-campanha!','entrou no movimento!','virou voluntário!','se juntou à caminhada!','quer o Vale mais forte!'];
+const VERBOS = ['apoia a campanha!','entrou no movimento!','virou voluntário!','se juntou à caminhada!','quer o Vale mais forte!'];
 const TEMPOS = ['agora mesmo','há poucos segundos','há instantes'];
-const CORES = [['#1B1D39','#0C0D1D'],['#398254','#1D4630'],['#BD2E2F','#8A1F20'],['#B98618','#7d5a0d'],['#3554A5','#22376e']];
+const CORES = [['#0B33C2','#05186F'],['#398254','#1D4630'],['#BD2E2F','#8A1F20'],['#B98618','#7d5a0d'],['#3554A5','#22376e']];
 
 function gerarPool() {
   const pool = [];
@@ -62,7 +62,7 @@ export default function Landing() {
   const [stats, setStats] = useState(null);
   const [scrolled, setScrolled] = useState(false);
 
-  // imã — propostas da pré-campanha
+  // imã — propostas da campanha
   const [lead, setLead] = useState({ name: '', email: '', phone: '' });
   const [leadSent, setLeadSent] = useState(false);
   const [leadSending, setLeadSending] = useState(false);
@@ -165,10 +165,11 @@ export default function Landing() {
         <div className="mlp-tricolor" aria-hidden="true"><i className="g" /><i className="r" /><i className="y" /></div>
         <div className="mlp-wrap mlp-bar">
           <a href="#topo" className="mlp-brand">
-            <span className="wm">
-              <b>Airton Artus</b>
-              <small>Pré-candidato a Deputado Estadual · RS</small>
-            </span>
+            <img
+              src={scrolled ? '/logo-horizontal-azul.png' : '/logo-horizontal-branco.png'}
+              alt="Airton Artus — Deputado Estadual"
+              style={{ height: 40, width: 'auto', display: 'block', transition: '.3s' }}
+            />
           </a>
           <nav className="mlp-menu" aria-label="Navegação principal">
             <a className="mlp-navlink" href="#trajetoria">Trajetória</a>
@@ -191,7 +192,7 @@ export default function Landing() {
           <p className="mlp-lead">
             Uma vida inteira cuidando de gente: 40 anos de medicina, dois mandatos de prefeito
             e um mandato de deputado trabalhando por saúde, infraestrutura e desenvolvimento
-            para o Vale do Taquari e todo o Rio Grande do Sul.
+            para os Vales e todo o Rio Grande do Sul.
           </p>
           <div className="mlp-cta">
             <a href="#apoie" className="mlp-btn mlp-btn--primary">Quero participar <ArrowRight size={18} /></a>
@@ -209,8 +210,8 @@ export default function Landing() {
       {/* MARQUEE */}
       <div className="mlp-marquee" aria-hidden="true">
         <div className="mlp-track">
-          <span>Saúde <i>•</i> Vale do Taquari <i>•</i> Agricultura Familiar <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
-          <span>Saúde <i>•</i> Vale do Taquari <i>•</i> Agricultura Familiar <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
+          <span>Saúde <i>•</i> Os Vales <i>•</i> Terceira Idade <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
+          <span>Saúde <i>•</i> Os Vales <i>•</i> Terceira Idade <i>•</i> Educação <i>•</i> Infraestrutura <i>•</i> Municipalismo <i>•</i> Trabalho <i>•</i></span>
         </div>
       </div>
 
@@ -248,7 +249,7 @@ export default function Landing() {
               <Tl yr="1997" t="Vereador por dois mandatos" d="Primeira missão pública em Venâncio Aires (1997–2004), seguida do período como vice-prefeito (2005–2008)." />
               <Tl yr="2009" t="Prefeito de Venâncio Aires — 2 mandatos" d="Oito anos de gestão (2009–2016) com marca de trabalho sério e cuidado com as pessoas." />
               <Tl yr="2023" t="Deputado Estadual" d="Na Assembleia Legislativa do RS, destinou recursos para saúde e infraestrutura da região." />
-              <Tl yr="2026" t="Pré-candidato a Deputado Estadual" d="De volta ao Vale do Taquari para ampliar a representação da região na Assembleia." />
+              <Tl yr="2026" t="Candidato a Deputado Estadual" d="De volta ao Vale do Taquari para ampliar a representação da região na Assembleia." />
             </div>
           </div>
         </div>
@@ -265,7 +266,7 @@ export default function Landing() {
           <div className="mlp-pillars">
             <Pillar ico={<HeartPulse size={26} />} t="Saúde pública de verdade" d="Menos fila e mais atendimento: fortalecimento dos hospitais regionais, dos postos de saúde e do SUS que o Airton ajudou a implantar." />
             <Pillar ico={<Route size={26} />} t="Infraestrutura e estradas" d="Pavimentação e manutenção das estradas do interior, ligando as comunidades à cidade e o produtor ao mercado." />
-            <Pillar ico={<Wheat size={26} />} t="Agricultura familiar" d="Apoio a quem produz: assistência técnica, escoamento da produção e valorização do produtor do Vale." />
+            <Pillar ico={<HeartHandshake size={26} />} t="Terceira Idade Protegida" d="Ampliação do cuidado e financiamento de internação geriátrica para famílias sem condições de cuidar de seus idosos." />
             <Pillar ico={<GraduationCap size={26} />} t="Educação e futuro" d="Escola de qualidade e oportunidades para os jovens ficarem e crescerem na própria região." />
             <Pillar ico={<Landmark size={26} />} t="Municipalismo" d="Quem foi prefeito sabe: recursos e autonomia para os municípios resolverem a vida das pessoas na ponta." />
             <Pillar ico={<Briefcase size={26} />} t="Trabalho e desenvolvimento" d="Ambiente favorável para a indústria, o comércio e os serviços gerarem emprego e renda no interior." />
@@ -326,7 +327,7 @@ export default function Landing() {
               <div>
                 <span className="mlp-eyebrow">Material exclusivo · Grátis</span>
                 <h2>Receba as propostas completas</h2>
-                <p>Deixe seu contato e receba no WhatsApp o material da pré-campanha — prioridades por área, agenda de encontros e as novidades em primeira mão.</p>
+                <p>Deixe seu contato e receba no WhatsApp o material da campanha — prioridades por área, agenda de encontros e as novidades em primeira mão.</p>
                 <ul>
                   <li><Check size={22} /> Prioridades detalhadas por área</li>
                   <li><Check size={22} /> Resultados e prestação de contas</li>
@@ -349,7 +350,7 @@ export default function Landing() {
                     <div className="mlp-field"><label className="sr-only" htmlFor="lead-email">E-mail (opcional)</label><input id="lead-email" type="email" placeholder="Seu e-mail (opcional)" value={lead.email} onChange={(e) => setLead((s) => ({ ...s, email: e.target.value }))} /></div>
                     <label className="mlp-consent">
                       <input type="checkbox" required />
-                      <span>Autorizo o uso dos meus dados para receber comunicações da pré-campanha, conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>.</span>
+                      <span>Autorizo o uso dos meus dados para receber comunicações da campanha, conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>.</span>
                     </label>
                     <button className="mlp-btn mlp-btn--primary mlp-btn--block" disabled={leadSending}>
                       {leadSending ? 'Enviando...' : 'Quero receber as propostas'}
@@ -369,7 +370,7 @@ export default function Landing() {
           <blockquote>Passei a vida do lado de quem precisa de cuidado. Na Assembleia, <span className="hl">meu lado é o da saúde</span> — e o do Rio Grande que trabalha.</blockquote>
           <div className="mlp-by">
             <img src="/candidato.jpg" alt="Retrato de Airton Artus" loading="lazy" />
-            <div style={{ textAlign: 'left' }}><b>Airton Artus</b><span>Médico · Pré-candidato a Deputado Estadual</span></div>
+            <div style={{ textAlign: 'left' }}><b>Airton Artus</b><span>Médico · Candidato a Deputado Estadual</span></div>
           </div>
         </div>
       </section>
@@ -380,7 +381,7 @@ export default function Landing() {
           <div className="mlp-head mlp-reveal">
             <span className="mlp-eyebrow">Vem com a gente</span>
             <h2>Acompanhe de perto</h2>
-            <p>Bastidores, agenda e conquistas da pré-campanha em primeira mão. Siga, comente e compartilhe — sua voz fortalece o movimento.</p>
+            <p>Bastidores, agenda e conquistas da campanha em primeira mão. Siga, comente e compartilhe — sua voz fortalece o movimento.</p>
           </div>
           <div className="mlp-soc-grid">
             <a href="https://instagram.com/airton.artus" target="_blank" rel="noopener noreferrer" className="mlp-soc ig mlp-reveal">
@@ -403,7 +404,7 @@ export default function Landing() {
               </div>
               <div>
                 <h3>WhatsApp</h3>
-                <div className="handle">Grupos da pré-campanha</div>
+                <div className="handle">Grupos da campanha</div>
                 <span className="go">Quero entrar <ArrowRight size={16} /></span>
               </div>
               <span className="bgnum">W</span>
@@ -470,12 +471,14 @@ export default function Landing() {
                 <div className="mlp-field">
                   <label className="sr-only" htmlFor="join-type">Como quer ajudar</label>
                   <select id="join-type" value={form.supportType} onChange={(e) => setForm((s) => ({ ...s, supportType: e.target.value }))}>
-                    {options('SupportType').map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
+                    {options('SupportType')
+                      .filter((o) => ['VOLUNTARIO', 'FAIXA_CASA', 'ADESIVO_CARRO', 'MATERIAL_DIGITAL'].includes(o.value))
+                      .map((o) => (<option key={o.value} value={o.value}>{o.label}</option>))}
                   </select>
                 </div>
                 <label className="mlp-consent">
                   <input type="checkbox" required />
-                  <span>Declaro meu apoio de forma livre e autorizo o tratamento dos meus dados pela pré-campanha, conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>. Posso sair da base a qualquer momento.</span>
+                  <span>Declaro meu apoio de forma livre e autorizo o tratamento dos meus dados pela campanha, conforme a <a href="/legal/politica-de-privacidade.html" target="_blank" rel="noopener noreferrer">Política de Privacidade</a>. Posso sair da base a qualquer momento.</span>
                 </label>
                 <button className="mlp-btn mlp-btn--primary mlp-btn--block" disabled={sending}>
                   {sending ? 'Enviando...' : 'Quero participar'}
@@ -492,11 +495,10 @@ export default function Landing() {
           <div className="mlp-foot-grid">
             <div>
               <div className="mlp-foot-brand">
-                <img className="mlp-mark" src="/marca.svg" alt="" width="38" height="38" />
-                <b>Airton Artus</b>
+                <img src="/logo-horizontal-branco.png" alt="Airton Artus — Deputado Estadual" style={{ height: 38, width: 'auto', display: 'block' }} />
               </div>
               <div className="mlp-foot-stripe" aria-hidden="true"><i className="g" /><i className="r" /><i className="y" /></div>
-              <p style={{ maxWidth: 320 }}>Saúde, trabalho e desenvolvimento para o Vale do Taquari e todo o Rio Grande do Sul.</p>
+              <p style={{ maxWidth: 320 }}>Saúde, trabalho e desenvolvimento para os Vales e todo o Rio Grande do Sul.</p>
               <div className="mlp-socials">
                 <a href="https://instagram.com/airton.artus" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><IgIcon /></a>
               </div>
@@ -523,8 +525,8 @@ export default function Landing() {
             </div>
           </div>
           <div className="mlp-foot-bottom">
-            © {new Date().getFullYear()} Airton Artus · Pré-candidato a Deputado Estadual · PDT · Rio Grande do Sul
-            <span className="mlp-foot-legal">Material de divulgação de pré-candidatura, sem pedido de voto, nos termos da legislação eleitoral.</span>
+            © {new Date().getFullYear()} Airton Artus · Candidato a Deputado Estadual · PDT · Rio Grande do Sul
+            <span className="mlp-foot-legal">Material de divulgação de candidatura, sem pedido de voto, nos termos da legislação eleitoral.</span>
           </div>
         </div>
       </footer>

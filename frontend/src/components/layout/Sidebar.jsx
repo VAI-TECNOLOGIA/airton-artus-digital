@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   ChevronDown, Circle, LayoutDashboard, MapPinned, BarChart3, UserPlus, Users,
   ShieldAlert, Ban, Megaphone, Image, Trophy, Footprints, CalendarDays, Package,
-  Flag, MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv, Upload, LogOut, UserX,
+  Flag, MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv, Upload, LogOut, UserX, Bell,
 } from 'lucide-react';
 import DeleteAccountModal from '../DeleteAccountModal.jsx';
 
@@ -12,7 +12,7 @@ import DeleteAccountModal from '../DeleteAccountModal.jsx';
 const ICONS = {
   LayoutDashboard, MapPinned, BarChart3, UserPlus, Users, ShieldAlert, Ban,
   Megaphone, Image, Trophy, Footprints, CalendarDays, Package, Flag,
-  MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv, Upload,
+  MessageSquare, Inbox, Send, Bot, UserCog, Settings, Tv, Upload, Bell,
 };
 import { NAV, can } from '../../lib/permissions.js';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -28,6 +28,29 @@ export default function Sidebar({ open, onClose }) {
   const { user, logout } = useAuth();
   const [collapsed, setCollapsed] = useState(loadCollapsed);
   const [deleting, setDeleting] = useState(false);
+  const [version, setVersion] = useState('');
+
+  useEffect(() => {
+    let alive = true;
+    (async () => {
+      let web = '';
+      try {
+        const r = await fetch('/versao.json', { cache: 'no-store' });
+        if (r.ok) web = (await r.json()).web || '';
+      } catch { /* noop */ }
+      let nativo = '';
+      try {
+        const { Capacitor } = await import('@capacitor/core');
+        if (Capacitor?.isNativePlatform?.()) {
+          const { App } = await import('@capacitor/app');
+          const info = await App.getInfo();
+          nativo = `App ${info.version} (${info.build}) · `;
+        }
+      } catch { /* web puro */ }
+      if (alive) setVersion(`${nativo}${web ? `Web ${web}` : ''}`.trim());
+    })();
+    return () => { alive = false; };
+  }, []);
 
   const groups = [];
   NAV.forEach((item) => {
@@ -49,12 +72,12 @@ export default function Sidebar({ open, onClose }) {
 
   return (
     <aside className={`sidebar ${open ? 'open' : ''}`}>
-      <div className="sidebar-brand">
-        <div className="brand-mark"><img src="/candidato.jpg" alt="Airton Artus" /></div>
-        <div className="brand-text">
-          <strong>Airton Artus</strong>
-          <span>Digital</span>
-        </div>
+      <div className="sidebar-brand" style={{ padding: '4px 2px' }}>
+        <img
+          src="/logo-horizontal-branco.png"
+          alt="Airton Artus — Deputado Estadual"
+          style={{ width: '100%', maxWidth: 216, height: 'auto', display: 'block', margin: '0 auto' }}
+        />
       </div>
 
       <nav className="nav">
@@ -106,6 +129,7 @@ export default function Sidebar({ open, onClose }) {
             <UserX size={15} /> Excluir minha conta
           </button>
         </div>
+        {version && <div className="sidebar-version">{version}</div>}
       </div>
       {deleting && <DeleteAccountModal onClose={() => setDeleting(false)} />}
     </aside>

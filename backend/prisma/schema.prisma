@@ -851,6 +851,8 @@ model WaTemplate {
   category    String?  // MARKETING | UTILITY | AUTHENTICATION
   label       String?  // rótulo amigável exibido no seletor
   description String?
+  headerFormat   String?  // NONE | TEXT | IMAGE | VIDEO | DOCUMENT
+  headerSampleUrl String? // imagem do cabeçalho re-hospedada (link estável p/ envio)
   bodyText    String?  // texto do corpo com {{1}}, {{2}}...
   previewText String?  // prévia com {nome}, {evento}... (convenção do front)
   varsJson    Json?    // [{ key, auto?, label?, placeholder? }]

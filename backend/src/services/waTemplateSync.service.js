@@ -2,6 +2,7 @@ import prisma from '../config/prisma.js';
 import env from '../config/env.js';
 import { AppError } from '../utils/AppError.js';
 import { CAMPAIGN_TEMPLATES, findTemplate } from '../config/waTemplates.js';
+import { saveBufferToUploads } from '../middlewares/upload.js';
 
 // ============================================================
 //  Sincronização de TEMPLATES OFICIAIS da Meta (WhatsApp Cloud
@@ -104,10 +105,35 @@ function deriveButton(components) {
   return null;
 }
 
+const EXT_BY_MIME = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/webp': 'webp' };
+
+/**
+ * Baixa a imagem de exemplo do cabeçalho (header_handle da Meta, que expira)
+ * e re-hospeda num link ESTÁVEL do próprio servidor — é esse link que vai no
+ * disparo. Idempotente: se já existe headerSampleUrl no banco, reaproveita.
+ */
+async function ensureHeaderImage(name, headerComp, existingUrl) {
+  if (existingUrl) return existingUrl;
+  const handle = headerComp?.example?.header_handle?.[0];
+  if (!handle) return null;
+  try {
+    const r = await fetch(handle);
+    if (!r.ok) return null;
+    const mime = r.headers.get('content-type') || 'image/png';
+    const ext = EXT_BY_MIME[mime.split(';')[0]] || 'png';
+    const buf = Buffer.from(await r.arrayBuffer());
+    return await saveBufferToUploads(buf, `wa-header-${name}.${ext}`);
+  } catch {
+    return null;
+  }
+}
+
 /** Parseia um template cru da Meta para a forma usada no app. */
 export function parseMetaTemplate(t) {
   const components = t.components || [];
   const bodyText = components.find((c) => c.type === 'BODY')?.text || '';
+  const headerComp = components.find((c) => c.type === 'HEADER');
+  const headerFormat = headerComp?.format || 'NONE';
   const cfg = findTemplate(t.name); // metadados curados, se existirem
 
   let vars, button, label, description, preview;
@@ -133,6 +159,8 @@ export function parseMetaTemplate(t) {
     category: t.category || null,
     label,
     description,
+    headerFormat,
+    headerComp, // cru — usado no sync p/ baixar a imagem de exemplo
     bodyText,
     previewText: preview,
     varsJson: vars,
@@ -153,6 +181,7 @@ export function shapeFromRow(row) {
     button: row.buttonJson || null,
     preview: row.previewText || '',
     status: row.status,
+    header: { format: row.headerFormat || 'NONE', sample: row.headerSampleUrl || null },
   };
 }
 
@@ -192,12 +221,22 @@ export async function syncWaTemplates() {
   let updated = 0;
   for (const t of all) {
     const shaped = parseMetaTemplate(t);
+    const existing = await prisma.waTemplate.findUnique({ where: { name: shaped.name } });
+
+    // Cabeçalho de imagem: re-hospeda a arte aprovada num link estável (reaproveita se já tiver).
+    let headerSampleUrl = existing?.headerSampleUrl || null;
+    if (shaped.headerFormat === 'IMAGE') {
+      headerSampleUrl = await ensureHeaderImage(shaped.name, shaped.headerComp, headerSampleUrl);
+    }
+
     const data = {
       language: shaped.language,
       status: shaped.status,
       category: shaped.category,
       label: shaped.label,
       description: shaped.description,
+      headerFormat: shaped.headerFormat,
+      headerSampleUrl,
       bodyText: shaped.bodyText,
       previewText: shaped.previewText,
       varsJson: shaped.varsJson,
@@ -205,7 +244,6 @@ export async function syncWaTemplates() {
       rawJson: shaped.rawJson,
       syncedAt: new Date(),
     };
-    const existing = await prisma.waTemplate.findUnique({ where: { name: shaped.name } });
     if (existing) {
       await prisma.waTemplate.update({ where: { name: shaped.name }, data });
       updated++;

@@ -25,7 +25,15 @@ export async function sendWhatsApp({ to, body, template }) {
       body: JSON.stringify(payload),
     });
     const data = await resp.json();
-    return { provider: 'meta_cloud', id: data?.messages?.[0]?.id, raw: data };
+    // A Meta pode responder 200 com corpo de erro OU sem id — ANTES isso era
+    // tratado como sucesso e o contato virava "enviado" sem nada ter saído.
+    // Agora lança com o motivo real → o disparo marca FALHA de verdade.
+    if (!resp.ok || data?.error || !data?.messages?.[0]?.id) {
+      const e = data?.error;
+      const detail = e?.error_data?.details ? ` — ${e.error_data.details}` : '';
+      throw new Error(e ? `Meta ${e.code}: ${e.message}${detail}` : 'Envio recusado pela Meta (sem id de mensagem).');
+    }
+    return { provider: 'meta_cloud', id: data.messages[0].id, raw: data };
   }
 
   const id = `wamid.SIMULATED.${Date.now()}`;

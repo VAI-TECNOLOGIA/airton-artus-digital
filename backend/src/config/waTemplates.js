@@ -103,16 +103,29 @@ export function renderPreview(tpl, vars = {}) {
  * @param contact { name, phone }
  * @param vars valores fixos da campanha (evento/data/local...)
  */
-export function buildTemplatePayload(tpl, contact, vars = {}) {
-  const bodyParams = tpl.vars.map((v) => {
+export function buildTemplatePayload(tpl, contact, vars = {}, headerImageUrl = null) {
+  const components = [];
+
+  // Cabeçalho de IMAGEM: a Meta exige o parâmetro da imagem a cada envio
+  // (o exemplo aprovado não basta). Usa a imagem da campanha ou a do sistema.
+  if (tpl.header?.format === 'IMAGE') {
+    const link = headerImageUrl || tpl.header.sample;
+    if (link) components.push({ type: 'header', parameters: [{ type: 'image', image: { link } }] });
+  }
+
+  // Corpo: só manda o componente se o template tiver variáveis (senão a Meta recusa).
+  const bodyParams = (tpl.vars || []).map((v) => {
     const text = v.auto ? firstName(contact.name) : String(vars[v.key] || '').trim();
     return { type: 'text', text: text || ' ' };
   });
-  const components = [{ type: 'body', parameters: bodyParams }];
+  if (bodyParams.length) components.push({ type: 'body', parameters: bodyParams });
+
   if (tpl.button?.type === 'url') {
     const token = tpl.button.source === 'contactPhone' ? brDigits(contact.phone) : 'base';
     components.push({ type: 'button', sub_type: 'url', index: 0, parameters: [{ type: 'text', text: token }] });
   }
-  // Usa o idioma do próprio template (templates sincronizados podem variar); default pt_BR.
-  return { name: tpl.name, language: { code: tpl.language || LANG }, components };
+
+  const payload = { name: tpl.name, language: { code: tpl.language || LANG } };
+  if (components.length) payload.components = components;
+  return payload;
 }

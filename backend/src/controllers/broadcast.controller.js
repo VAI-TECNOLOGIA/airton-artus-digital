@@ -28,18 +28,27 @@ export const syncTemplates = asyncHandler(async (req, res) => {
   res.json({ ok: true, ...result });
 });
 
-/** Valida a escolha de template + variáveis fixas. Retorna {templateName, templateVars} ou lança. */
-async function resolveTemplateSelection(templateName, templateVars) {
-  if (!templateName) return { templateName: null, templateVars: null };
+/** Valida a escolha de template + variáveis fixas. Retorna {templateName, templateVars, headerImageUrl} ou lança. */
+async function resolveTemplateSelection(templateName, templateVars, headerImageUrl) {
+  if (!templateName) return { templateName: null, templateVars: null, headerImageUrl: null };
   const tpl = await getTemplateShape(templateName);
   if (!tpl) throw new AppError('Template não encontrado ou indisponível para campanha.', 400);
   const fixed = tpl.vars.filter((v) => !v.auto);
   const vars = templateVars || {};
   const missing = fixed.filter((v) => !String(vars[v.key] || '').trim()).map((v) => v.label || v.key);
   if (missing.length) throw new AppError(`Preencha as variáveis do template: ${missing.join(', ')}.`, 400);
+
+  // Cabeçalho de imagem: usa o que veio da campanha, senão a imagem do sistema.
+  let headerImg = null;
+  if (tpl.header?.format === 'IMAGE') {
+    headerImg = (headerImageUrl && String(headerImageUrl).trim()) || tpl.header.sample || null;
+    if (!headerImg) throw new AppError('Este modelo tem uma imagem no topo. Carregue a imagem para poder disparar.', 400);
+  }
+
   return {
     templateName: tpl.name,
     templateVars: Object.fromEntries(fixed.map((v) => [v.key, String(vars[v.key]).trim()])),
+    headerImageUrl: headerImg,
   };
 }
 
@@ -69,20 +78,22 @@ const schema = z.object({
   channel: z.enum(CHANNELS).optional(),
   templateName: z.string().nullable().optional(),
   templateVars: z.record(z.string()).nullable().optional(),
+  headerImageUrl: z.string().nullable().optional(),
   scheduledAt: z.string().nullable().optional(),
 });
 
 export const create = asyncHandler(async (req, res) => {
   const data = schema.parse(req.body);
-  const { templateName, templateVars } = await resolveTemplateSelection(data.templateName, data.templateVars);
+  const { templateName, templateVars, headerImageUrl } = await resolveTemplateSelection(data.templateName, data.templateVars, data.headerImageUrl);
 
   const c = await prisma.broadcastCampaign.create({
     data: {
       name: data.name,
       message: data.message,
-      channel: data.channel || 'WHATSAPP',
+      channel: 'WHATSAPP', // único canal que entrega de verdade
       templateName,
       templateVars,
+      headerImageUrl,
       scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : null,
       ownerId: req.user?.id,
     },
@@ -215,6 +226,8 @@ export const send = asyncHandler(async (req, res) => {
 
   // Campanha via template oficial (entrega fora da janela de 24h) vs texto livre.
   const tpl = campaign.templateName ? await getTemplateShape(campaign.templateName) : null;
+  // Imagem do cabeçalho: a da campanha, senão a imagem do sistema (template).
+  const headerImageUrl = campaign.headerImageUrl || tpl?.header?.sample || null;
 
   let sent = 0;
   let failed = 0;
@@ -229,7 +242,7 @@ export const send = asyncHandler(async (req, res) => {
     }
     try {
       if (tpl) {
-        const template = buildTemplatePayload(tpl, { name: c.name, phone: c.phone }, campaign.templateVars || {});
+        const template = buildTemplatePayload(tpl, { name: c.name, phone: c.phone }, campaign.templateVars || {}, headerImageUrl);
         await sendViaChannel(campaign.channel, { to: c.phone, template });
       } else {
         const body = renderTemplate(campaign.message, { nome: c.name, cidade: c.cityName, bairro: c.neighborhood, responsavel: c.responsible });
@@ -273,10 +286,10 @@ export const pause = asyncHandler(async (req, res) => {
 
 /** Vincula (ou remove) um template oficial numa campanha já criada. */
 export const setTemplate = asyncHandler(async (req, res) => {
-  const { templateName, templateVars } = await resolveTemplateSelection(req.body.templateName, req.body.templateVars);
+  const { templateName, templateVars, headerImageUrl } = await resolveTemplateSelection(req.body.templateName, req.body.templateVars, req.body.headerImageUrl);
   const c = await prisma.broadcastCampaign.update({
     where: { id: req.params.id },
-    data: { templateName, templateVars },
+    data: { templateName, templateVars, headerImageUrl },
   });
   res.json(c);
 });

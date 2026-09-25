@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Plus, Send, Upload, Megaphone, X, RefreshCw } from 'lucide-react';
+import { Plus, Send, Upload, Megaphone, X, RefreshCw, AlertTriangle, MessageCircle } from 'lucide-react';
 import Layout from '../components/layout/Layout.jsx';
 import { Card } from '../components/ui/Card.jsx';
 import Modal from '../components/ui/Modal.jsx';
@@ -11,6 +11,30 @@ import EmptyState from '../components/ui/EmptyState.jsx';
 import api, { apiError } from '../api/client.js';
 import { useToast } from '../context/ToastContext.jsx';
 import { label, options } from '../config/enums.js';
+
+// Alerta + upload da imagem do cabeçalho (templates com header de IMAGEM).
+// Já vem pré-carregado com a imagem que está no sistema (arte aprovada).
+function HeaderImageField({ value, sample, onChange }) {
+  return (
+    <div className="tpl-imgalert">
+      <div className="tpl-imgalert-head">
+        <AlertTriangle size={17} />
+        <div>
+          <strong>Este modelo tem uma imagem no topo</strong>
+          <span>Já carregamos a imagem que está no sistema — ela é obrigatória para o disparo. Você pode trocar se quiser.</span>
+        </div>
+      </div>
+      <Field
+        field={{ name: 'headerImageUrl', label: 'Imagem do cabeçalho', type: 'upload', accept: 'image/*' }}
+        value={value || sample || ''}
+        onChange={(_n, url) => onChange(url)}
+      />
+      {!(value || sample) && (
+        <div className="field-hint" style={{ color: '#B45309' }}>Sem imagem, a Meta recusa o disparo.</div>
+      )}
+    </div>
+  );
+}
 
 export default function Broadcasts() {
   const toast = useToast();
@@ -110,6 +134,8 @@ export default function Broadcasts() {
       ...s,
       templateName: name || null,
       templateVars: {},
+      // Cabeçalho de imagem: já carrega a imagem que está no sistema (arte aprovada).
+      headerImageUrl: tpl?.header?.format === 'IMAGE' ? (tpl.header.sample || '') : '',
       // guarda a prévia como "mensagem" pra passar a validação e aparecer no relatório
       message: tpl ? renderPreview(tpl, {}) : (s.message || ''),
     }));
@@ -134,13 +160,23 @@ export default function Broadcasts() {
   async function openDetail(row) {
     const { data } = await api.get(`/broadcasts/${row.id}`);
     setDetail(data);
-    setTplForm({ templateName: data.templateName || null, templateVars: data.templateVars || {} });
+    const tpl = templates.find((t) => t.name === data.templateName) || null;
+    setTplForm({
+      templateName: data.templateName || null,
+      templateVars: data.templateVars || {},
+      headerImageUrl: data.headerImageUrl || (tpl?.header?.format === 'IMAGE' ? (tpl.header.sample || '') : ''),
+    });
     setAud({});
     setAudCount(null);
   }
 
   function pickDetailTemplate(name) {
-    setTplForm({ templateName: name || null, templateVars: {} });
+    const tpl = templates.find((t) => t.name === name) || null;
+    setTplForm({
+      templateName: name || null,
+      templateVars: {},
+      headerImageUrl: tpl?.header?.format === 'IMAGE' ? (tpl.header.sample || '') : '',
+    });
   }
 
   async function saveTemplate() {
@@ -149,6 +185,7 @@ export default function Broadcasts() {
       await api.post(`/broadcasts/${detail.id}/template`, {
         templateName: tplForm.templateName || null,
         templateVars: tplForm.templateVars || {},
+        headerImageUrl: tplForm.headerImageUrl || null,
       });
       toast.success(tplForm.templateName ? 'Modelo vinculado à campanha!' : 'Modelo removido (voltou a texto livre).');
       openDetail(detail);
@@ -267,7 +304,10 @@ export default function Broadcasts() {
           }
         >
           <Field field={{ name: 'name', label: 'Nome da campanha', required: true }} value={form.name} onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))} />
-          <Field field={{ name: 'channel', label: 'Canal', type: 'select', options: options('Channel') }} value={form.channel} onChange={(n, v) => setForm((s) => ({ ...s, [n]: v }))} />
+          <div className="field">
+            <label>Canal</label>
+            <div className="channel-fixed"><MessageCircle size={16} /> WhatsApp (único canal que entrega de verdade)</div>
+          </div>
 
           {/* Seletor de modelo oficial — resolve o "botão pra usar o template". */}
           <div className="field">
@@ -285,6 +325,13 @@ export default function Broadcasts() {
 
           {selectedTpl ? (
             <>
+              {selectedTpl.header?.format === 'IMAGE' && (
+                <HeaderImageField
+                  value={form.headerImageUrl}
+                  sample={selectedTpl.header.sample}
+                  onChange={(url) => setForm((s) => ({ ...s, headerImageUrl: url }))}
+                />
+              )}
               {selectedTpl.vars.filter((v) => !v.auto).map((v) => (
                 <Field
                   key={v.key}
@@ -342,6 +389,13 @@ export default function Broadcasts() {
               </div>
             )}
           </div>
+          {detailTpl?.header?.format === 'IMAGE' && (
+            <HeaderImageField
+              value={tplForm.headerImageUrl}
+              sample={detailTpl.header.sample}
+              onChange={(url) => setTplForm((s) => ({ ...s, headerImageUrl: url }))}
+            />
+          )}
           {detailTpl && detailTpl.vars.filter((v) => !v.auto).map((v) => (
             <Field
               key={v.key}

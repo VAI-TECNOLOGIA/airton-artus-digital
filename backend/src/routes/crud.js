@@ -26,9 +26,9 @@ export const notices = resourceRouter(
     // Aviso publicado no mural → push pra equipe toda (dispositivos logados).
     afterCreate: (item) =>
       sendPushToUsers(null, {
-        title: '📢 Novo aviso no mural',
+        title: 'Novo aviso no mural',
         body: item.title,
-        data: { kind: 'notice', id: item.id },
+        data: { kind: 'notice', id: item.id, link: '/mural' },
       }),
   }),
   { writeRoles: [A, C] }

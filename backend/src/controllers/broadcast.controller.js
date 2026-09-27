@@ -216,9 +216,20 @@ export const send = asyncHandler(async (req, res) => {
   // COMUNICADO INTERNO: notifica TODOS os usuários — push (app) + sino (app e
   // navegador). Envio único (não usa lista de contatos nem WhatsApp/Meta).
   if (campaign.channel === 'CHAT_INTERNO') {
+    // Publica no MURAL para haver conteúdo ao clicar na notificação (via prisma
+    // direto — não passa pelo afterCreate do resource, evita push duplicado).
+    await prisma.notice.create({
+      data: {
+        title: campaign.name,
+        description: campaign.message,
+        type: 'AVISO',
+        status: 'PUBLICADO',
+        authorId: req.user?.id || null,
+      },
+    });
     const result = await notifyUsers(
       { mode: 'all' },
-      { title: campaign.name, body: campaign.message, kind: 'campanha', link: '/mural' },
+      { title: campaign.name, body: campaign.message, kind: 'notice', link: '/mural' },
     );
     const updated = await prisma.broadcastCampaign.update({
       where: { id: campaignId },

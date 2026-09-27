@@ -224,6 +224,7 @@ export default function ResourcePage({ config }) {
           );
         })}
         <div className="spacer" />
+        {config.toolbarExtra}
         {canCreate && config.fields && (
           <button className="btn btn-primary" onClick={openCreate}>
             <Plus size={16} />

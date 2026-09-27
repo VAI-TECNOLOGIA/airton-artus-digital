@@ -205,30 +205,90 @@ export const sendAccess = asyncHandler(async (req, res) => {
     return res.json({ ok: true, login: phone, link, mode: 'link' });
   }
 
-  // Modo "api": dispara o template oficial pela Meta.
-  const result = await sendWhatsApp({
-    to: phone,
-    template: {
-      name: 'airton_redefinir_senha',
-      language: { code: 'pt_BR' },
-      components: [
-        { type: 'body', parameters: [{ type: 'text', text: user.name || 'tudo bem' }] },
-        { type: 'button', sub_type: 'url', index: 0, parameters: [{ type: 'text', text: token }] },
-      ],
-    },
-  });
-  if (result?.raw?.error) {
-    const err = result.raw.error;
-    const code = String(err.code || err?.error_data?.code || '');
-    let msg = err.message || 'Falha no envio pela Meta.';
-    if (code === '131030' || /not in allowed list/i.test(msg)) {
-      msg = 'O WhatsApp oficial ainda está em número de TESTE — a Meta só entrega a contatos liberados no painel. Use "Abrir no WhatsApp" para enviar pelo seu número agora, ou conclua a conexão do número oficial da campanha.';
-    } else if (code === '131049' || code === '131047' || code === '131026') {
-      msg = 'A Meta não entregou a este contato agora (limite/janela de 24h ou contato indisponível). Use "Abrir no WhatsApp" para enviar manualmente.';
-    }
-    throw new AppError(msg, 400);
+  // Modo "api": dispara o template oficial pela Meta. sendWhatsApp LANÇA em erro
+  // da Meta — traduzimos para uma mensagem amigável.
+  let result;
+  try {
+    result = await sendWhatsApp({ to: phone, template: accessTemplatePayload(user, token) });
+  } catch (e) {
+    throw new AppError(friendlyAccessError(e.message), 400);
   }
   res.json({ ok: true, login: phone, link, provider: result?.provider, simulated: !!result?.simulated });
+});
+
+/** Payload do template oficial de acesso (redefinir senha, botão com o token). */
+function accessTemplatePayload(user, token) {
+  return {
+    name: 'airton_redefinir_senha',
+    language: { code: 'pt_BR' },
+    components: [
+      { type: 'body', parameters: [{ type: 'text', text: user.name || 'tudo bem' }] },
+      { type: 'button', sub_type: 'url', index: 0, parameters: [{ type: 'text', text: token }] },
+    ],
+  };
+}
+
+/** Traduz o erro cru da Meta para linguagem do cliente. */
+function friendlyAccessError(msg = '') {
+  if (/131030|not in allowed list/i.test(msg)) return 'Número em modo de TESTE na Meta — só entrega a contatos liberados no painel. Use "Abrir no WhatsApp".';
+  if (/131049|131047|131026|130472/.test(msg)) return 'A Meta não entregou agora (limite diário/janela de 24h ou contato indisponível). Tente mais tarde ou use "Abrir no WhatsApp".';
+  return msg || 'Falha no envio pela Meta.';
+}
+
+/**
+ * Envio de acesso em LOTE — provisiona conta + dispara o template de acesso
+ * para os cadastros represados (status alvo, sem acesso ainda). Cap por
+ * chamada para respeitar o limite diário da Meta; devolve o que ficou.
+ */
+export const sendAccessBulk = asyncHandler(async (req, res) => {
+  const status = req.body?.status || 'NOVO';
+  const limit = Math.min(Number(req.body?.limit) || 150, 250);
+
+  const candidates = await prisma.supporter.findMany({
+    where: { status, optOutAt: null },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true, name: true, phone: true, whatsapp: true, email: true },
+  });
+
+  // Elegíveis: têm telefone e ainda NÃO têm conta com senha definida.
+  const eligible = [];
+  for (const s of candidates) {
+    const phone = brDigits(s.whatsapp || s.phone);
+    if (!phone) continue;
+    const existing = await prisma.user.findFirst({ where: { phone }, select: { id: true, name: true, password: true } });
+    if (existing?.password) continue; // já tem acesso
+    eligible.push({ s, phone, existing });
+  }
+
+  const batch = eligible.slice(0, limit);
+  let sent = 0;
+  let failed = 0;
+  let stoppedByLimit = false;
+  const errors = [];
+
+  for (const { s, phone, existing } of batch) {
+    try {
+      let user = existing;
+      if (!user) {
+        let email = s.email && s.email.includes('@') ? s.email.toLowerCase() : `${phone}@wa.airtonartus.app`;
+        if (await prisma.user.findUnique({ where: { email } })) email = `${phone}.${Date.now()}@wa.airtonartus.app`;
+        user = await prisma.user.create({ data: { name: s.name || 'Apoiador', email, phone, role: 'PARCEIRO', password: '' } });
+      }
+      const token = signResetToken({ sub: user.id });
+      await prisma.user.update({ where: { id: user.id }, data: { resetToken: token, resetTokenExpires: new Date(Date.now() + 48 * 3600_000) } });
+      await sendWhatsApp({ to: phone, template: accessTemplatePayload(user, token) });
+      sent++;
+    } catch (e) {
+      failed++;
+      errors.push({ name: s.name, reason: friendlyAccessError(e.message) });
+      // Limite/rate da Meta → para o lote (não adianta insistir hoje).
+      if (/131049|130472|rate|too many|limit/i.test(e.message)) { stoppedByLimit = true; break; }
+    }
+  }
+
+  const remaining = eligible.length - (sent + failed);
+  await audit({ userId: req.user?.id, action: 'SEND_ACCESS_BULK', entity: 'Supporter', changes: { status, sent, failed, eligible: eligible.length }, ip: req.ip });
+  res.json({ sent, failed, eligible: eligible.length, remaining, stoppedByLimit, errors: errors.slice(0, 10) });
 });
 
 export const remove = asyncHandler(async (req, res) => {

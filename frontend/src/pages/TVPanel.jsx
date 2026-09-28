@@ -36,7 +36,7 @@ function RSMap({ byCity }) {
         scrollWheelZoom={false}
         zoomControl={false}
         attributionControl={false}
-        style={{ height: '100%', width: '100%', background: '#0C0D1D' }}
+        style={{ height: '100%', width: '100%', background: '#05186F' }}
       >
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
         {cities.map((c) => {
@@ -170,7 +170,7 @@ export default function TVPanel() {
 function RSFlag({ size = 60 }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" aria-label="Marca Airton Artus">
-      <rect width="64" height="64" rx="14" fill="#14162B" />
+      <rect width="64" height="64" rx="14" fill="#0824A0" />
       <path fill="#E8AF3C" fillRule="evenodd" d="M26.2 11h11.6l10.4 38.5h-9.2l-1.9-7.4H26.9L25 49.5h-9.2L26.2 11zm5.8 9.6-3.5 14.6h7L32 20.6z" />
       <rect x="15" y="54" width="11.33" height="4.5" fill="#398254" />
       <rect x="26.33" y="54" width="11.33" height="4.5" fill="#BD2E2F" />

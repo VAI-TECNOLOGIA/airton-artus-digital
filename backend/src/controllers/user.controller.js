@@ -28,7 +28,7 @@ export const list = asyncHandler(async (req, res) => {
 const createSchema = z.object({
   name: z.string().min(2),
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(6).optional(),
   role: z.enum(USER_ROLES),
   phone: z.string().nullable().optional(),
   regionId: z.string().uuid().nullable().optional(),
@@ -39,8 +39,12 @@ export const create = asyncHandler(async (req, res) => {
   const data = createSchema.parse(nullifyEmpty(req.body));
   const exists = await prisma.user.findUnique({ where: { email: data.email.toLowerCase() } });
   if (exists) throw new AppError('E-mail já cadastrado', 409);
+  // Cadastro manual: se o admin não definir senha, a conta nasce SEM senha (vazia).
+  // NÃO dispara WhatsApp. A pessoa cria a senha no 1º login (o sistema envia o link)
+  // ou pelo "Esqueci minha senha".
+  const password = data.password ? await hashPassword(data.password) : '';
   const user = await prisma.user.create({
-    data: { ...data, email: data.email.toLowerCase(), password: await hashPassword(data.password) },
+    data: { ...data, email: data.email.toLowerCase(), password },
     select,
   });
   res.status(201).json(user);

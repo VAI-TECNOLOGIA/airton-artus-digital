@@ -1,26 +1,26 @@
 /* ============================================================
-   Landing executiva — Airton Artus (pré-campanha 2026)
-   Identidade oficial: navy #1B1D39 + ouro #E8AF3C + tricolor RS.
+   Landing executiva — Airton Artus (campanha 2026)
+   Identidade oficial: navy #0B33C2 + ouro #E8AF3C + tricolor RS.
    Tipografia: Anton (display) · Archivo (títulos) · Inter (texto).
    Estilos 100% escopados sob `.mlp` para NÃO conflitar com o
    design system do painel (index.css).
    ============================================================ */
 
 .mlp{
-  --navy:#1B1D39; --navy-2:#262A52; --navy-deep:#0C0D1D;
+  --navy:#0B33C2; --navy-2:#1747E0; --navy-deep:#05186F;
   --gold:#E8AF3C; --gold-2:#B98618;
   --rs-green:#398254; --rs-red:#BD2E2F;
   --ink:#16181D; --muted:#5A616B;
   --line:#E7E8EF; --paper:#fff; --paper-soft:#F6F7F9; --rad:18px;
-  --sh-sm:0 4px 14px rgba(12,13,29,.06);
-  --sh:0 18px 50px rgba(12,13,29,.12);
-  --sh-lg:0 30px 80px rgba(12,13,29,.24);
+  --sh-sm:0 4px 14px rgba(5, 24, 111,.06);
+  --sh:0 18px 50px rgba(5, 24, 111,.12);
+  --sh-lg:0 30px 80px rgba(5, 24, 111,.24);
   font-family:'Inter',system-ui,sans-serif;
   color:var(--ink);background:var(--paper);line-height:1.6;
   -webkit-font-smoothing:antialiased;
 }
 .mlp *{margin:0;padding:0;box-sizing:border-box}
-.mlp h1,.mlp h2{font-family:'Anton','Archivo',sans-serif;font-weight:400;text-transform:uppercase;line-height:1.02;letter-spacing:.015em}
+.mlp h1,.mlp h2{font-family:'Kaisar','Archivo',sans-serif;font-weight:400;text-transform:uppercase;line-height:1.02;letter-spacing:.015em}
 .mlp h3{font-family:'Archivo',sans-serif;line-height:1.15;letter-spacing:-.01em}
 .mlp a{text-decoration:none;color:inherit}
 .mlp .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
@@ -48,7 +48,7 @@
 .mlp-header{position:fixed;top:0;left:0;right:0;z-index:100;transition:.3s;padding-top:env(safe-area-inset-top,0px)}
 .mlp-bar{display:flex;align-items:center;justify-content:space-between;height:84px;transition:.3s}
 .mlp-brand{display:flex;align-items:center;gap:13px}
-.mlp-brand .wm b{font-family:'Anton';font-weight:400;font-size:21px;letter-spacing:.04em;text-transform:uppercase;display:block;line-height:1.05;color:#fff;transition:.3s}
+.mlp-brand .wm b{font-family:'Kaisar';font-weight:400;font-size:21px;letter-spacing:.04em;text-transform:uppercase;display:block;line-height:1.05;color:#fff;transition:.3s}
 .mlp-brand .wm small{font-weight:700;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);transition:.3s;font-family:'Archivo'}
 .mlp-menu{display:flex;align-items:center;gap:28px}
 .mlp-menu a{font-weight:600;font-size:14.5px;color:rgba(255,255,255,.92);position:relative;transition:.2s}
@@ -69,8 +69,8 @@
 .mlp-hero{position:relative;min-height:100vh;display:flex;align-items:center;color:#fff;overflow:hidden;background:var(--navy-deep)}
 .mlp-hero-photo{position:absolute;inset:0;background-image:url('/img/hero.jpg');background-size:cover;background-position:72% 20%;filter:saturate(.72) contrast(1.04)}
 .mlp-hero-shade{position:absolute;inset:0;background:
-  linear-gradient(90deg,rgba(12,13,29,.96) 0%,rgba(12,13,29,.86) 34%,rgba(27,29,57,.45) 66%,rgba(27,29,57,.35) 100%),
-  linear-gradient(180deg,rgba(12,13,29,.35) 0%,transparent 30%,rgba(12,13,29,.9) 100%)}
+  linear-gradient(90deg,rgba(5, 24, 111,.96) 0%,rgba(5, 24, 111,.86) 34%,rgba(11, 51, 194,.45) 66%,rgba(11, 51, 194,.35) 100%),
+  linear-gradient(180deg,rgba(5, 24, 111,.35) 0%,transparent 30%,rgba(5, 24, 111,.9) 100%)}
 .mlp-hero-content{position:relative;z-index:2;padding:140px 28px 110px;max-width:1180px}
 .mlp-hero .mlp-eyebrow{color:var(--gold)}
 .mlp-hero h1{font-size:clamp(52px,7.4vw,108px);margin:24px 0 22px;text-shadow:0 10px 44px rgba(0,0,0,.45)}
@@ -79,7 +79,7 @@
 .mlp-cta{display:flex;gap:16px;flex-wrap:wrap}
 .mlp-trust{display:flex;align-items:center;gap:14px;margin-top:42px;flex-wrap:wrap}
 .mlp-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);padding:8px 15px;border-radius:50px;font-weight:600;color:rgba(255,255,255,.85);font-size:14px}
-.mlp-pill b{color:var(--gold);font-family:'Anton';font-weight:400;letter-spacing:.03em}
+.mlp-pill b{color:var(--gold);font-family:var(--font-number);font-weight:700;letter-spacing:0;font-variant-numeric:tabular-nums}
 .mlp-scroll{position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.6);font-size:12px;letter-spacing:.2em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px}
 .mlp-mouse{width:24px;height:38px;border:2px solid rgba(255,255,255,.5);border-radius:14px;position:relative}
 .mlp-mouse::after{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:4px;height:7px;border-radius:3px;background:rgba(255,255,255,.7);animation:mlp-wheel 1.6s infinite}
@@ -103,14 +103,14 @@
 .mlp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
 .mlp-stat{text-align:center;padding:34px 18px;border-radius:var(--rad);background:#fff;box-shadow:var(--sh-sm);border:1px solid var(--line);position:relative;overflow:hidden}
 .mlp-stat::before{content:"";position:absolute;left:0;top:0;height:4px;width:100%;background:linear-gradient(90deg,var(--rs-green) 0 33.3%,var(--rs-red) 33.3% 66.6%,var(--gold) 66.6%)}
-.mlp-stat b{font-family:'Anton';font-size:clamp(36px,4.2vw,54px);font-weight:400;color:var(--navy);display:block;line-height:1;letter-spacing:.02em}
+.mlp-stat b{font-family:var(--font-number);font-size:clamp(38px,4.4vw,58px);font-weight:800;color:var(--navy);display:block;line-height:1;letter-spacing:-0.01em;font-variant-numeric:tabular-nums}
 .mlp-stat span{color:var(--muted);font-weight:600;font-size:14.5px;margin-top:8px;display:block}
 
 /* Bio / trajetória */
 .mlp-bio{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
 .mlp-bio-photo{position:relative;border-radius:22px;overflow:hidden;box-shadow:var(--sh);position:sticky;top:110px}
 .mlp-bio-photo img{display:block;width:100%;height:auto}
-.mlp-bio-photo figcaption{position:absolute;left:0;right:0;bottom:0;padding:40px 22px 16px;background:linear-gradient(transparent,rgba(12,13,29,.85));color:#fff;font-weight:600;font-size:14px}
+.mlp-bio-photo figcaption{position:absolute;left:0;right:0;bottom:0;padding:40px 22px 16px;background:linear-gradient(transparent,rgba(5, 24, 111,.85));color:#fff;font-weight:600;font-size:14px}
 
 /* Pillars */
 .mlp-pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
@@ -132,7 +132,7 @@
 .mlp-result{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.13);border-radius:var(--rad);padding:30px 26px;transition:.3s;position:relative;overflow:hidden}
 .mlp-result:hover{transform:translateY(-6px);background:rgba(255,255,255,.08);border-color:rgba(232,175,60,.4)}
 .mlp-result .ic{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:rgba(232,175,60,.16);color:var(--gold);margin-bottom:18px}
-.mlp-result b{font-family:'Anton';font-weight:400;font-size:clamp(30px,3vw,42px);color:var(--gold);display:block;line-height:1;letter-spacing:.02em}
+.mlp-result b{font-family:var(--font-number);font-weight:800;font-size:clamp(32px,3.2vw,46px);color:var(--gold);display:block;line-height:1;letter-spacing:-0.01em;font-variant-numeric:tabular-nums}
 .mlp-result h3{font-size:16.5px;font-weight:800;margin:10px 0 8px;color:#fff}
 .mlp-result p{color:rgba(255,255,255,.68);font-size:13.5px}
 
@@ -142,7 +142,7 @@
 .mlp-shot.wide{grid-column:1/-1;aspect-ratio:21/9}
 .mlp-shot img{width:100%;height:100%;object-fit:cover;transition:transform .5s cubic-bezier(.2,.7,.2,1)}
 .mlp-shot:hover img{transform:scale(1.04)}
-.mlp-shot figcaption{position:absolute;left:0;right:0;bottom:0;padding:44px 20px 16px;background:linear-gradient(transparent,rgba(12,13,29,.82));color:#fff;font-weight:700;font-size:14.5px;font-family:'Archivo'}
+.mlp-shot figcaption{position:absolute;left:0;right:0;bottom:0;padding:44px 20px 16px;background:linear-gradient(transparent,rgba(5, 24, 111,.82));color:#fff;font-weight:700;font-size:14.5px;font-family:'Archivo'}
 
 /* Lead magnet */
 .mlp-magnet{position:relative;border-radius:28px;overflow:hidden;color:#fff;background:radial-gradient(120% 140% at 85% 0%,var(--navy-2) 0%,var(--navy) 60%,var(--navy-deep) 100%);box-shadow:var(--sh-lg)}
@@ -174,7 +174,7 @@
 
 /* Vision */
 .mlp-vision{background:var(--navy);color:#fff;position:relative;overflow:hidden}
-.mlp-vision::before{content:"\201C";position:absolute;left:40px;top:-30px;font-family:'Anton';font-size:300px;color:rgba(255,255,255,.05);line-height:1}
+.mlp-vision::before{content:"\201C";position:absolute;left:40px;top:-30px;font-family:'Kaisar';font-size:300px;color:rgba(255,255,255,.05);line-height:1}
 .mlp-vision::after{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:linear-gradient(90deg,var(--rs-green) 0 33.3%,var(--rs-red) 33.3% 66.6%,var(--gold) 66.6%)}
 .mlp-vision .mlp-wrap{position:relative;z-index:2;max-width:880px;text-align:center}
 .mlp-vision blockquote{font-family:'Archivo';font-size:clamp(24px,3.2vw,38px);font-weight:600;line-height:1.28}
@@ -191,12 +191,12 @@
 .mlp-tl:last-child{padding-bottom:0}
 .mlp-tl::before{content:"";position:absolute;left:-34px;top:4px;width:18px;height:18px;border-radius:50%;background:#fff;border:4px solid var(--navy);box-shadow:0 0 0 4px #E9EAF3}
 .mlp-tl:last-child::before{border-color:var(--gold-2);box-shadow:0 0 0 4px rgba(232,175,60,.25)}
-.mlp-tl .yr{font-family:'Anton';font-weight:400;color:var(--gold-2);font-size:16px;letter-spacing:.06em}
+.mlp-tl .yr{font-family:'Kaisar';font-weight:400;color:var(--gold-2);font-size:16px;letter-spacing:.06em}
 .mlp-tl h3{font-size:19px;font-weight:800;margin:4px 0 6px;color:var(--navy)}
 .mlp-tl p{color:var(--muted);font-size:15px}
 
 /* Social */
-.mlp-social{background:radial-gradient(120% 120% at 10% 0%,#23253F,var(--navy-deep) 70%);color:#fff;position:relative;overflow:hidden}
+.mlp-social{background:radial-gradient(120% 120% at 10% 0%,#1E4AE6,var(--navy-deep) 70%);color:#fff;position:relative;overflow:hidden}
 .mlp-social .mlp-head .mlp-eyebrow{color:var(--gold)}
 .mlp-social .mlp-head h2{color:#fff}
 .mlp-social .mlp-head p{color:rgba(255,255,255,.7)}
@@ -216,7 +216,7 @@
 .mlp-soc .handle{opacity:.9;font-weight:600;margin-bottom:18px}
 .mlp-soc .go{display:inline-flex;align-items:center;gap:9px;background:#fff;color:var(--ink);font-weight:700;padding:12px 22px;border-radius:50px;align-self:flex-start;transition:.25s}
 .mlp-soc:hover .go{gap:14px}
-.mlp-soc .bgnum{position:absolute;right:-10px;bottom:-30px;font-family:'Anton';font-weight:400;font-size:130px;opacity:.12;line-height:1}
+.mlp-soc .bgnum{position:absolute;right:-10px;bottom:-30px;font-family:'Kaisar';font-weight:400;font-size:130px;opacity:.12;line-height:1}
 
 /* Testimonials */
 .mlp-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
@@ -250,7 +250,7 @@
 .mlp-footer{background:var(--navy-deep);color:rgba(255,255,255,.65);padding:64px 0 calc(30px + env(safe-area-inset-bottom,0px))}
 .mlp-foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid rgba(255,255,255,.1)}
 .mlp-foot-brand{display:flex;align-items:center;gap:12px;margin-bottom:14px}
-.mlp-foot-brand b{font-family:'Anton';font-weight:400;color:#fff;font-size:20px;text-transform:uppercase;letter-spacing:.05em}
+.mlp-foot-brand b{font-family:'Kaisar';font-weight:400;color:#fff;font-size:20px;text-transform:uppercase;letter-spacing:.05em}
 .mlp-foot-stripe{display:flex;height:4px;width:120px;margin-bottom:16px}
 .mlp-foot-stripe i{flex:1}
 .mlp-foot-stripe .g{background:var(--rs-green)}
@@ -319,7 +319,7 @@
   .mlp-wrap{padding:0 20px}
   .mlp-block{padding:72px 0}
   .mlp-hero-content{padding:120px 20px 90px}
-  .mlp-hero-shade{background:linear-gradient(180deg,rgba(12,13,29,.88) 0%,rgba(12,13,29,.72) 45%,rgba(12,13,29,.92) 100%)}
+  .mlp-hero-shade{background:linear-gradient(180deg,rgba(5, 24, 111,.88) 0%,rgba(5, 24, 111,.72) 45%,rgba(5, 24, 111,.92) 100%)}
   .mlp-toasts{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px))}
   .mlp-toast{min-width:0;max-width:none;width:100%}
 }
@@ -327,22 +327,23 @@
 /* ============================================================
    RSVP — página pública de confirmação de presença (/convite/:token)
    ============================================================ */
-.rsvp{min-height:100vh;background:radial-gradient(120% 90% at 50% 0%,#23253F 0%,#1B1D39 45%,#0C0D1D 100%);color:#fff;font-family:'Inter',system-ui,sans-serif;display:flex;flex-direction:column}
+.rsvp{min-height:100vh;background:radial-gradient(120% 90% at 50% 0%,#1E4AE6 0%,#0B33C2 45%,#05186F 100%);color:#fff;font-family:'Inter',system-ui,sans-serif;display:flex;flex-direction:column}
 .rsvp-wrap{width:100%;max-width:540px;margin:0 auto;padding:28px 20px 40px;flex:1;display:flex;flex-direction:column}
 .rsvp-brand{text-align:center;margin:12px 0 22px}
-.rsvp-brand b{font-family:'Anton';font-weight:400;font-size:24px;letter-spacing:.05em;text-transform:uppercase;display:block}
-.rsvp-brand small{font-family:'Archivo';font-weight:700;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#E8AF3C}
+.rsvp-logo{height:46px;width:auto;display:inline-block;margin-bottom:8px}
+.rsvp-brand b{font-family:'Kaisar';font-weight:400;font-size:24px;letter-spacing:.05em;text-transform:uppercase;display:block}
+.rsvp-brand small{display:block;font-family:'Archivo';font-weight:700;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:#E8AF3C}
 .rsvp-card{background:#fff;color:#16181D;border-radius:20px;padding:30px 26px;box-shadow:0 30px 80px rgba(0,0,0,.4)}
 .rsvp-center{text-align:center}
 .rsvp-eyebrow{display:inline-block;font-family:'Archivo';font-weight:800;font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:#B98618;margin-bottom:8px}
-.rsvp-title{font-family:'Anton';font-weight:400;text-transform:uppercase;line-height:1.05;font-size:clamp(28px,7vw,40px);color:#1B1D39;letter-spacing:.01em}
+.rsvp-title{font-family:'Kaisar';font-weight:400;text-transform:uppercase;line-height:1.05;font-size:clamp(28px,7vw,40px);color:#0B33C2;letter-spacing:.01em}
 .rsvp-desc{color:#5A616B;margin-top:10px;font-size:15px}
 .rsvp-info{margin:20px 0;display:flex;flex-direction:column;gap:10px;padding:16px;background:#F6F7F9;border:1px solid #E7E8EF;border-radius:14px}
 .rsvp-info-row{display:flex;align-items:center;gap:11px;font-size:14.5px;font-weight:600;color:#16181D}
 .rsvp-info-row svg{color:#B98618;flex:none}
 .rsvp-social{display:inline-flex;align-items:center;gap:7px;background:#E4F4EA;color:#1D6338;font-weight:700;font-size:13px;padding:7px 13px;border-radius:50px;margin-bottom:6px}
 .rsvp-form{margin-top:18px}
-.rsvp-form h3{font-family:'Archivo';font-weight:800;font-size:17px;color:#1B1D39;margin-bottom:14px}
+.rsvp-form h3{font-family:'Archivo';font-weight:800;font-size:17px;color:#0B33C2;margin-bottom:14px}
 .rsvp-field{margin-bottom:13px}
 .rsvp-field label{display:block;font-size:13px;font-weight:600;color:#3A3F47;margin-bottom:5px}
 .rsvp-opt{color:#8A9099;font-weight:500}
@@ -359,11 +360,11 @@
 .rsvp-badge{width:66px;height:66px;border-radius:50%;display:grid;place-items:center;margin:0 auto 14px}
 .rsvp-badge.green{background:#E4F4EA;color:#1D6338}
 .rsvp-badge.red{background:#F9E4E5;color:#8A1F20}
-.rsvp-badge.navy{background:#E9EAF3;color:#1B1D39}
-.rsvp-card.rsvp-center h2{font-family:'Anton';font-weight:400;text-transform:uppercase;color:#1B1D39;font-size:26px;letter-spacing:.01em;margin-bottom:8px}
+.rsvp-badge.navy{background:#E9EAF3;color:#0B33C2}
+.rsvp-card.rsvp-center h2{font-family:'Kaisar';font-weight:400;text-transform:uppercase;color:#0B33C2;font-size:26px;letter-spacing:.01em;margin-bottom:8px}
 .rsvp-muted{color:#5A616B;font-size:14.5px}
 .rsvp-recap{margin-top:18px;padding-top:16px;border-top:1px solid #E7E8EF}
-.rsvp-recap b{display:block;color:#1B1D39;font-size:15px}
+.rsvp-recap b{display:block;color:#0B33C2;font-size:15px}
 .rsvp-recap span{color:#5A616B;font-size:13.5px}
 .rsvp-foot{text-align:center;color:rgba(255,255,255,.55);font-size:12.5px;margin-top:24px}
 .rsvp-foot .mlp-foot-stripe{margin:0 auto 10px;width:90px}

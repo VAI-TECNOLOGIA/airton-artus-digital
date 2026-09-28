@@ -200,6 +200,7 @@ enum BroadcastContactStatus {
   PENDENTE
   ENVIADO
   ENTREGUE
+  LIDA
   FALHA
 }
 
@@ -256,6 +257,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   coordinatedSupporters Supporter[]         @relation("SupporterCoordinator")
+  createdSupporters     Supporter[]         @relation("SupporterCreator")
   supervisedVolunteers  Volunteer[]         @relation("VolunteerSupervisor")
   assignedConversations Conversation[]      @relation("ConversationAgent")
   authoredNotices       Notice[]            @relation("NoticeAuthor")
@@ -274,6 +276,7 @@ model User {
   internalMemberships   InternalMember[]    @relation("IntMember")
   internalMessages      InternalMessage[]   @relation("IntMsgSender")
   deviceTokens          DeviceToken[]
+  notifications         AppNotification[]   @relation("UserNotifications")
 
   @@index([role])
   @@index([regionId])
@@ -352,6 +355,9 @@ model Supporter {
   duplicates    Supporter[]   @relation("SupporterDuplicates")
   coordinatorId String?
   coordinator   User?         @relation("SupporterCoordinator", fields: [coordinatorId], references: [id], onDelete: SetNull)
+  // Quem cadastrou este apoiador (membro logado). Backfill a partir do AuditLog.
+  createdById String?
+  createdBy   User?         @relation("SupporterCreator", fields: [createdById], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -360,12 +366,14 @@ model Supporter {
   conversations   Conversation[]
   bannerLocations BannerLocation[]
   broadcastContacts BroadcastContact[]
+  materialRequests  MaterialRequest[] @relation("SupporterMaterialRequests")
 
   @@index([phone])
   @@index([status])
   @@index([regionId])
   @@index([cityId])
   @@index([coordinatorId])
+  @@index([createdById])
 }
 
 model Volunteer {
@@ -552,11 +560,16 @@ model MaterialRequest {
   materialId  String?
   material    Material? @relation(fields: [materialId], references: [id], onDelete: SetNull)
   materialName String
+  materials    String[] @default([])   // vários itens num pedido só
+  materialType String?                 // INDIVIDUAL | DOBRADINHA
   quantity    Int      @default(1)
   justification String?
   cityName    String?
   neighborhood String?
   deliveryAddress String?
+
+  supporterId String?
+  supporter   Supporter? @relation("SupporterMaterialRequests", fields: [supporterId], references: [id], onDelete: SetNull)
 
   requesterId String?
   requester   User?    @relation("RequestRequester", fields: [requesterId], references: [id], onDelete: SetNull)
@@ -574,6 +587,7 @@ model MaterialRequest {
 
   @@index([status])
   @@index([requesterId])
+  @@index([supporterId])
 }
 
 model BannerLocation {
@@ -752,11 +766,38 @@ model BroadcastCampaign {
   message     String
   channel     Channel  @default(WHATSAPP)
   status      BroadcastStatus @default(RASCUNHO)
+  templateName String?          // template oficial aprovado (null = texto livre)
+  templateVars Json?            // (legado) valores fixos das variáveis — mantido por compat
+  templateLang   String? @default("pt_BR")
+  headerImageUrl String?
+  varsJson       Json?          // mapeamento das variáveis do corpo [{source,value}]
+  audienceJson   Json?          // filtros do público selecionado
   scheduledAt DateTime?
   totalContacts Int    @default(0)
   sentCount     Int    @default(0)
   failedCount   Int    @default(0)
   pendingCount  Int    @default(0)
+  deliveredCount Int   @default(0)
+  readCount      Int   @default(0)
+
+  // Autorização — fluxo: equipe solicita -> autorizador (User.podeAutorizar) libera/recusa.
+  autorizada             Boolean   @default(false)
+  autorizacaoSolicitada  Boolean   @default(false)
+  solicitadaPorId        String?
+  solicitadaEm           DateTime?
+  autorizadaPorId        String?
+  autorizadaEm           DateTime?
+  autorizacaoNota        String?
+
+  // Declaração de conformidade (aceite ativo antes do envio) — registro auditável.
+  declAcceptedAt  DateTime?
+  declUserId      String?
+  declUserName    String?
+  declIp          String?
+  declVersion     String?
+  declListCount   Int?
+  declListHash    String?
+  declContentHash String?
 
   ownerId String?
   owner   User?   @relation("BroadcastOwner", fields: [ownerId], references: [id], onDelete: SetNull)
@@ -782,6 +823,12 @@ model BroadcastContact {
   status      BroadcastContactStatus @default(PENDENTE)
   error       String?
   sentAt      DateTime?
+  // Rastreio da API Oficial: wamid + confirmações do webhook.
+  wamid       String?
+  deliveredAt DateTime?
+  readAt      DateTime?
+  senderPhoneId String?   // número que fez o envio (Airton usa 1 só)
+  source      String?     // BASE | COLADO | CSV
 
   supporterId String?
   supporter   Supporter? @relation(fields: [supporterId], references: [id], onDelete: SetNull)
@@ -789,6 +836,32 @@ model BroadcastContact {
   createdAt DateTime @default(now())
 
   @@index([campaignId])
+  @@index([status])
+  @@index([wamid])
+}
+
+// Templates oficiais sincronizados da Meta (WhatsApp Cloud API).
+// Populado pelo botão "Sincronizar templates" -> GET /{WABA}/message_templates.
+// Fonte da verdade para o seletor de modelos do Disparador.
+model WaTemplate {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  language    String   @default("pt_BR")
+  status      String   // APPROVED | PENDING | REJECTED | PAUSED | ...
+  category    String?  // MARKETING | UTILITY | AUTHENTICATION
+  label       String?  // rótulo amigável exibido no seletor
+  description String?
+  headerFormat   String?  // NONE | TEXT | IMAGE | VIDEO | DOCUMENT
+  headerSampleUrl String? // imagem do cabeçalho re-hospedada (link estável p/ envio)
+  bodyText    String?  // texto do corpo com {{1}}, {{2}}...
+  previewText String?  // prévia com {nome}, {evento}... (convenção do front)
+  varsJson    Json?    // [{ key, auto?, label?, placeholder? }]
+  buttonJson  Json?    // null | { type:'url', source:'contactPhone' }
+  rawJson     Json?    // components crus da Meta (auditoria)
+  syncedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
   @@index([status])
 }
 
@@ -865,6 +938,24 @@ model DeviceToken {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+}
+
+// Notificação in-app (o "sino") de um usuário. Criada junto do push
+// pela tela "Enviar notificação" e por eventos do sistema.
+model AppNotification {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  kind      String?   // categoria/origem (ex.: manual, mural, demanda)
+  link      String?   // rota interna aberta ao tocar
+  data      Json?
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, readAt])
+  @@index([userId, createdAt])
 }
 
 // LGPD: pedido público de exclusão de dados do apoiador, verificado por

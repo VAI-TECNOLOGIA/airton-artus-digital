@@ -93,3 +93,18 @@ export function fileUrl(filename) {
   if (/^https?:\/\//i.test(filename)) return filename;
   return `${env.publicUrl}/${env.uploadDir}/${filename}`;
 }
+
+/**
+ * Salva um buffer no storage de uploads e devolve a URL pública.
+ * Usado fora do fluxo HTTP (ex.: baixar a imagem de um template da Meta e
+ * re-hospedar num link estável do próprio servidor).
+ */
+export async function saveBufferToUploads(buffer, filename) {
+  if (USE_BLOB) {
+    const { put } = await import('@vercel/blob');
+    const blob = await put(filename, buffer, { access: 'public', addRandomSuffix: false });
+    return blob.url;
+  }
+  fs.writeFileSync(path.join(uploadRoot, filename), buffer);
+  return fileUrl(filename);
+}

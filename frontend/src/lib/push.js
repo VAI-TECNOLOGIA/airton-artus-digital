@@ -61,10 +61,11 @@ export async function initPushNotifications() {
         console.warn('[push] erro de registro FCM:', JSON.stringify(e));
       });
 
-      // Toque na notificação → navega pro destino (avisos abrem o mural).
+      // Toque na notificação → navega pro destino.
       PushNotifications.addListener('pushNotificationActionPerformed', ({ notification }) => {
-        const kind = notification?.data?.kind;
-        if (kind === 'notice') window.location.assign('/mural');
+        const data = notification?.data || {};
+        if (data.link) window.location.assign(data.link);
+        else if (data.kind === 'notice') window.location.assign('/mural');
       });
     }
 

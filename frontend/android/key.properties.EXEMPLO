@@ -1,0 +1,22 @@
+# ============================================================
+# CHAVE DE UPLOAD — Airton Artus Digital (Play App Signing)
+# ============================================================
+# COMO USAR:
+# 1) Copie sua keystore de upload para:
+#       frontend/android/app/upload-keystore.jks
+#    (a pasta app/ já ignora *.jks e *.keystore no Git)
+#
+# 2) Copie este arquivo para "key.properties" (sem .EXEMPLO):
+#       cp key.properties.EXEMPLO key.properties
+#
+# 3) Preencha os 4 valores abaixo com os dados da SUA chave.
+#    (o arquivo key.properties está no .gitignore — não vai pro Git)
+#
+# Depois me avise que eu rodo o build (./gradlew bundleRelease).
+# A senha fica só neste arquivo local; eu não preciso lê-la.
+# ============================================================
+
+storeFile=upload-keystore.jks
+storePassword=COLOQUE_A_SENHA_DO_KEYSTORE
+keyAlias=COLOQUE_O_ALIAS_DA_CHAVE
+keyPassword=COLOQUE_A_SENHA_DA_CHAVE

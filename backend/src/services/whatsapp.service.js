@@ -1,4 +1,5 @@
 import env from '../config/env.js';
+import { brDigits } from '../utils/helpers.js';
 
 // ============================================================
 //  Serviço WhatsApp — arquitetura preparada para a API Oficial
@@ -9,11 +10,12 @@ import env from '../config/env.js';
 // ============================================================
 
 export async function sendWhatsApp({ to, body, template }) {
+  const to164 = to ? '55' + brDigits(to) : to; // E.164 BR (idempotente)
   if (env.whatsapp.provider === 'meta_cloud' && env.whatsapp.token) {
     const url = `https://graph.facebook.com/v20.0/${env.whatsapp.phoneNumberId}/messages`;
     const payload = template
-      ? { messaging_product: 'whatsapp', to, type: 'template', template }
-      : { messaging_product: 'whatsapp', to, type: 'text', text: { body } };
+      ? { messaging_product: 'whatsapp', to: to164, type: 'template', template }
+      : { messaging_product: 'whatsapp', to: to164, type: 'text', text: { body } };
     const resp = await fetch(url, {
       method: 'POST',
       headers: {
@@ -23,7 +25,15 @@ export async function sendWhatsApp({ to, body, template }) {
       body: JSON.stringify(payload),
     });
     const data = await resp.json();
-    return { provider: 'meta_cloud', id: data?.messages?.[0]?.id, raw: data };
+    // A Meta pode responder 200 com corpo de erro OU sem id — ANTES isso era
+    // tratado como sucesso e o contato virava "enviado" sem nada ter saído.
+    // Agora lança com o motivo real → o disparo marca FALHA de verdade.
+    if (!resp.ok || data?.error || !data?.messages?.[0]?.id) {
+      const e = data?.error;
+      const detail = e?.error_data?.details ? ` — ${e.error_data.details}` : '';
+      throw new Error(e ? `Meta ${e.code}: ${e.message}${detail}` : 'Envio recusado pela Meta (sem id de mensagem).');
+    }
+    return { provider: 'meta_cloud', id: data.messages[0].id, raw: data };
   }
 
   const id = `wamid.SIMULATED.${Date.now()}`;

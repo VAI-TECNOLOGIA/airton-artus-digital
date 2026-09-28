@@ -2,6 +2,7 @@ import { crudFactory } from '../utils/crudFactory.js';
 import { resourceRouter } from './resourceRouter.js';
 import { regionScopeWithGlobal } from '../utils/scope.js';
 import { sendPushToUsers } from '../services/push.service.js';
+import { notifyDemandResolved } from '../services/whatsappTemplates.service.js';
 
 // Hierarquia: LIDER (total) · MEMBRO (equipe interna) · PARCEIRO (externo).
 // As antigas siglas viram aliases dos novos níveis para preservar a lógica.
@@ -25,9 +26,9 @@ export const notices = resourceRouter(
     // Aviso publicado no mural → push pra equipe toda (dispositivos logados).
     afterCreate: (item) =>
       sendPushToUsers(null, {
-        title: '📢 Novo aviso no mural',
+        title: 'Novo aviso no mural',
         body: item.title,
-        data: { kind: 'notice', id: item.id },
+        data: { kind: 'notice', id: item.id, link: '/mural' },
       }),
   }),
   { writeRoles: [A, C] }
@@ -119,6 +120,12 @@ export const demands = resourceRouter(
     include: { responsible: { select: { name: true } } },
     allowedFilters: ['status', 'category', 'priority', 'cityName'],
     writableFields: ['citizenName', 'phone', 'cityName', 'cityId', 'neighborhood', 'category', 'description', 'priority', 'status', 'history', 'responsibleId'],
+    // Jornada: ao mover a demanda para RESOLVIDA, avisa o cidadão pela API oficial.
+    afterUpdate: (item, req, prev) => {
+      if (prev?.status !== 'RESOLVIDA' && item.status === 'RESOLVIDA' && item.phone) {
+        return notifyDemandResolved({ name: item.citizenName, phone: item.phone });
+      }
+    },
   }),
   { writeRoles: [A, SP, C] }
 );

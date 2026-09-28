@@ -4,7 +4,7 @@
 
 Esta página descreve como excluir permanentemente sua conta e os dados associados no aplicativo **Airton Artus Digital**.
 
-> **Quem tem conta?** Contas com login são de membros da equipe, voluntários credenciados e parceiros da pré-campanha, criadas pela coordenação. Se você é **apoiador cadastrado sem login** e quer sair da base, veja [Excluir dados específicos](excluir-dados.html) — o pedido é ainda mais simples.
+> **Quem tem conta?** Contas com login são de membros da equipe, voluntários credenciados e parceiros da campanha, criadas pela coordenação. Se você é **apoiador cadastrado sem login** e quer sair da base, veja [Excluir dados específicos](excluir-dados.html) — o pedido é ainda mais simples.
 
 ## Como solicitar a exclusão
 
@@ -16,7 +16,7 @@ Esta página descreve como excluir permanentemente sua conta e os dados associad
 A exclusão é processada **imediatamente** e você é desconectado de todos os dispositivos.
 
 ### Opção 2 — Pela coordenação
-Fale com seu coordenador ou com a administração da pré-campanha e peça a exclusão da sua conta. Um administrador exclui o acesso diretamente no painel, com efeito **imediato**.
+Fale com seu coordenador ou com a administração da campanha e peça a exclusão da sua conta. Um administrador exclui o acesso diretamente no painel, com efeito **imediato**.
 
 ### Opção 3 — Por e-mail
 Envie um e-mail para **privacidade@airtonartus.com.br** com o assunto **"Exclusão de conta — Airton Artus Digital"**, contendo:
@@ -26,7 +26,7 @@ Envie um e-mail para **privacidade@airtonartus.com.br** com o assunto **"Exclus�
 
 Responderemos confirmando a exclusão em até **5 dias úteis**.
 
-### Opção 4 — Pelo WhatsApp oficial da pré-campanha
+### Opção 4 — Pelo WhatsApp oficial da campanha
 Envie a mensagem **"EXCLUIR CONTA"** pelo número oficial. A equipe confirmará sua identidade e processará o pedido.
 
 ## O que é excluído

@@ -9,6 +9,7 @@ import Login from './pages/Login.jsx';
 // Recharts/Leaflet só são baixados por quem entra no painel.
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword.jsx'));
 const ResetPassword = lazy(() => import('./pages/ResetPassword.jsx'));
+const CriarConta = lazy(() => import('./pages/CriarConta.jsx'));
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
 const Supporters = lazy(() => import('./pages/Supporters.jsx'));
 const Volunteers = lazy(() => import('./pages/Volunteers.jsx'));
@@ -26,6 +27,7 @@ const Conversations = lazy(() => import('./pages/Conversations.jsx'));
 const Demands = lazy(() => import('./pages/Demands.jsx'));
 const Broadcasts = lazy(() => import('./pages/Broadcasts.jsx'));
 const Automations = lazy(() => import('./pages/Automations.jsx'));
+const SendNotification = lazy(() => import('./pages/SendNotification.jsx'));
 const Users = lazy(() => import('./pages/Users.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const Landing = lazy(() => import('./pages/Landing.jsx'));
@@ -53,6 +55,7 @@ export default function App() {
     <Suspense fallback={lazyFallback}>
     <Routes>
       <Route path="/login" element={<Login />} />
+      <Route path="/criar-conta" element={<CriarConta />} />
       <Route path="/esqueci-senha" element={<ForgotPassword />} />
       <Route path="/redefinir-senha" element={<ResetPassword />} />
       <Route path="/lp" element={<Landing />} />
@@ -83,6 +86,7 @@ export default function App() {
       <Route path="/demandas" element={P(['LIDER', 'MEMBRO'], <Demands />)} />
       <Route path="/disparos" element={P(['LIDER', 'MEMBRO'], <Broadcasts />)} />
       <Route path="/automacoes" element={P(['LIDER'], <Automations />)} />
+      <Route path="/notificacoes" element={P(['LIDER'], <SendNotification />)} />
 
       <Route path="/usuarios" element={P(['LIDER'], <Users />)} />
       <Route path="/configuracoes" element={P(['LIDER'], <Settings />)} />

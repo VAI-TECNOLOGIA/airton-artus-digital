@@ -45,6 +45,24 @@ export default function Field({ field, value, onChange, error }) {
           maxSizeMB={field.maxSizeMB}
           previewImages={field.previewImages !== false}
         />
+      ) : type === 'datalist' ? (
+        <>
+          <input
+            className="input"
+            data-field={name}
+            aria-invalid={error ? 'true' : undefined}
+            list={`dl-${name}`}
+            value={value ?? ''}
+            onChange={(e) => set(e.target.value)}
+            placeholder={placeholder}
+            autoComplete="off"
+          />
+          <datalist id={`dl-${name}`}>
+            {options.map((o) => (
+              <option key={o.value ?? o} value={o.value ?? o} />
+            ))}
+          </datalist>
+        </>
       ) : (
         <input
           className="input"

@@ -54,7 +54,18 @@ export async function sendPushToUsers(userIds, { title, body, data = {} }) {
     tokens: tokens.map((t) => t.token),
     notification: { title, body },
     data: Object.fromEntries(Object.entries(data).map(([k, v]) => [k, String(v)])),
-    android: { priority: 'high', notification: { color: '#1B1D39' } },
+    android: {
+      priority: 'high',
+      notification: {
+        color: '#0B33C2', // azul da identidade
+        // Sem channelId: o app ainda não cria um canal próprio; referenciar um
+        // canal inexistente faz o Android 8+ engolir a notificação. Usa o canal
+        // padrão do FCM (toca). Canal HIGH com heads-up fica p/ o próximo AAB.
+        priority: 'high',
+        visibility: 'public',
+        defaultVibrateTimings: true,
+      },
+    },
     apns: { payload: { aps: { sound: 'default' } } },
   });
 
@@ -69,6 +80,39 @@ export async function sendPushToUsers(userIds, { title, body, data = {} }) {
   if (dead.length) await prisma.deviceToken.deleteMany({ where: { token: { in: dead } } });
 
   return { sent: res.successCount, failed: res.failureCount, pruned: dead.length, simulated: false };
+}
+
+/**
+ * Resolve a lista de usuários-alvo de uma notificação.
+ * @param {{mode:'all'|'roles'|'users', userIds?:string[], roles?:string[]}} target
+ * @returns {Promise<string[]>} ids de usuários ATIVOS
+ */
+export async function resolveTargetUserIds({ mode, userIds = [], roles = [] } = {}) {
+  if (mode === 'users') {
+    const rows = await prisma.user.findMany({ where: { id: { in: userIds }, active: true }, select: { id: true } });
+    return rows.map((u) => u.id);
+  }
+  const where = { active: true };
+  if (mode === 'roles') where.role = { in: roles };
+  const rows = await prisma.user.findMany({ where, select: { id: true } });
+  return rows.map((u) => u.id);
+}
+
+/**
+ * Motor único de aviso: grava a notificação no sino de cada usuário-alvo
+ * E envia o push para os dispositivos deles. Use sempre isto (não o
+ * sendPushToUsers cru) quando o aviso também deve aparecer no sino.
+ */
+export async function notifyUsers(target, { title, body, kind = 'manual', link = null, data = {} }) {
+  const userIds = Array.isArray(target) ? target : await resolveTargetUserIds(target);
+  if (!userIds.length) return { recipients: 0, notified: 0, push: { sent: 0, failed: 0, simulated: false } };
+
+  await prisma.appNotification.createMany({
+    data: userIds.map((userId) => ({ userId, title, body, kind, link })),
+  });
+
+  const push = await sendPushToUsers(userIds, { title, body, data: { ...data, kind, ...(link ? { link } : {}) } });
+  return { recipients: userIds.length, notified: userIds.length, push };
 }
 
 /** Registra (ou atualiza o dono de) um token de dispositivo. */

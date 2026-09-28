@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Image, Copy, Download, Plus, Film } from 'lucide-react';
+import { Image, Copy, Download, Plus, Film, Trash2 } from 'lucide-react';
 import Layout from '../components/layout/Layout.jsx';
 import Modal from '../components/ui/Modal.jsx';
 import Field from '../components/ui/Field.jsx';
@@ -90,6 +90,17 @@ export default function MediaKit() {
     }
   }
 
+  async function remove(m) {
+    if (!window.confirm(`Excluir "${m.title}"? Esta ação não pode ser desfeita.`)) return;
+    try {
+      await api.delete(`/media-kit/${m.id}`);
+      toast.success('Material excluído.');
+      setItems((list) => list.filter((x) => x.id !== m.id));
+    } catch (e) {
+      toast.error(apiError(e));
+    }
+  }
+
   return (
     <Layout title="Mídia Kit da campanha" subtitle="Artes, vídeos, jingles e textos prontos para a militância">
       <div className="toolbar">
@@ -131,6 +142,11 @@ export default function MediaKit() {
                     <a className="btn btn-sm" href={m.fileUrl} target="_blank" rel="noreferrer">
                       <Download size={14} /> Baixar
                     </a>
+                  )}
+                  {canManage && (
+                    <button className="btn btn-sm btn-ghost" style={{ color: 'var(--red)', marginLeft: 'auto' }} onClick={() => remove(m)} title="Excluir material">
+                      <Trash2 size={14} /> Excluir
+                    </button>
                   )}
                 </div>
               </div>

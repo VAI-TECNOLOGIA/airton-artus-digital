@@ -6,14 +6,18 @@ import { audit } from '../utils/audit.js';
 import { crudFactory } from '../utils/crudFactory.js';
 import { supporterScope } from '../utils/scope.js';
 import { sendWhatsApp } from '../services/whatsapp.service.js';
+import { notifyVolunteerConfirmed } from '../services/whatsappTemplates.service.js';
 import { SUPPORT_TYPES, SUPPORTER_STATUS } from '../utils/enums.js';
-import { nullifyEmpty, onlyDigits } from '../utils/helpers.js';
-import { fallbackLatLng, linkCityByName } from '../utils/geo.js';
+import { nullifyEmpty, onlyDigits, brDigits } from '../utils/helpers.js';
+import { signResetToken } from '../utils/jwt.js';
+import { fallbackLatLng } from '../utils/geo.js';
+import { resolveCity, cleanPlace, canonicalCityName } from '../utils/cityNormalize.js';
 
 const include = {
   region: { select: { id: true, name: true } },
   city: { select: { id: true, name: true } },
   coordinator: { select: { id: true, name: true } },
+  createdBy: { select: { id: true, name: true } },
   volunteer: true,
 };
 
@@ -78,15 +82,14 @@ export const create = asyncHandler(async (req, res) => {
     });
   }
 
-  // Conexão com o mapa: sem lat/lng manual, usa centroide da cidade + jitter.
-  // Sem cityId, tenta vincular pela cidade digitada (habilita filtro por região).
-  if (!data.cityId && data.cityName) {
-    const city = await linkCityByName(prisma, data.cityName);
-    if (city) {
-      data.cityId = city.id;
-      if (!data.regionId) data.regionId = city.regionId;
-    }
+  // Padrão de cidade: nome canônico (colapsa acento/caixa/espaço/typo) + vínculo
+  // cityId/regionId quando existe na tabela City. Único ponto de verdade.
+  if (data.cityName) {
+    const r = await resolveCity(prisma, data.cityName);
+    data.cityName = r.cityName;
+    if (!data.cityId && r.cityId) { data.cityId = r.cityId; if (!data.regionId) data.regionId = r.regionId; }
   }
+  if (data.neighborhood) data.neighborhood = cleanPlace(data.neighborhood);
   if (data.lat == null || data.lng == null) {
     const geo = fallbackLatLng({ cityName: data.cityName, neighborhood: data.neighborhood, seed: phone });
     data.lat = geo.lat;
@@ -102,6 +105,7 @@ export const create = asyncHandler(async (req, res) => {
       status,
       flaggedReason,
       duplicateOfId,
+      createdById: req.user?.id || null, // quem cadastrou (membro logado)
     },
     include,
   });
@@ -132,9 +136,169 @@ export const update = asyncHandler(async (req, res) => {
   delete data.region;
   delete data.city;
   delete data.coordinator;
+  if (data.cityName) {
+    const r = await resolveCity(prisma, data.cityName);
+    data.cityName = r.cityName;
+    if (r.cityId) { data.cityId = r.cityId; data.regionId = r.regionId; }
+  }
+  if (data.neighborhood) data.neighborhood = cleanPlace(data.neighborhood);
   const supporter = await prisma.supporter.update({ where: { id: req.params.id }, data, include });
   await audit({ userId: req.user?.id, action: 'UPDATE', entity: 'Supporter', entityId: supporter.id, ip: req.ip });
   res.json(supporter);
+});
+
+/** Cidades já cadastradas (canônicas e distintas) — alimenta o autocomplete e evita duplicidade. */
+export const listCities = asyncHandler(async (req, res) => {
+  const rows = await prisma.supporter.findMany({
+    where: { cityName: { not: null } },
+    distinct: ['cityName'],
+    select: { cityName: true },
+  });
+  const set = new Set();
+  for (const r of rows) {
+    const name = canonicalCityName(r.cityName);
+    if (name) set.add(name);
+  }
+  res.json({ data: [...set].sort((a, b) => a.localeCompare(b, 'pt-BR')).map((name) => ({ name })) });
+});
+
+/**
+ * Provisiona o acesso do apoiador (telefone = login) e devolve o link de "definir senha".
+ * - mode 'link' (padrão): só gera/atualiza o token e retorna o LINK — a equipe envia pelo próprio
+ *   WhatsApp (Web/app). Funciona sempre, sem depender do número oficial nem de template aprovado.
+ * - mode 'api': além disso, dispara o template OFICIAL (airton_redefinir_senha) pela Meta.
+ */
+export const sendAccess = asyncHandler(async (req, res) => {
+  // SEGURANÇA (28/09): o número oficial estava sendo BLOQUEADO porque o template
+  // "redefinir senha" era enviado a quem nunca pediu → risco de ban na Meta.
+  // O modo 'api' (envio automático pelo número oficial) fica DESLIGADO; só o modo
+  // 'link' (a equipe envia pelo próprio WhatsApp) — sem risco pro número.
+  const mode = 'link';
+  const s = await prisma.supporter.findUnique({ where: { id: req.params.id } });
+  if (!s) throw new AppError('Apoiador não encontrado', 404);
+  const phone = brDigits(s.whatsapp || s.phone);
+  if (!phone) throw new AppError('Apoiador sem telefone cadastrado.', 400);
+
+  // Cria (ou reaproveita) a conta de acesso; o telefone é o login.
+  let user = await prisma.user.findFirst({ where: { phone } });
+  if (!user) {
+    let email = s.email && s.email.includes('@') ? s.email.toLowerCase() : `${phone}@wa.airtonartus.app`;
+    if (await prisma.user.findUnique({ where: { email } })) email = `${phone}.${Date.now()}@wa.airtonartus.app`;
+    user = await prisma.user.create({
+      data: {
+        name: s.name || 'Apoiador',
+        email,
+        phone,
+        role: 'PARCEIRO',
+        password: '', // sem senha até a pessoa criar (1º acesso ou "esqueci senha")
+      },
+    });
+  }
+
+  // Token de "definir senha" (48h). O login é sempre o telefone.
+  const token = signResetToken({ sub: user.id });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { resetToken: token, resetTokenExpires: new Date(Date.now() + 48 * 3600_000) },
+  });
+  const base = req.headers.origin || process.env.PUBLIC_URL || 'https://app.airtonartus.com.br';
+  const link = `${base}/redefinir-senha?token=${encodeURIComponent(token)}`;
+
+  // Modo "link": a equipe envia pelo próprio WhatsApp — devolve login + link prontos.
+  if (mode === 'link') {
+    return res.json({ ok: true, login: phone, link, mode: 'link' });
+  }
+
+  // Modo "api": dispara o template oficial pela Meta. sendWhatsApp LANÇA em erro
+  // da Meta — traduzimos para uma mensagem amigável.
+  let result;
+  try {
+    result = await sendWhatsApp({ to: phone, template: accessTemplatePayload(user, token) });
+  } catch (e) {
+    throw new AppError(friendlyAccessError(e.message), 400);
+  }
+  res.json({ ok: true, login: phone, link, provider: result?.provider, simulated: !!result?.simulated });
+});
+
+/** Payload do template oficial de acesso (redefinir senha, botão com o token). */
+function accessTemplatePayload(user, token) {
+  return {
+    name: 'airton_redefinir_senha',
+    language: { code: 'pt_BR' },
+    components: [
+      { type: 'body', parameters: [{ type: 'text', text: user.name || 'tudo bem' }] },
+      { type: 'button', sub_type: 'url', index: 0, parameters: [{ type: 'text', text: token }] },
+    ],
+  };
+}
+
+/** Traduz o erro cru da Meta para linguagem do cliente. */
+function friendlyAccessError(msg = '') {
+  if (/131030|not in allowed list/i.test(msg)) return 'Número em modo de TESTE na Meta — só entrega a contatos liberados no painel. Use "Abrir no WhatsApp".';
+  if (/131049|131047|131026|130472/.test(msg)) return 'A Meta não entregou agora (limite diário/janela de 24h ou contato indisponível). Tente mais tarde ou use "Abrir no WhatsApp".';
+  return msg || 'Falha no envio pela Meta.';
+}
+
+/**
+ * Envio de acesso em LOTE — provisiona conta + dispara o template de acesso
+ * para os cadastros represados (status alvo, sem acesso ainda). Cap por
+ * chamada para respeitar o limite diário da Meta; devolve o que ficou.
+ */
+export const sendAccessBulk = asyncHandler(async (req, res) => {
+  // DESLIGADO (28/09): o envio em lote pelo número oficial fazia as pessoas
+  // (que nunca pediram) bloquearem o número → risco de ban na Meta. Enquanto o
+  // número não estiver verificado/estável, o acesso vai pelo WhatsApp da equipe
+  // (modo 'link' por apoiador). Mantido inerte para não sumir da rota.
+  throw new AppError('Envio de acesso em lote está desativado para proteger o número oficial contra bloqueios. Envie o acesso individualmente pelo WhatsApp da equipe (botão de acesso na linha do apoiador).', 403);
+  // eslint-disable-next-line no-unreachable
+  const status = req.body?.status || 'NOVO';
+  const limit = Math.min(Number(req.body?.limit) || 150, 250);
+
+  const candidates = await prisma.supporter.findMany({
+    where: { status, optOutAt: null },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true, name: true, phone: true, whatsapp: true, email: true },
+  });
+
+  // Elegíveis: têm telefone e ainda NÃO têm conta com senha definida.
+  const eligible = [];
+  for (const s of candidates) {
+    const phone = brDigits(s.whatsapp || s.phone);
+    if (!phone) continue;
+    const existing = await prisma.user.findFirst({ where: { phone }, select: { id: true, name: true, password: true } });
+    if (existing?.password) continue; // já tem acesso
+    eligible.push({ s, phone, existing });
+  }
+
+  const batch = eligible.slice(0, limit);
+  let sent = 0;
+  let failed = 0;
+  let stoppedByLimit = false;
+  const errors = [];
+
+  for (const { s, phone, existing } of batch) {
+    try {
+      let user = existing;
+      if (!user) {
+        let email = s.email && s.email.includes('@') ? s.email.toLowerCase() : `${phone}@wa.airtonartus.app`;
+        if (await prisma.user.findUnique({ where: { email } })) email = `${phone}.${Date.now()}@wa.airtonartus.app`;
+        user = await prisma.user.create({ data: { name: s.name || 'Apoiador', email, phone, role: 'PARCEIRO', password: '' } });
+      }
+      const token = signResetToken({ sub: user.id });
+      await prisma.user.update({ where: { id: user.id }, data: { resetToken: token, resetTokenExpires: new Date(Date.now() + 48 * 3600_000) } });
+      await sendWhatsApp({ to: phone, template: accessTemplatePayload(user, token) });
+      sent++;
+    } catch (e) {
+      failed++;
+      errors.push({ name: s.name, reason: friendlyAccessError(e.message) });
+      // Limite/rate da Meta → para o lote (não adianta insistir hoje).
+      if (/131049|130472|rate|too many|limit/i.test(e.message)) { stoppedByLimit = true; break; }
+    }
+  }
+
+  const remaining = eligible.length - (sent + failed);
+  await audit({ userId: req.user?.id, action: 'SEND_ACCESS_BULK', entity: 'Supporter', changes: { status, sent, failed, eligible: eligible.length }, ip: req.ip });
+  res.json({ sent, failed, eligible: eligible.length, remaining, stoppedByLimit, errors: errors.slice(0, 10) });
 });
 
 export const remove = asyncHandler(async (req, res) => {
@@ -203,11 +367,13 @@ export const importBatch = asyncHandler(async (req, res) => {
 
       let cityId = null;
       let regionId = null;
+      let cityName = null;
       if (raw.cityName) {
-        const city = await linkCityByName(prisma, raw.cityName);
-        if (city) { cityId = city.id; regionId = city.regionId; }
+        const r = await resolveCity(prisma, raw.cityName);
+        cityName = r.cityName; cityId = r.cityId; regionId = r.regionId;
       }
-      const geo = fallbackLatLng({ cityName: raw.cityName, neighborhood: raw.neighborhood, seed: phone });
+      const neighborhood = cleanPlace(raw.neighborhood) || null;
+      const geo = fallbackLatLng({ cityName, neighborhood, seed: phone });
 
       const created = await prisma.supporter.create({
         data: {
@@ -220,8 +386,8 @@ export const importBatch = asyncHandler(async (req, res) => {
           street: raw.street || null,
           number: raw.number || null,
           complement: raw.complement || null,
-          neighborhood: raw.neighborhood || null,
-          cityName: raw.cityName || null,
+          neighborhood,
+          cityName,
           cityId,
           regionId,
           lat: geo.lat,
@@ -232,6 +398,7 @@ export const importBatch = asyncHandler(async (req, res) => {
           supportType,
           status: 'NOVO',
           coordinatorId,
+          createdById: req.user?.id || null, // quem importou
         },
         select: { id: true },
       });
@@ -289,6 +456,10 @@ export const confirmVolunteer = asyncHandler(async (req, res) => {
       changedById: req.user?.id,
     },
   });
+
+  // DESLIGADO (28/09): o aviso automático pelo número oficial ia pra quem não
+  // esperava e ajudava a fazer bloquearem o número. A equipe envia o acesso/aviso
+  // manualmente pelo próprio WhatsApp (modal de acesso), sem risco pro número.
 
   res.json(updated);
 });

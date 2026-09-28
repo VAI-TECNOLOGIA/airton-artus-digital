@@ -36,6 +36,7 @@ export const NAV = [
   { to: '/conversas', label: 'Conversas (CRM)', icon: 'MessageSquare', roles: INTERNO },
   { to: '/demandas', label: 'Demandas', icon: 'Inbox', roles: INTERNO },
   { to: '/disparos', label: 'Disparos', icon: 'Send', roles: INTERNO },
+  { to: '/notificacoes', label: 'Enviar notificação', icon: 'Bell', roles: LIDER },
   { to: '/automacoes', label: 'Automações', icon: 'Bot', roles: LIDER },
 
   { section: 'Administração' },

@@ -1,5 +1,14 @@
 import prisma from '../config/prisma.js';
 import { sendViaChannel, renderTemplate } from './messaging.service.js';
+import { sendWhatsApp } from './whatsapp.service.js';
+
+// Tipos de automação que têm TEMPLATE oficial aprovado (só variável {{1}} = nome).
+// Fora da janela de 24h a Meta só entrega por template — então nesses tipos
+// mandamos o template (a mensagem livre da automação vira só rótulo interno).
+const TYPE_TEMPLATE = {
+  ANIVERSARIO: 'airton_aniversario',
+  AGRADECIMENTO_VOLUNTARIO: 'airton_agradecimento',
+};
 
 // ============================================================
 //  Motor de automações — executado 1x/dia pelo Vercel Cron
@@ -110,7 +119,19 @@ export async function runAutomations() {
       });
 
       try {
-        await sendViaChannel('WHATSAPP', { to: s.phone, body });
+        const tplName = TYPE_TEMPLATE[auto.type];
+        if (tplName) {
+          await sendWhatsApp({
+            to: s.phone,
+            template: {
+              name: tplName,
+              language: { code: 'pt_BR' },
+              components: [{ type: 'body', parameters: [{ type: 'text', text: s.name?.split(' ')[0] || s.name || 'tudo bem' }] }],
+            },
+          });
+        } else {
+          await sendViaChannel('WHATSAPP', { to: s.phone, body });
+        }
         await prisma.automationLog.create({
           data: { automationId: auto.id, recipient: s.phone, channel: 'WHATSAPP', success: true },
         });

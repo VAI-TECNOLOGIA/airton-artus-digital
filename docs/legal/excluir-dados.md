@@ -9,7 +9,7 @@ Se você não quer excluir sua conta (ou não tem conta com login), mas deseja r
 Você pode revogar seu consentimento a qualquer momento, por qualquer um destes canais:
 
 1. **Pela web (autoatendimento, imediato):** acesse [**/excluir-dados**](/excluir-dados) — você informa seu telefone, recebe um código de confirmação no seu WhatsApp e a exclusão é feita **na hora**.
-2. **Responda "SAIR"** a qualquer mensagem recebida da pré-campanha — você deixa de receber comunicações **imediatamente**.
+2. **Responda "SAIR"** a qualquer mensagem recebida da campanha — você deixa de receber comunicações **imediatamente**.
 3. **WhatsApp oficial:** envie **"EXCLUIR MEUS DADOS"** — você recebe um código de confirmação e, ao respondê-lo, seu cadastro é removido **na hora**.
 4. **E-mail:** privacidade@airtonartus.com.br com o assunto **"Exclusão de dados — Airton Artus Digital"**, informando nome e telefone cadastrados (processado em até **5 dias úteis**).
 

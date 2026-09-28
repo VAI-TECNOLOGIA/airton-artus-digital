@@ -32,7 +32,7 @@ r.post('/test', authenticate, authorize('LIDER'), asyncHandler(async (req, res) 
   const all = Boolean(req.body?.all);
   const result = await sendPushToUsers(all ? null : [req.user.id], {
     title: req.body?.title || 'Airton Artus Digital',
-    body: req.body?.body || 'Push de teste — canal de notificações funcionando. ✅',
+    body: req.body?.body || 'Push de teste — canal de notificações funcionando.',
     data: { kind: 'test' },
   });
   res.json(result);

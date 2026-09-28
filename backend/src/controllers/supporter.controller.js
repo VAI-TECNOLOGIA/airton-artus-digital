@@ -169,7 +169,11 @@ export const listCities = asyncHandler(async (req, res) => {
  * - mode 'api': além disso, dispara o template OFICIAL (airton_redefinir_senha) pela Meta.
  */
 export const sendAccess = asyncHandler(async (req, res) => {
-  const mode = req.body?.mode === 'api' ? 'api' : 'link';
+  // SEGURANÇA (28/09): o número oficial estava sendo BLOQUEADO porque o template
+  // "redefinir senha" era enviado a quem nunca pediu → risco de ban na Meta.
+  // O modo 'api' (envio automático pelo número oficial) fica DESLIGADO; só o modo
+  // 'link' (a equipe envia pelo próprio WhatsApp) — sem risco pro número.
+  const mode = 'link';
   const s = await prisma.supporter.findUnique({ where: { id: req.params.id } });
   if (!s) throw new AppError('Apoiador não encontrado', 404);
   const phone = brDigits(s.whatsapp || s.phone);
@@ -241,6 +245,12 @@ function friendlyAccessError(msg = '') {
  * chamada para respeitar o limite diário da Meta; devolve o que ficou.
  */
 export const sendAccessBulk = asyncHandler(async (req, res) => {
+  // DESLIGADO (28/09): o envio em lote pelo número oficial fazia as pessoas
+  // (que nunca pediram) bloquearem o número → risco de ban na Meta. Enquanto o
+  // número não estiver verificado/estável, o acesso vai pelo WhatsApp da equipe
+  // (modo 'link' por apoiador). Mantido inerte para não sumir da rota.
+  throw new AppError('Envio de acesso em lote está desativado para proteger o número oficial contra bloqueios. Envie o acesso individualmente pelo WhatsApp da equipe (botão de acesso na linha do apoiador).', 403);
+  // eslint-disable-next-line no-unreachable
   const status = req.body?.status || 'NOVO';
   const limit = Math.min(Number(req.body?.limit) || 150, 250);
 
@@ -447,8 +457,9 @@ export const confirmVolunteer = asyncHandler(async (req, res) => {
     },
   });
 
-  // Jornada: avisa o voluntário pela API oficial (template aprovado, best-effort).
-  notifyVolunteerConfirmed({ name: supporter.name, phone: supporter.whatsapp || supporter.phone }).catch(() => {});
+  // DESLIGADO (28/09): o aviso automático pelo número oficial ia pra quem não
+  // esperava e ajudava a fazer bloquearem o número. A equipe envia o acesso/aviso
+  // manualmente pelo próprio WhatsApp (modal de acesso), sem risco pro número.
 
   res.json(updated);
 });

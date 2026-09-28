@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Copy, Check, Send } from 'lucide-react';
+import { Copy, Check } from 'lucide-react';
 import Modal from './ui/Modal.jsx';
 import { useToast } from '../context/ToastContext.jsx';
 import { waLink, prettyPhone, phoneDigits, defaultMessage, accessMessage } from '../lib/whatsapp.js';
-import api, { apiError } from '../api/client.js';
+import api from '../api/client.js';
 
 /** Ícone do WhatsApp (mesmo traço usado na landing). */
 export function WaIcon({ size = 16 }) {
@@ -39,7 +39,6 @@ export default function WhatsAppMessageModal({ supporter, candidate = 'Airton Ar
 
   const [msg, setMsg] = useState(() => defaultMessage(supporter, candidate));
   const [copied, setCopied] = useState(false);
-  const [sending, setSending] = useState(false);
   const [linking, setLinking] = useState(hasPhone);
 
   // Ao abrir: provisiona a conta (telefone = login) e traz o LINK de acesso já na mensagem.
@@ -70,21 +69,6 @@ export default function WhatsAppMessageModal({ supporter, candidate = 'Airton Ar
       setTimeout(() => setCopied(false), 1800);
     } catch {
       toast.error('Não foi possível copiar automaticamente. Selecione o texto e copie.');
-    }
-  }
-
-  async function sendViaApi() {
-    if (!id) { toast.error('Registro sem identificação.'); return; }
-    setSending(true);
-    try {
-      const { data } = await api.post(`/supporters/${id}/send-access`, { mode: 'api' });
-      if (data?.simulated) toast.success('Registrado em modo simulado — conecte o número oficial para entregar de fato.');
-      else toast.success('Acesso enviado pela API oficial do WhatsApp!');
-      onClose?.();
-    } catch (e) {
-      toast.error(apiError(e));
-    } finally {
-      setSending(false);
     }
   }
 
@@ -122,13 +106,12 @@ export default function WhatsAppMessageModal({ supporter, candidate = 'Airton Ar
           </p>
         )}
 
-        {/* Opção 1 — pelo próprio WhatsApp da equipe (funciona hoje) */}
+        {/* Envio pelo próprio WhatsApp da equipe — sem risco pro número oficial */}
         <div style={rowStyle}>
           <div style={{ minWidth: 220, flex: 1 }}>
-            <b>1. Pelo meu WhatsApp</b>{' '}
-            <span className="chip" style={{ fontSize: 11 }}>recomendado agora</span>
+            <b>Enviar pelo meu WhatsApp</b>
             <div className="field-hint" style={{ marginTop: 2 }}>
-              Abre o WhatsApp com a mensagem e o link prontos. Você envia do seu número — funciona hoje mesmo.
+              Abre o WhatsApp com a mensagem e o link prontos. Você envia do seu número, com um toque pessoal — a pessoa cria a senha e entra.
             </div>
           </div>
           <div style={actionsStyle}>
@@ -150,22 +133,6 @@ export default function WhatsAppMessageModal({ supporter, candidate = 'Airton Ar
             ) : (
               <button className="btn btn-green" disabled><WaIcon /> Abrir no WhatsApp</button>
             )}
-          </div>
-        </div>
-
-        {/* Opção 2 — automático pela API oficial (template) */}
-        <div style={rowStyle}>
-          <div style={{ minWidth: 220, flex: 1 }}>
-            <b>2. Pela API oficial (template)</b>
-            <div className="field-hint" style={{ marginTop: 2 }}>
-              Envio automático pela Meta. Precisa do <b>número oficial</b> da campanha conectado e do
-              <b> template aprovado</b> — enquanto estiver no número de teste, só entrega a contatos liberados.
-            </div>
-          </div>
-          <div style={actionsStyle}>
-            <button className="btn btn-primary" disabled={sending || !hasPhone} onClick={sendViaApi}>
-              <Send size={15} /> {sending ? 'Enviando…' : 'Enviar por template'}
-            </button>
           </div>
         </div>
       </div>

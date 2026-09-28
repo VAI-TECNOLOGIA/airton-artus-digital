@@ -9,6 +9,11 @@ import { sendWhatsApp } from './whatsapp.service.js';
 
 const LANG = 'pt_BR';
 
+// Interruptor de emergência: WA_ACCESS_MUTE=1 silencia TODOS os disparos
+// automáticos de acesso/senha pelo número oficial (protege contra bloqueios em
+// massa que ameaçam banir o número na Meta). Deixe vazio para operar normal.
+const ACCESS_MUTED = process.env.WA_ACCESS_MUTE === '1';
+
 /** Boas-vindas / acesso liberado — botão estático para o app (sem variável de botão). */
 export async function notifyAccessGranted({ name, phone }) {
   if (!phone) return;
@@ -45,7 +50,7 @@ export async function notifyDemandResolved({ name, phone }) {
 
 /** Voluntário confirmado — mensagem de confirmação da participação (template UTILITY). */
 export async function notifyVolunteerConfirmed({ name, phone }) {
-  if (!phone) return;
+  if (!phone || ACCESS_MUTED) return;
   try {
     await sendWhatsApp({
       to: phone,
@@ -62,7 +67,7 @@ export async function notifyVolunteerConfirmed({ name, phone }) {
 
 /** Redefinição de senha — botão dinâmico com o token no fim da URL (/redefinir-senha?token={{1}}). */
 export async function notifyPasswordReset({ name, phone, token }) {
-  if (!phone || !token) return;
+  if (!phone || !token || ACCESS_MUTED) return;
   try {
     await sendWhatsApp({
       to: phone,
